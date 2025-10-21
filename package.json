@@ -9,7 +9,8 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "seed": "tsx scripts/seed-test-data.ts"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",
@@ -48,6 +49,7 @@
     "husky": "9.1.7",
     "lint-staged": "15.5.0",
     "prettier-plugin-astro": "0.14.1",
+    "tsx": "^4.19.2",
     "typescript-eslint": "8.28.0"
   },
   "lint-staged": {
