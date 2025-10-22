@@ -525,3 +525,92 @@ export const ValidationConstants = {
 		MAX_LIMIT: 100,
 	},
 } as const;
+
+// =============================================================================
+// GAME VIEW - CLIENT-SIDE TYPES
+// =============================================================================
+
+/**
+ * Game mode enum
+ */
+export type GameMode = "normal" | "daily";
+
+/**
+ * Pin location on map
+ */
+export type PinLocation = {
+	lat: number; // -90 to 90
+	lon: number; // -180 to 180
+};
+
+/**
+ * State for a single photo in the round
+ */
+export type PhotoState = {
+	photoData: DailySetPhotoDTO;
+	guess: GuessDTO | null; // Set after submission
+	result: PhotoScoreResultDTO | null; // Set after scoring
+	status: "pending" | "guessing" | "submitted" | "complete";
+};
+
+/**
+ * Main game state ViewModel
+ * Manages entire game flow across 5 photos
+ */
+export type GameViewModel = {
+	mode: GameMode;
+	dailySetId: string | null; // null for Normal mode
+	dateUtc: string | null; // null for Normal mode
+	photos: PhotoState[]; // Always 5 items
+	currentPhotoIndex: number; // 0-4
+	startTime: number; // Unix timestamp (ms)
+	elapsedTime: number; // Milliseconds
+	totalScore: number; // Running total across photos
+	isAlreadySubmitted: boolean; // Daily mode: already submitted today
+	isLoading: boolean; // Loading state for submissions
+	error: GameError | null; // Current error state
+};
+
+/**
+ * Error state type
+ */
+export type GameError = {
+	type: "map_load" | "submission" | "network" | "no_daily_set" | "invalid_guess";
+	message: string;
+	retryable: boolean;
+};
+
+/**
+ * Current guess state (before submission)
+ */
+export type CurrentGuess = {
+	pin: PinLocation | null;
+	year: number | null;
+};
+
+/**
+ * Timer state
+ */
+export type TimerState = {
+	startTime: number; // Unix timestamp
+	elapsedMs: number;
+	isRunning: boolean;
+};
+
+/**
+ * Map viewport bounds
+ */
+export type MapBounds = {
+	north: number;
+	south: number;
+	east: number;
+	west: number;
+};
+
+/**
+ * Nickname validation result
+ */
+export type NicknameValidation = {
+	isValid: boolean;
+	error?: string;
+};
