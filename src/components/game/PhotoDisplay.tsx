@@ -38,18 +38,6 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
 
 	return (
 		<div className="space-y-3">
-			{/* Photo counter */}
-			<div className="flex items-center justify-between">
-				<h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-					Photo {currentIndex + 1} of {totalPhotos}
-				</h2>
-				{photo.competition && (
-					<span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">
-						{photo.competition}
-					</span>
-				)}
-			</div>
-
 			{/* Photo container */}
 			<div className="relative w-full aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
 				{/* Loading skeleton */}
@@ -119,21 +107,6 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
 					/>
 				)}
 			</div>
-
-			{/* Tags */}
-			{photo.tags && photo.tags.length > 0 && (
-				<div className="flex flex-wrap gap-2" role="list" aria-label="Photo tags">
-					{photo.tags.map((tag) => (
-						<span
-							key={tag}
-							className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
-							role="listitem"
-						>
-							{tag}
-						</span>
-					))}
-				</div>
-			)}
 		</div>
 	);
 }
