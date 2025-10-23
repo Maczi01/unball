@@ -64,33 +64,39 @@ export function FeedbackSection({
 
 			{/* Main content */}
 			<div className="flex-1 overflow-y-auto">
-				<div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
-					{/* Celebration message */}
-					<div className="text-center bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg p-6 shadow-lg">
-						<p className="text-3xl font-bold text-white" id="feedback-title">
+				<div className="max-w-7xl mx-auto p-4 space-y-4">
+					{/* Celebration message with score - more compact */}
+					<div className="text-center bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg py-4 px-6 shadow-lg">
+						<p className="text-xl font-bold text-white mb-1" id="feedback-title">
 							{getCelebrationMessage()}
+						</p>
+						<p className="text-4xl font-black text-white tabular-nums">
+							{result.total_score.toLocaleString()} points
+						</p>
+						<p className="text-sm text-blue-100 mt-1">
+							out of 20,000 possible
 						</p>
 					</div>
 
-					{/* Two column layout: Photo & Map */}
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+					{/* Two column layout: Photo & Map - more compact */}
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 						{/* Left: Photo */}
-						<div className="space-y-4">
+						<div className="space-y-3">
 							<div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
 								<img
 									src={photoUrl}
 									alt="Football match"
-									className="w-full h-auto object-cover"
+									className="w-full h-auto max-h-[300px] object-contain"
 								/>
 							</div>
 
 							{/* Event details */}
-							<div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-								<h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+							<div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+								<h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
 									{result.event_name}
 								</h3>
 								{result.description && (
-									<p className="text-gray-600 dark:text-gray-400 mb-3">
+									<p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
 										{result.description}
 									</p>
 								)}
@@ -104,8 +110,8 @@ export function FeedbackSection({
 						</div>
 
 						{/* Right: Map with both pins */}
-						<div className="space-y-4">
-							<div className="h-[400px] lg:h-[500px]">
+						<div>
+							<div className="h-[300px] lg:h-[380px]">
 								<MapComponent
 									userPin={userGuessPin}
 									correctPin={{ lat: result.correct_lat, lon: result.correct_lon }}
