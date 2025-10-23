@@ -18,7 +18,7 @@ export const GET: APIRoute = async ({ locals }) => {
 			round_id: `round_${Date.now()}`,
 			photos: [
 				{
-					id: "photo_1",
+					photo_id: "photo_1",
 					photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Jogo_no_Est%C3%A1dio_do_Maracan%C3%A3%2C_antes_da_Copa_do_Mundo_de_1950.tif/lossy-page1-1280px-Jogo_no_Est%C3%A1dio_do_Maracan%C3%A3%2C_antes_da_Copa_do_Mundo_de_1950.tif.jpg",
 					thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Jogo_no_Est%C3%A1dio_do_Maracan%C3%A3%2C_antes_da_Copa_do_Mundo_de_1950.tif/lossy-page1-1280px-Jogo_no_Est%C3%A1dio_do_Maracan%C3%A3%2C_antes_da_Copa_do_Mundo_de_1950.tif.jpg",
 					competition: "Champions League",
@@ -26,7 +26,7 @@ export const GET: APIRoute = async ({ locals }) => {
 					tags: ["club", "european"],
 				},
 				{
-					id: "photo_2",
+					photo_id: "photo_2",
 					photo_url: "https://via.placeholder.com/800x600/9333ea/ffffff?text=Football+Photo+2",
 					thumbnail_url: "https://via.placeholder.com/200x150/9333ea/ffffff?text=Photo+2",
 					competition: "World Cup",
@@ -34,7 +34,7 @@ export const GET: APIRoute = async ({ locals }) => {
 					tags: ["international", "tournament"],
 				},
 				{
-					id: "photo_3",
+					photo_id: "photo_3",
 					photo_url: "https://via.placeholder.com/800x600/10b981/ffffff?text=Football+Photo+3",
 					thumbnail_url: "https://via.placeholder.com/200x150/10b981/ffffff?text=Photo+3",
 					competition: "Premier League",
@@ -42,7 +42,7 @@ export const GET: APIRoute = async ({ locals }) => {
 					tags: ["club", "domestic"],
 				},
 				{
-					id: "photo_4",
+					photo_id: "photo_4",
 					photo_url: "https://via.placeholder.com/800x600/f59e0b/ffffff?text=Football+Photo+4",
 					thumbnail_url: "https://via.placeholder.com/200x150/f59e0b/ffffff?text=Photo+4",
 					competition: "La Liga",
@@ -50,7 +50,7 @@ export const GET: APIRoute = async ({ locals }) => {
 					tags: ["club", "domestic"],
 				},
 				{
-					id: "photo_5",
+					photo_id: "photo_5",
 					photo_url: "https://via.placeholder.com/800x600/ef4444/ffffff?text=Football+Photo+5",
 					thumbnail_url: "https://via.placeholder.com/200x150/ef4444/ffffff?text=Photo+5",
 					competition: "Copa America",

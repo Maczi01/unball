@@ -42,10 +42,14 @@ export type DbUpdate<T extends keyof Database["public"]["Tables"]> =
  * Photo metadata for Normal mode (no answers revealed)
  * Derived from photos_metadata view
  */
-export type NormalRoundPhotoDTO = Pick<
-	DbTable<"photos">,
-	"id" | "photo_url" | "thumbnail_url" | "competition" | "place" | "tags"
->;
+export type NormalRoundPhotoDTO = {
+	photo_id: string; // Renamed from 'id' for consistency
+	photo_url: string;
+	thumbnail_url: string | null;
+	competition: string | null;
+	place: string | null;
+	tags: string[] | null;
+};
 
 /**
  * Response for GET /api/normal/photos
@@ -545,9 +549,10 @@ export type PinLocation = {
 
 /**
  * State for a single photo in the round
+ * Supports both Normal mode (NormalRoundPhotoDTO) and Daily mode (DailySetPhotoDTO)
  */
 export type PhotoState = {
-	photoData: DailySetPhotoDTO;
+	photoData: NormalRoundPhotoDTO | DailySetPhotoDTO;
 	guess: GuessDTO | null; // Set after submission
 	result: PhotoScoreResultDTO | null; // Set after scoring
 	status: "pending" | "guessing" | "submitted" | "complete";

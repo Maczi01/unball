@@ -145,6 +145,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
   const [showFeedback, setShowFeedback] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [leaderboardRank, setLeaderboardRank] = useState<number | undefined>(undefined);
+  const [lastGuessPin, setLastGuessPin] = useState<{ lat: number; lon: number } | null>(null);
 
   const currentPhoto = gameState.photos[gameState.currentPhotoIndex];
   const currentPhotoNumber = gameState.currentPhotoIndex + 1;
@@ -182,6 +183,9 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       }
 
       const result: PhotoScoreResultDTO = await response.json();
+
+      // Save the guess pin before clearing
+      setLastGuessPin({ lat: pin.lat, lon: pin.lon });
 
       dispatch({ type: "SUBMIT_GUESS", payload: { guess, result } });
       setShowFeedback(true);
@@ -293,6 +297,39 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
     );
   }
 
+  // Show feedback page
+  if (showFeedback && currentPhoto.result) {
+    return (
+      <FeedbackSection
+        result={currentPhoto.result}
+        runningTotal={gameState.totalScore}
+        currentPhoto={currentPhotoNumber}
+        totalPhotos={gameState.photos.length}
+        onNext={handleNextPhoto}
+        userGuessPin={lastGuessPin}
+        photoUrl={currentPhoto.photoData.photo_url}
+      />
+    );
+  }
+
+  // Show round summary
+  if (showSummary) {
+    return (
+      <RoundSummary
+        mode={mode}
+        results={gameState.photos.filter((p) => p.result !== null).map((p) => p.result!)}
+        totalScore={gameState.totalScore}
+        totalTimeMs={elapsedMs}
+        isFirstSubmission={mode === "daily" && !hasSubmitted && !isAlreadySubmitted}
+        leaderboardRank={leaderboardRank}
+        onViewLeaderboard={handleViewLeaderboard}
+        onPlayAgain={handlePlayAgain}
+        onSubmitWithNickname={handleSubmitWithNickname}
+      />
+    );
+  }
+
+  // Show main game interface
   return (
     <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden">
       {/* Header */}
@@ -326,11 +363,11 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
             </div>
 
             {/* Year picker */}
-            <YearPicker selectedYear={year} onYearChange={setYear} disabled={showFeedback} />
+            <YearPicker selectedYear={year} onYearChange={setYear} disabled={false} />
 
             {/* Submit button */}
             <SubmitButton
-              isDisabled={!isComplete || showFeedback}
+              isDisabled={!isComplete}
               isLoading={gameState.isLoading}
               onClick={handleSubmitGuess}
             />
@@ -340,13 +377,9 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
           <div className="h-[400px] lg:max-h-full lg:h-full">
             <MapComponent
               userPin={pin}
-              correctPin={
-                currentPhoto.result
-                  ? { lat: currentPhoto.result.correct_lat, lon: currentPhoto.result.correct_lon }
-                  : null
-              }
-              showFeedback={showFeedback}
-              kmError={currentPhoto.result?.km_error || null}
+              correctPin={null}
+              showFeedback={false}
+              kmError={null}
               onPinPlace={setPin}
               onPinMove={setPin}
               className="h-full"
@@ -354,32 +387,6 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
           </div>
         </div>
       </div>
-
-      {/* Feedback overlay */}
-      {showFeedback && currentPhoto.result && (
-        <FeedbackSection
-          result={currentPhoto.result}
-          runningTotal={gameState.totalScore}
-          currentPhoto={currentPhotoNumber}
-          totalPhotos={gameState.photos.length}
-          onNext={handleNextPhoto}
-        />
-      )}
-
-      {/* Round summary */}
-      {showSummary && (
-        <RoundSummary
-          mode={mode}
-          results={gameState.photos.filter((p) => p.result !== null).map((p) => p.result!)}
-          totalScore={gameState.totalScore}
-          totalTimeMs={elapsedMs}
-          isFirstSubmission={mode === "daily" && !hasSubmitted && !isAlreadySubmitted}
-          leaderboardRank={leaderboardRank}
-          onViewLeaderboard={handleViewLeaderboard}
-          onPlayAgain={handlePlayAgain}
-          onSubmitWithNickname={handleSubmitWithNickname}
-        />
-      )}
 
       {/* Error display */}
       {gameState.error && (
