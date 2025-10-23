@@ -59,13 +59,14 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
 		// TODO: Fetch actual photo data from database
 		// For now, return mock correct answer
-		const correctAnswers: Record<string, { lat: number; lon: number; year: number; event_name: string; description: string }> = {
+		const correctAnswers: Record<string, { lat: number; lon: number; year: number; event_name: string; description: string; source_url: string | null }> = {
 			photo_1: {
 				lat: 41.38,
 				lon: 2.17,
 				year: 2015,
 				event_name: "Champions League Final",
 				description: "FC Barcelona vs Juventus at Camp Nou",
+				source_url: "https://www.youtube.com/watch?v=example1",
 			},
 			photo_2: {
 				lat: -22.97,
@@ -73,6 +74,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 				year: 2014,
 				event_name: "World Cup Final",
 				description: "Germany vs Argentina at Maracanã Stadium",
+				source_url: "https://www.youtube.com/watch?v=example2",
 			},
 			photo_3: {
 				lat: 51.48,
@@ -80,6 +82,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 				year: 2018,
 				event_name: "FA Cup Final",
 				description: "Chelsea vs Manchester United at Wembley Stadium",
+				source_url: "https://www.youtube.com/watch?v=example3",
 			},
 			photo_4: {
 				lat: 40.45,
@@ -87,6 +90,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 				year: 2016,
 				event_name: "El Clásico",
 				description: "Real Madrid vs Barcelona at Santiago Bernabéu",
+				source_url: "https://www.youtube.com/watch?v=example4",
 			},
 			photo_5: {
 				lat: -34.54,
@@ -94,6 +98,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 				year: 2021,
 				event_name: "Copa America Final",
 				description: "Argentina vs Brazil at Estadio Maracanã",
+				source_url: "https://www.youtube.com/watch?v=example5",
 			},
 		};
 
@@ -139,7 +144,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 			correct_year: correctAnswer.year,
 			event_name: correctAnswer.event_name,
 			description: correctAnswer.description,
-			source_url: null,
+			source_url: correctAnswer.source_url,
 			license: "CC BY 4.0",
 			credit: "Mock Photo Credit",
 		};
