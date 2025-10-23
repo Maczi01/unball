@@ -294,7 +294,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden">
       {/* Header */}
       <GameHeader
         mode={mode}
@@ -312,16 +312,18 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       )}
 
       {/* Main game area */}
-      <div className="flex-1 p-4 md:p-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="flex-1 flex items-center justify-center overflow-hidden p-4 md:p-6 pb-6">
+        <div className="w-full h-full max-h-full grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left column: Photo and controls */}
-          <div className="space-y-6">
+          <div className="space-y-3 flex flex-col max-h-full overflow-hidden">
             {/* Photo */}
-            <PhotoDisplay
-              photo={currentPhoto.photoData}
-              currentIndex={gameState.currentPhotoIndex}
-              totalPhotos={gameState.photos.length}
-            />
+            <div className="flex-1 flex flex-col min-h-0">
+              <PhotoDisplay
+                photo={currentPhoto.photoData}
+                currentIndex={gameState.currentPhotoIndex}
+                totalPhotos={gameState.photos.length}
+              />
+            </div>
 
             {/* Year picker */}
             <YearPicker selectedYear={year} onYearChange={setYear} disabled={showFeedback} />
@@ -335,7 +337,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
           </div>
 
           {/* Right column: Map */}
-          <div className="lg:sticky lg:top-6 h-[400px] lg:h-[600px]">
+          <div className="h-[400px] lg:max-h-full lg:h-full">
             <MapComponent
               userPin={pin}
               correctPin={

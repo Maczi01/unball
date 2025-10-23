@@ -37,9 +37,9 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
 	};
 
 	return (
-		<div className="space-y-3">
+		<div className="h-full flex flex-col min-h-0">
 			{/* Photo container */}
-			<div className="relative w-full aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+			<div className="relative w-full h-full bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
 				{/* Loading skeleton */}
 				{isLoading && !hasError && (
 					<div className="absolute inset-0 flex items-center justify-center bg-gray-200 dark:bg-gray-700 animate-pulse">
@@ -103,7 +103,7 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
 						src={photo.thumbnail_url}
 						alt=""
 						aria-hidden="true"
-						className="absolute inset-0 w-full h-full object-cover blur-sm scale-110"
+						className="absolute inset-0 w-full h-full object-cover scale-110"
 					/>
 				)}
 			</div>

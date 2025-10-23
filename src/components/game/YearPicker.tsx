@@ -16,26 +16,26 @@ export function YearPicker({ selectedYear, onYearChange, disabled = false }: Yea
 	};
 
 	return (
-		<div className="space-y-4">
+		<div className="space-y-2">
 			{/* Header */}
 			<div className="flex items-center justify-between">
-				<label className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+				<label className="text-base font-semibold text-gray-900 dark:text-gray-100">
 					What year was this?
 				</label>
-				<span className="text-sm text-gray-500 dark:text-gray-400">
+				<span className="text-xs text-gray-500 dark:text-gray-400">
 					{MIN} - {MAX}
 				</span>
 			</div>
 
 			{/* Selected year display */}
 			<div className="text-center">
-				<div className="text-5xl font-bold text-blue-600 dark:text-blue-400" aria-live="polite">
+				<div className="text-4xl font-bold text-blue-600 dark:text-blue-400" aria-live="polite">
 					{selectedYear !== null ? selectedYear : MIN}
 				</div>
 			</div>
 
 			{/* Slider */}
-			<div className="px-2">
+			<div className="px-2 py-1">
 				<Slider
 					min={MIN}
 					max={MAX}
@@ -47,11 +47,6 @@ export function YearPicker({ selectedYear, onYearChange, disabled = false }: Yea
 					aria-label="Year slider"
 				/>
 			</div>
-
-			{/* Guidelines */}
-			<p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-				Use the slider to select a year
-			</p>
 		</div>
 	);
 }
