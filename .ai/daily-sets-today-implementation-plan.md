@@ -5,6 +5,7 @@
 This endpoint retrieves today's published daily photo set containing exactly 5 photos. It serves as the primary data source for the daily challenge mode gameplay. The endpoint returns only safe metadata (URLs, competition info, tags) without revealing answers (coordinates, year, event name, description) until after submission.
 
 **Key Requirements:**
+
 - Return today's daily set based on current UTC date
 - Only return published sets (`is_published = true`)
 - Ensure exactly 5 photos are included, ordered by position
@@ -90,9 +91,9 @@ export type DailySetPhotoDTO = {
 
 ```typescript
 // From src/db/database.types.ts
-DbTable<"daily_sets"> // daily_sets table Row type
-DbTable<"daily_set_photos"> // daily_set_photos junction table Row type
-DbTable<"photos"> // photos table Row type (use photos_metadata view)
+DbTable<"daily_sets">; // daily_sets table Row type
+DbTable<"daily_set_photos">; // daily_set_photos junction table Row type
+DbTable<"photos">; // photos table Row type (use photos_metadata view)
 ```
 
 ## 5. Data Flow
@@ -100,8 +101,9 @@ DbTable<"photos"> // photos table Row type (use photos_metadata view)
 ### Query Strategy
 
 1. **Get current UTC date:**
+
    ```typescript
-   const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+   const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
    ```
 
 2. **Query daily_sets table:**
@@ -127,8 +129,9 @@ DbTable<"photos"> // photos table Row type (use photos_metadata view)
 
 ```typescript
 const { data: dailySet, error } = await supabase
-  .from('daily_sets')
-  .select(`
+  .from("daily_sets")
+  .select(
+    `
     id,
     date_utc,
     daily_set_photos!inner (
@@ -143,9 +146,10 @@ const { data: dailySet, error } = await supabase
         tags
       )
     )
-  `)
-  .eq('date_utc', today)
-  .eq('is_published', true)
+  `
+  )
+  .eq("date_utc", today)
+  .eq("is_published", true)
   .single();
 ```
 
@@ -154,13 +158,11 @@ const { data: dailySet, error } = await supabase
 Create `src/lib/services/daily-sets.service.ts`:
 
 ```typescript
-import type { SupabaseClient } from '@/db/supabase.client';
-import type { DailySetResponseDTO, DailySetPhotoDTO } from '@/types';
+import type { SupabaseClient } from "@/db/supabase.client";
+import type { DailySetResponseDTO, DailySetPhotoDTO } from "@/types";
 
-export async function getTodaysDailySet(
-  supabase: SupabaseClient
-): Promise<DailySetResponseDTO | null> {
-  const today = new Date().toISOString().split('T')[0];
+export async function getTodaysDailySet(supabase: SupabaseClient): Promise<DailySetResponseDTO | null> {
+  const today = new Date().toISOString().split("T")[0];
 
   // Implementation here
 }
@@ -211,13 +213,13 @@ export async function getTodaysDailySet(
 
 ### Error Scenarios and Responses
 
-| Scenario | Status Code | Response | Action |
-|----------|-------------|----------|--------|
-| No daily set for today | 404 | `{ error: "No daily set published for today", fallback: "Try Normal mode instead" }` | Log warning, suggest Normal mode |
-| Set exists but not published | 404 | Same as above | Log info about unpublished set |
-| Set has wrong photo count | 500 | `{ error: "Daily set incomplete" }` | Log critical error, alert admin |
-| Database connection error | 500 | `{ error: "Failed to retrieve daily set" }` | Log error with stack trace |
-| Supabase timeout | 500 | `{ error: "Service temporarily unavailable" }` | Log error, retry logic in service |
+| Scenario                     | Status Code | Response                                                                             | Action                            |
+| ---------------------------- | ----------- | ------------------------------------------------------------------------------------ | --------------------------------- |
+| No daily set for today       | 404         | `{ error: "No daily set published for today", fallback: "Try Normal mode instead" }` | Log warning, suggest Normal mode  |
+| Set exists but not published | 404         | Same as above                                                                        | Log info about unpublished set    |
+| Set has wrong photo count    | 500         | `{ error: "Daily set incomplete" }`                                                  | Log critical error, alert admin   |
+| Database connection error    | 500         | `{ error: "Failed to retrieve daily set" }`                                          | Log error with stack trace        |
+| Supabase timeout             | 500         | `{ error: "Service temporarily unavailable" }`                                       | Log error, retry logic in service |
 
 ### Error Handling Pattern
 
@@ -230,27 +232,27 @@ export const GET: APIRoute = async ({ locals }) => {
     if (!dailySet) {
       return new Response(
         JSON.stringify({
-          error: 'No daily set published for today',
-          fallback: 'Try Normal mode instead',
-          timestamp: new Date().toISOString()
+          error: "No daily set published for today",
+          fallback: "Try Normal mode instead",
+          timestamp: new Date().toISOString(),
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     return new Response(JSON.stringify(dailySet), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('[GET /api/daily/sets/today] Error:', error);
+    console.error("[GET /api/daily/sets/today] Error:", error);
 
     return new Response(
       JSON.stringify({
-        error: 'Failed to retrieve daily set',
-        timestamp: new Date().toISOString()
+        error: "Failed to retrieve daily set",
+        timestamp: new Date().toISOString(),
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
@@ -282,6 +284,7 @@ console.error(`[Daily Sets] Database error:`, error);
    - These indexes already exist per db-plan.md
 
 2. **Caching:**
+
    ```typescript
    // Cache daily set for 5 minutes (300 seconds)
    headers: {
@@ -289,6 +292,7 @@ console.error(`[Daily Sets] Database error:`, error);
      'Cache-Control': 'public, max-age=300, s-maxage=300'
    }
    ```
+
    - Daily sets don't change frequently during the day
    - Invalidate cache at midnight UTC (daily set rotation)
 
@@ -315,23 +319,22 @@ console.error(`[Daily Sets] Database error:`, error);
 **File:** `src/lib/services/daily-sets.service.ts`
 
 ```typescript
-import type { SupabaseClient } from '@/db/supabase.client';
-import type { DailySetResponseDTO, DailySetPhotoDTO } from '@/types';
+import type { SupabaseClient } from "@/db/supabase.client";
+import type { DailySetResponseDTO, DailySetPhotoDTO } from "@/types";
 
 /**
  * Retrieves today's published daily set with photos
  * @param supabase - Supabase client from context.locals
  * @returns Daily set with 5 photos, or null if not found
  */
-export async function getTodaysDailySet(
-  supabase: SupabaseClient
-): Promise<DailySetResponseDTO | null> {
-  const today = new Date().toISOString().split('T')[0];
+export async function getTodaysDailySet(supabase: SupabaseClient): Promise<DailySetResponseDTO | null> {
+  const today = new Date().toISOString().split("T")[0];
 
   try {
     const { data, error } = await supabase
-      .from('daily_sets')
-      .select(`
+      .from("daily_sets")
+      .select(
+        `
         id,
         date_utc,
         daily_set_photos!inner (
@@ -346,17 +349,18 @@ export async function getTodaysDailySet(
             tags
           )
         )
-      `)
-      .eq('date_utc', today)
-      .eq('is_published', true)
-      .order('position', {
-        foreignTable: 'daily_set_photos',
-        ascending: true
+      `
+      )
+      .eq("date_utc", today)
+      .eq("is_published", true)
+      .order("position", {
+        foreignTable: "daily_set_photos",
+        ascending: true,
       })
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         // No rows returned - normal case when no set published
         console.warn(`[Daily Sets] No published set found for ${today}`);
         return null;
@@ -376,28 +380,25 @@ export async function getTodaysDailySet(
       thumbnail_url: dsp.photos.thumbnail_url,
       competition: dsp.photos.competition,
       place: dsp.photos.place,
-      tags: dsp.photos.tags
+      tags: dsp.photos.tags,
     }));
 
     // Validate photo count
     if (photos.length !== 5) {
-      console.error(
-        `[Daily Sets] Invalid photo count for set ${data.id}: ${photos.length} (expected 5)`
-      );
-      throw new Error('Daily set incomplete');
+      console.error(`[Daily Sets] Invalid photo count for set ${data.id}: ${photos.length} (expected 5)`);
+      throw new Error("Daily set incomplete");
     }
 
     const response: DailySetResponseDTO = {
       daily_set_id: data.id,
       date_utc: data.date_utc,
-      photos
+      photos,
     };
 
     console.info(`[Daily Sets] Retrieved set for ${today}, id: ${data.id}`);
     return response;
-
   } catch (error) {
-    console.error('[Daily Sets] Error fetching today\'s set:', error);
+    console.error("[Daily Sets] Error fetching today's set:", error);
     throw error;
   }
 }
@@ -408,8 +409,8 @@ export async function getTodaysDailySet(
 **File:** `src/pages/api/daily/sets/today.ts`
 
 ```typescript
-import type { APIRoute } from 'astro';
-import { getTodaysDailySet } from '@/lib/services/daily-sets.service';
+import type { APIRoute } from "astro";
+import { getTodaysDailySet } from "@/lib/services/daily-sets.service";
 
 export const prerender = false;
 
@@ -428,43 +429,39 @@ export const GET: APIRoute = async ({ locals }) => {
     if (!dailySet) {
       return new Response(
         JSON.stringify({
-          error: 'No daily set published for today',
-          fallback: 'Try Normal mode instead',
-          timestamp: new Date().toISOString()
+          error: "No daily set published for today",
+          fallback: "Try Normal mode instead",
+          timestamp: new Date().toISOString(),
         }),
         {
           status: 404,
           headers: {
-            'Content-Type': 'application/json'
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
     }
 
-    return new Response(
-      JSON.stringify(dailySet),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300, s-maxage=300'
-        }
-      }
-    );
-
+    return new Response(JSON.stringify(dailySet), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=300, s-maxage=300",
+      },
+    });
   } catch (error) {
-    console.error('[GET /api/daily/sets/today] Error:', error);
+    console.error("[GET /api/daily/sets/today] Error:", error);
 
     return new Response(
       JSON.stringify({
-        error: 'Failed to retrieve daily set',
-        timestamp: new Date().toISOString()
+        error: "Failed to retrieve daily set",
+        timestamp: new Date().toISOString(),
       }),
       {
         status: 500,
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
   }
@@ -474,6 +471,7 @@ export const GET: APIRoute = async ({ locals }) => {
 ### Step 3: Add Type Exports (Already Done)
 
 The necessary types are already defined in `src/types.ts`:
+
 - `DailySetResponseDTO`
 - `DailySetPhotoDTO`
 
@@ -520,30 +518,30 @@ curl http://localhost:3000/api/daily/sets/today
 
 ```typescript
 // tests/api/daily-sets-today.test.ts
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 
-describe('GET /api/daily/sets/today', () => {
-  it('should return today\'s daily set with 5 photos', async () => {
-    const response = await fetch('/api/daily/sets/today');
+describe("GET /api/daily/sets/today", () => {
+  it("should return today's daily set with 5 photos", async () => {
+    const response = await fetch("/api/daily/sets/today");
     expect(response.status).toBe(200);
 
     const data = await response.json();
-    expect(data).toHaveProperty('daily_set_id');
-    expect(data).toHaveProperty('date_utc');
+    expect(data).toHaveProperty("daily_set_id");
+    expect(data).toHaveProperty("date_utc");
     expect(data.photos).toHaveLength(5);
 
     // Verify no answer fields leaked
     data.photos.forEach((photo: any) => {
-      expect(photo).not.toHaveProperty('lat');
-      expect(photo).not.toHaveProperty('lon');
-      expect(photo).not.toHaveProperty('year_utc');
-      expect(photo).not.toHaveProperty('event_name');
+      expect(photo).not.toHaveProperty("lat");
+      expect(photo).not.toHaveProperty("lon");
+      expect(photo).not.toHaveProperty("year_utc");
+      expect(photo).not.toHaveProperty("event_name");
     });
   });
 
-  it('should return 404 when no set published', async () => {
+  it("should return 404 when no set published", async () => {
     // Test scenario where no set exists
-    const response = await fetch('/api/daily/sets/today');
+    const response = await fetch("/api/daily/sets/today");
     expect([200, 404]).toContain(response.status);
   });
 });
@@ -552,6 +550,7 @@ describe('GET /api/daily/sets/today', () => {
 ### Step 6: Monitor and Log
 
 **Monitoring Checklist:**
+
 - [ ] Log all 404 responses (expected, but good to track frequency)
 - [ ] Alert on 500 errors (unexpected, requires investigation)
 - [ ] Track response times (should be < 100ms)
@@ -562,12 +561,12 @@ describe('GET /api/daily/sets/today', () => {
 
 ```typescript
 // Add structured logging
-console.info('[Daily Sets API]', {
-  endpoint: '/api/daily/sets/today',
+console.info("[Daily Sets API]", {
+  endpoint: "/api/daily/sets/today",
   status: 200,
   responseTime: Date.now() - startTime,
   setId: dailySet.daily_set_id,
-  photoCount: dailySet.photos.length
+  photoCount: dailySet.photos.length,
 });
 ```
 

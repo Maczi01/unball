@@ -1,6 +1,7 @@
 # API Documentation: GET /api/daily/sets/today
 
 ## Overview
+
 Retrieves today's published daily photo set containing exactly 5 photos for the daily challenge mode.
 
 **Endpoint:** `GET /api/daily/sets/today`
@@ -12,20 +13,25 @@ Retrieves today's published daily photo set containing exactly 5 photos for the 
 ## Request
 
 ### HTTP Method
+
 `GET`
 
 ### URL
+
 ```
 http://localhost:3000/api/daily/sets/today
 ```
 
 ### Headers
+
 None required
 
 ### Query Parameters
+
 None
 
 ### Request Body
+
 None
 
 ---
@@ -37,10 +43,13 @@ None
 **Scenario:** Daily set for today exists and is published
 
 **Headers:**
+
 - `Content-Type: application/json`
 - `Cache-Control: public, max-age=300, s-maxage=300` (5-minute cache)
 
 **Body:**
+So
+
 ```json
 {
   "daily_set_id": "uuid",
@@ -54,13 +63,14 @@ None
       "competition": "Champions League",
       "place": "Spain",
       "tags": ["club", "european"]
-    },
+    }
     // ... 4 more photos (total 5)
   ]
 }
 ```
 
 **Photo Fields Included:**
+
 - `photo_id`: UUID of the photo
 - `position`: 1-5 (display order)
 - `photo_url`: Full-size photo URL
@@ -70,6 +80,7 @@ None
 - `tags`: Array of tag strings (nullable)
 
 **Answer Fields Excluded (security):**
+
 - ❌ `lat`, `lon` (coordinates)
 - ❌ `year_utc` (year answer)
 - ❌ `event_name` (event description)
@@ -84,9 +95,11 @@ These are only revealed after submission via the submission endpoint.
 **Scenario:** No daily set published for today
 
 **Headers:**
+
 - `Content-Type: application/json`
 
 **Body:**
+
 ```json
 {
   "error": "No daily set published for today",
@@ -96,6 +109,7 @@ These are only revealed after submission via the submission endpoint.
 ```
 
 **Client Handling:**
+
 - Display "No daily challenge available today" message
 - Redirect user to Normal mode gameplay
 - Check back later (daily sets may be published during the day)
@@ -107,9 +121,11 @@ These are only revealed after submission via the submission endpoint.
 **Scenario:** Database connection error or unexpected server error
 
 **Headers:**
+
 - `Content-Type: application/json`
 
 **Body:**
+
 ```json
 {
   "error": "Failed to retrieve daily set",
@@ -118,6 +134,7 @@ These are only revealed after submission via the submission endpoint.
 ```
 
 **Client Handling:**
+
 - Display "Service temporarily unavailable" message
 - Retry after a few seconds
 - Fall back to Normal mode
@@ -127,12 +144,14 @@ These are only revealed after submission via the submission endpoint.
 ## Implementation Details
 
 ### Files
+
 - **Service:** `src/lib/services/daily-sets.service.ts`
 - **Route:** `src/pages/api/daily/sets/today.ts`
 - **Types:** `src/types.ts` (DailySetResponseDTO, DailySetPhotoDTO)
 - **Database:** `src/db/database.types.ts`
 
 ### Database Query
+
 ```typescript
 // Queries daily_sets table joined with daily_set_photos and photos
 // Filters by today's UTC date and is_published = true
@@ -141,18 +160,21 @@ These are only revealed after submission via the submission endpoint.
 ```
 
 ### Security
+
 - **RLS Policies:** Enabled on all tables
 - **Column Security:** Uses `photos_metadata` view to exclude answer fields
 - **Public Access:** No authentication required (public endpoint)
 - **Rate Limiting:** 5-minute cache reduces load
 
 ### Performance
+
 - **Query Time:** < 50ms (with indexes)
 - **Response Time:** < 100ms total
 - **Caching:** 5 minutes (300 seconds)
 - **Response Size:** ~2-5KB (5 photos)
 
 ### Logging
+
 - **Success:** `[Daily Sets] Retrieved set for 2025-10-20, id: {uuid}`
 - **Not Found:** `[Daily Sets] No published set found for 2025-10-20`
 - **Error:** `[Daily Sets] Error fetching today's set: {error}`
@@ -162,6 +184,7 @@ These are only revealed after submission via the submission endpoint.
 ## Testing
 
 ### Manual Test (404 - No Data)
+
 ```bash
 curl -i http://localhost:3000/api/daily/sets/today
 
@@ -172,6 +195,7 @@ curl -i http://localhost:3000/api/daily/sets/today
 ```
 
 ### Manual Test (200 - With Data)
+
 ```bash
 # First, insert test data into database
 # Then:
@@ -185,6 +209,7 @@ curl http://localhost:3000/api/daily/sets/today
 ```
 
 ### Verification Checklist
+
 - ✅ Returns 404 when no published set exists
 - ✅ Returns 200 with valid data when set exists
 - ✅ Exactly 5 photos in response

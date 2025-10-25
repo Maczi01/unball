@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import type { SubmissionCheckResponseDTO } from "@/types";
+import { checkDailySubmission } from "@/lib/services/submissions.service";
 
 export const prerender = false;
 
@@ -12,52 +13,51 @@ export const prerender = false;
  * @returns 500 - Server error
  */
 export const GET: APIRoute = async ({ request, locals }) => {
-	try {
-		// Get device token from header
-		const deviceToken = request.headers.get("X-Device-Token");
+  try {
+    // Get device token from header
+    const deviceToken = request.headers.get("X-Device-Token");
 
-		if (!deviceToken) {
-			return new Response(
-				JSON.stringify({
-					error: "Device token is required",
-					timestamp: new Date().toISOString(),
-				}),
-				{
-					status: 400,
-					headers: {
-						"Content-Type": "application/json",
-					},
-				},
-			);
-		}
+    if (!deviceToken) {
+      return new Response(
+        JSON.stringify({
+          error: "Device token is required",
+          timestamp: new Date().toISOString(),
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
 
-		// TODO: Check database for existing submission
-		// For now, always return false (not submitted)
-		const response: SubmissionCheckResponseDTO = {
-			has_submitted: false,
-			submission: null,
-		};
+    // Get today's date in UTC
+    const today = new Date().toISOString().split("T")[0];
 
-		return new Response(JSON.stringify(response), {
-			status: 200,
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-	} catch (error) {
-		console.error("[GET /api/daily/submissions/check] Error:", error);
+    // Check database for existing submission
+    const response: SubmissionCheckResponseDTO = await checkDailySubmission(locals.supabase, deviceToken, today);
 
-		return new Response(
-			JSON.stringify({
-				error: "Failed to check submission status",
-				timestamp: new Date().toISOString(),
-			}),
-			{
-				status: 500,
-				headers: {
-					"Content-Type": "application/json",
-				},
-			},
-		);
-	}
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("[GET /api/daily/submissions/check] Error:", error);
+
+    return new Response(
+      JSON.stringify({
+        error: "Failed to check submission status",
+        timestamp: new Date().toISOString(),
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
 };

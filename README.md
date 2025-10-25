@@ -128,18 +128,19 @@ The application will be available at `http://localhost:3000`
 
 ## Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server on port 3000 |
-| `npm run build` | Build the application for production |
-| `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run ESLint to check code quality |
-| `npm run lint:fix` | Automatically fix ESLint issues |
-| `npm run format` | Format code with Prettier |
+| Script             | Description                           |
+| ------------------ | ------------------------------------- |
+| `npm run dev`      | Start development server on port 3000 |
+| `npm run build`    | Build the application for production  |
+| `npm run preview`  | Preview the production build locally  |
+| `npm run lint`     | Run ESLint to check code quality      |
+| `npm run lint:fix` | Automatically fix ESLint issues       |
+| `npm run format`   | Format code with Prettier             |
 
 ### Git Hooks
 
 The project uses **Husky** and **lint-staged** to automatically:
+
 - Run ESLint fix on `.ts`, `.tsx`, `.astro` files before commit
 - Run Prettier on `.json`, `.css`, `.md` files before commit
 

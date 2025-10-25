@@ -10,7 +10,7 @@ const { mode } = Astro.params;
 
 // Validate mode
 if (mode !== "normal" && mode !== "daily") {
-	return Astro.redirect("/play/normal");
+  return Astro.redirect("/play/normal");
 }
 
 const validMode = mode as GameMode;
@@ -21,122 +21,115 @@ let isAlreadySubmitted = false;
 let errorMessage: string | null = null;
 
 try {
-	if (validMode === "daily") {
-		// Fetch daily set
-		const dailyResponse = await fetch(`${Astro.url.origin}/api/daily/sets/today`);
+  if (validMode === "daily") {
+    // Fetch daily set
+    const dailyResponse = await fetch(`${Astro.url.origin}/api/daily/sets/today`);
 
-		if (!dailyResponse.ok) {
-			if (dailyResponse.status === 404) {
-				errorMessage = "Today's Daily Challenge isn't ready yet. Try Normal mode instead!";
-			} else {
-				errorMessage = "Failed to load Daily Challenge. Please try again later.";
-			}
-		} else {
-			initialData = await dailyResponse.json() as DailySetResponseDTO;
+    if (!dailyResponse.ok) {
+      if (dailyResponse.status === 404) {
+        errorMessage = "Today's Daily Challenge isn't ready yet. Try Normal mode instead!";
+      } else {
+        errorMessage = "Failed to load Daily Challenge. Please try again later.";
+      }
+    } else {
+      initialData = (await dailyResponse.json()) as DailySetResponseDTO;
 
-			// Check submission status
-			const deviceToken = Astro.cookies.get("anon_device_token")?.value;
+      // Check submission status
+      const deviceToken = Astro.cookies.get("anon_device_token")?.value;
 
-			if (deviceToken) {
-				try {
-					const checkResponse = await fetch(`${Astro.url.origin}/api/daily/submissions/check`, {
-						headers: {
-							"X-Device-Token": deviceToken,
-						},
-					});
+      if (deviceToken) {
+        try {
+          const checkResponse = await fetch(`${Astro.url.origin}/api/daily/submissions/check`, {
+            headers: {
+              "X-Device-Token": deviceToken,
+            },
+          });
 
-					if (checkResponse.ok) {
-						const checkData = await checkResponse.json() as SubmissionCheckResponseDTO;
-						isAlreadySubmitted = checkData.has_submitted;
-					}
-				} catch (error) {
-					console.error("Failed to check submission status:", error);
-					// Continue anyway, assume not submitted
-				}
-			}
-		}
-	} else {
-		// Fetch random photos for Normal mode
-		const normalResponse = await fetch(`${Astro.url.origin}/api/normal/photos`);
+          if (checkResponse.ok) {
+            const checkData = (await checkResponse.json()) as SubmissionCheckResponseDTO;
+            isAlreadySubmitted = checkData.has_submitted;
+          }
+        } catch (error) {
+          console.error("Failed to check submission status:", error);
+          // Continue anyway, assume not submitted
+        }
+      }
+    }
+  } else {
+    // Fetch random photos for Normal mode
+    const normalResponse = await fetch(`${Astro.url.origin}/api/normal/photos`);
 
-		if (!normalResponse.ok) {
-			errorMessage = "Failed to load game. Please try again later.";
-		} else {
-			initialData = await normalResponse.json() as NormalRoundResponseDTO;
-		}
-	}
+    if (!normalResponse.ok) {
+      errorMessage = "Failed to load game. Please try again later.";
+    } else {
+      initialData = (await normalResponse.json()) as NormalRoundResponseDTO;
+    }
+  }
 } catch (error) {
-	console.error("Error fetching game data:", error);
-	errorMessage = "An unexpected error occurred. Please try again.";
+  console.error("Error fetching game data:", error);
+  errorMessage = "An unexpected error occurred. Please try again.";
 }
 
 const pageTitle = validMode === "daily" ? "FootyGuess Daily - Daily Challenge" : "FootyGuess Daily - Normal Mode";
 ---
 
 <Layout title={pageTitle}>
-	<!-- Mapbox CSS -->
-	<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <!-- Mapbox CSS -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
 
-	{errorMessage ? (
-		<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-			<div class="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 text-center space-y-6">
-				<div class="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-8 w-8 text-red-600 dark:text-red-400"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-				</div>
+  {
+    errorMessage ? (
+      <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+        <div class="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 text-center space-y-6">
+          <div class="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8 w-8 text-red-600 dark:text-red-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
 
-				<div class="space-y-2">
-					<h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-						Oops!
-					</h1>
-					<p class="text-gray-600 dark:text-gray-400">
-						{errorMessage}
-					</p>
-				</div>
+          <div class="space-y-2">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Oops!</h1>
+            <p class="text-gray-600 dark:text-gray-400">{errorMessage}</p>
+          </div>
 
-				<div class="flex flex-col sm:flex-row gap-3">
-					{validMode === "daily" && (
-						<a
-							href="/play/normal"
-							class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
-						>
-							Try Normal Mode
-						</a>
-					)}
-					<a
-						href="/"
-						class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
-					>
-						Go Home
-					</a>
-				</div>
-			</div>
-		</div>
-	) : initialData ? (
-		<GameView
-			client:load
-			mode={validMode}
-			initialData={initialData}
-			isAlreadySubmitted={isAlreadySubmitted}
-		/>
-	) : (
-		<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-			<div class="text-center">
-				<div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-				<p class="text-gray-600 dark:text-gray-400 text-lg">Loading game...</p>
-			</div>
-		</div>
-	)}
+          <div class="flex flex-col sm:flex-row gap-3">
+            {validMode === "daily" && (
+              <a
+                href="/play/normal"
+                class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+              >
+                Try Normal Mode
+              </a>
+            )}
+            <a
+              href="/"
+              class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+            >
+              Go Home
+            </a>
+          </div>
+        </div>
+      </div>
+    ) : initialData ? (
+      <GameView client:load mode={validMode} initialData={initialData} isAlreadySubmitted={isAlreadySubmitted} />
+    ) : (
+      <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div class="text-center">
+          <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p class="text-gray-600 dark:text-gray-400 text-lg">Loading game...</p>
+        </div>
+      </div>
+    )
+  }
 </Layout>

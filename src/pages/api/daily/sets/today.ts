@@ -1,6 +1,6 @@
-import type { APIRoute } from 'astro';
+import type { APIRoute } from "astro";
 
-import { getTodaysDailySet } from '@/lib/services/daily-sets.service';
+import { getTodaysDailySet } from "@/lib/services/daily-sets.service";
 
 export const prerender = false;
 
@@ -13,46 +13,46 @@ export const prerender = false;
  * @returns 500 - Server error
  */
 export const GET: APIRoute = async ({ locals }) => {
-	try {
-		const dailySet = await getTodaysDailySet(locals.supabase);
+  try {
+    const dailySet = await getTodaysDailySet(locals.supabase);
 
-		if (!dailySet) {
-			return new Response(
-				JSON.stringify({
-					error: 'No daily set published for today',
-					fallback: 'Try Normal mode instead',
-					timestamp: new Date().toISOString(),
-				}),
-				{
-					status: 404,
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				},
-			);
-		}
+    if (!dailySet) {
+      return new Response(
+        JSON.stringify({
+          error: "No daily set published for today",
+          fallback: "Try Normal mode instead",
+          timestamp: new Date().toISOString(),
+        }),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
 
-		return new Response(JSON.stringify(dailySet), {
-			status: 200,
-			headers: {
-				'Content-Type': 'application/json',
-				'Cache-Control': 'public, max-age=300, s-maxage=300',
-			},
-		});
-	} catch (error) {
-		console.error('[GET /api/daily/sets/today] Error:', error);
+    return new Response(JSON.stringify(dailySet), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=300, s-maxage=300",
+      },
+    });
+  } catch (error) {
+    console.error("[GET /api/daily/sets/today] Error:", error);
 
-		return new Response(
-			JSON.stringify({
-				error: 'Failed to retrieve daily set',
-				timestamp: new Date().toISOString(),
-			}),
-			{
-				status: 500,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		);
-	}
+    return new Response(
+      JSON.stringify({
+        error: "Failed to retrieve daily set",
+        timestamp: new Date().toISOString(),
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
 };

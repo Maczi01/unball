@@ -13,6 +13,7 @@ The application follows a single-page application (SPA) pattern for the core gam
 - **Privacy**: Anonymous gameplay with optional nickname setting for leaderboard participation
 
 The UI consists of 9 primary views organized into three sections:
+
 1. **Public Views** (5): Home, Game, Round Summary, Leaderboard, Credits
 2. **User Settings** (1): Nickname Management
 3. **Admin Views** (3): Dashboard, Daily Sets Management, Analytics
@@ -26,6 +27,7 @@ The UI consists of 9 primary views organized into three sections:
 **Main Purpose**: Welcome users, explain the game concept, and provide clear mode selection for starting gameplay.
 
 **Key Information to Display**:
+
 - Game title and tagline ("Test your football knowledge across time and space")
 - Brief explanation of gameplay mechanics (guess location + year from photos)
 - Two game mode options with clear differentiation
@@ -33,6 +35,7 @@ The UI consists of 9 primary views organized into three sections:
 - Links to supporting pages (How to Play, Leaderboard, Credits)
 
 **Key View Components**:
+
 - **Hero Section**
   - Large game title with football imagery
   - Concise value proposition (1-2 sentences)
@@ -63,12 +66,14 @@ The UI consists of 9 primary views organized into three sections:
   - "Credits" link in footer
 
 **UX Considerations**:
+
 - Daily Challenge should be visually emphasized as the primary mode
 - Show "Already played today" badge if user has submitted
 - Provide clear visual distinction between modes
 - Ensure CTAs are large enough for touch targets (min 44x44px)
 
 **Accessibility Considerations**:
+
 - Heading hierarchy (h1 for title, h2 for sections)
 - Skip to main content link
 - Clear focus indicators on interactive elements
@@ -76,6 +81,7 @@ The UI consists of 9 primary views organized into three sections:
 - ARIA labels for mode selection cards
 
 **Security Considerations**:
+
 - No sensitive data displayed
 - Device token generated and stored on first visit (localStorage/cookie)
 - Privacy policy link in footer
@@ -89,6 +95,7 @@ The UI consists of 9 primary views organized into three sections:
 **Main Purpose**: Core gameplay interface where users view photos, place map pins, select years, and receive feedback on their guesses.
 
 **Key Information to Display**:
+
 - Current photo (large, high quality)
 - Mode indicator (Normal or Daily Challenge)
 - Progress through round (e.g., "Photo 2 of 5")
@@ -154,6 +161,7 @@ The UI consists of 9 primary views organized into three sections:
   - Network error: "You appear to be offline"
 
 **UX Considerations**:
+
 - Map must be easily navigable on mobile (touch zoom, pan)
 - Clear visual feedback when pin is placed
 - Year selection should be efficient (slider for quick selection, input for precision)
@@ -163,6 +171,7 @@ The UI consists of 9 primary views organized into three sections:
 - For Daily mode, show notice if already submitted: "You've already submitted today's challenge. This is a practice round."
 
 **Accessibility Considerations**:
+
 - Map keyboard controls with clear instructions
 - ARIA live regions for score announcements
 - Screen reader descriptions for map state ("Pin placed at latitude X, longitude Y")
@@ -171,6 +180,7 @@ The UI consists of 9 primary views organized into three sections:
 - Alternative to map for users with motor impairments (coordinate input)
 
 **Security Considerations**:
+
 - Client-side score calculation for immediate feedback only
 - Server recalculates all scores on submission
 - Rate limiting on submission endpoint
@@ -186,6 +196,7 @@ The UI consists of 9 primary views organized into three sections:
 **Main Purpose**: Display comprehensive results after completing all 5 photos, including total score, time, per-photo breakdown, event details, and leaderboard submission status for Daily mode.
 
 **Key Information to Display**:
+
 - Total score (prominent)
 - Total time taken
 - Per-photo breakdown with event details
@@ -240,6 +251,7 @@ The UI consists of 9 primary views organized into three sections:
   - Photo credits and licensing info
 
 **UX Considerations**:
+
 - Celebrate good performance (animations, positive messaging for high scores)
 - Clear differentiation between submitted and practice rounds
 - Easy navigation to leaderboard (primary CTA for Daily)
@@ -248,6 +260,7 @@ The UI consists of 9 primary views organized into three sections:
 - Persistent display of total score while scrolling
 
 **Accessibility Considerations**:
+
 - Announce completion to screen readers
 - Heading hierarchy for breakdown sections
 - Expandable descriptions keyboard accessible
@@ -255,6 +268,7 @@ The UI consists of 9 primary views organized into three sections:
 - Clear labeling of all score metrics
 
 **Security Considerations**:
+
 - Submission handled server-side (POST /api/daily/submissions)
 - Server validates all scores before accepting
 - Device token verified for duplicate submission prevention
@@ -269,6 +283,7 @@ The UI consists of 9 primary views organized into three sections:
 **Main Purpose**: Display daily Top-10 rankings with scores, times, and nicknames, allowing users to compare performance and providing motivation for competitive play.
 
 **Key Information to Display**:
+
 - Selected date
 - Top-10 ranked submissions
 - Total submissions count
@@ -318,6 +333,7 @@ The UI consists of 9 primary views organized into three sections:
   - Note: "Leaderboards reset daily at 00:00 UTC"
 
 **UX Considerations**:
+
 - Clear visual hierarchy (podium positions emphasized)
 - Smooth date switching (no full page reload)
 - User's position always visible (sticky or highlighted)
@@ -326,6 +342,7 @@ The UI consists of 9 primary views organized into three sections:
 - Pagination or "Load More" if expanding beyond Top-10 (future)
 
 **Accessibility Considerations**:
+
 - Table semantics (thead, tbody, th, td with scope)
 - Screen reader announcements for rank changes
 - Keyboard navigation for date selector
@@ -333,6 +350,7 @@ The UI consists of 9 primary views organized into three sections:
 - Clear focus indicators
 
 **Security Considerations**:
+
 - Public endpoint, no authentication required
 - Rate limiting to prevent abuse
 - Nicknames sanitized server-side (profanity filter)
@@ -347,6 +365,7 @@ The UI consists of 9 primary views organized into three sections:
 **Main Purpose**: Allow users to set or update their display nickname for leaderboard participation, with clear consent for public display.
 
 **Key Information to Display**:
+
 - Current nickname (if set)
 - Input validation feedback
 - Privacy notice about public display
@@ -379,7 +398,7 @@ The UI consists of 9 primary views organized into three sections:
   - Error messages (inline):
     - "Nickname too short (minimum 3 characters)"
     - "Nickname contains profanity"
-    - "Invalid characters (use only A-Z, 0-9, spaces, -, _)"
+    - "Invalid characters (use only A-Z, 0-9, spaces, -, \_)"
 
 - **Consent Section** (first-time only)
   - Checkbox: "I understand my nickname will be publicly displayed on leaderboards"
@@ -399,6 +418,7 @@ The UI consists of 9 primary views organized into three sections:
   - Error: "Failed to save. Please try again."
 
 **UX Considerations**:
+
 - Real-time validation (not just on submit)
 - Clear, friendly error messages
 - Smooth transitions for validation states
@@ -407,6 +427,7 @@ The UI consists of 9 primary views organized into three sections:
 - Success confirmation before redirecting
 
 **Accessibility Considerations**:
+
 - Form labels properly associated with inputs
 - ARIA live region for validation messages
 - Error messages linked to input (aria-describedby)
@@ -414,6 +435,7 @@ The UI consists of 9 primary views organized into three sections:
 - Required field indicators
 
 **Security Considerations**:
+
 - Client-side validation (UX) + server-side validation (security)
 - Profanity filter applied server-side (PUT /api/devices/nickname)
 - Rate limiting on update endpoint
@@ -429,6 +451,7 @@ The UI consists of 9 primary views organized into three sections:
 **Main Purpose**: Display comprehensive attribution and licensing information for all photos used in the game, ensuring compliance with photo licenses and providing transparency.
 
 **Key Information to Display**:
+
 - Complete list of all photos with attribution
 - Photographer credits
 - License types
@@ -470,6 +493,7 @@ The UI consists of 9 primary views organized into three sections:
   - Contact info for licensing questions
 
 **UX Considerations**:
+
 - Lazy loading for images (performance)
 - Smooth filtering (no page reload)
 - Clear visual grouping
@@ -478,6 +502,7 @@ The UI consists of 9 primary views organized into three sections:
 - Skeleton loading for initial load
 
 **Accessibility Considerations**:
+
 - Alt text for all thumbnail images
 - Keyboard accessible filters and pagination
 - Screen reader friendly links (clear context)
@@ -485,6 +510,7 @@ The UI consists of 9 primary views organized into three sections:
 - Focus indicators
 
 **Security Considerations**:
+
 - External links with rel="noopener noreferrer"
 - No sensitive data (public information)
 - Rate limiting on search endpoint (if dynamic)
@@ -498,6 +524,7 @@ The UI consists of 9 primary views organized into three sections:
 **Main Purpose**: Enable administrators to manage photo content, including uploading new photos with metadata, viewing existing photos, and managing photo eligibility for daily sets.
 
 **Key Information to Display**:
+
 - Total photos count and eligibility stats
 - Searchable, filterable photo list
 - Upload interface
@@ -585,6 +612,7 @@ The UI consists of 9 primary views organized into three sections:
   - Cannot delete if used in published daily sets
 
 **UX Considerations**:
+
 - Fast search and filtering (debounced)
 - Clear visual feedback for upload progress
 - Drag-and-drop for file upload (with fallback)
@@ -593,6 +621,7 @@ The UI consists of 9 primary views organized into three sections:
 - Success/error toast notifications
 
 **Accessibility Considerations**:
+
 - Keyboard navigation for all controls
 - ARIA labels for icon buttons
 - Focus management in modals
@@ -600,6 +629,7 @@ The UI consists of 9 primary views organized into three sections:
 - Alternative text for images
 
 **Security Considerations**:
+
 - Admin authentication required (Supabase Auth with admin role)
 - File upload validation (type, size)
 - Metadata sanitization (prevent XSS)
@@ -616,6 +646,7 @@ The UI consists of 9 primary views organized into three sections:
 **Main Purpose**: Enable administrators to create, schedule, and manage daily sets, ensuring a consistent pipeline of upcoming daily challenges with proper validation and uniqueness checks.
 
 **Key Information to Display**:
+
 - Schedule status (days ahead)
 - Upcoming daily sets
 - Calendar view of scheduled dates
@@ -711,6 +742,7 @@ The UI consists of 9 primary views organized into three sections:
   - "Confirm Publish" button
 
 **UX Considerations**:
+
 - Visual schedule status (clear warnings)
 - Easy photo selection with preview
 - Drag-and-drop for photo ordering
@@ -719,6 +751,7 @@ The UI consists of 9 primary views organized into three sections:
 - Bulk scheduling (future enhancement)
 
 **Accessibility Considerations**:
+
 - Calendar keyboard navigation
 - Form labels and validation announcements
 - Focus management in modals
@@ -726,6 +759,7 @@ The UI consists of 9 primary views organized into three sections:
 - Alternative to drag-and-drop (up/down buttons)
 
 **Security Considerations**:
+
 - Admin authentication required
 - Validate photo eligibility server-side
 - Prevent duplicate dates (database constraint)
@@ -741,6 +775,7 @@ The UI consists of 9 primary views organized into three sections:
 **Main Purpose**: Provide administrators with comprehensive KPIs and metrics to measure product success, engagement, retention, and content health.
 
 **Key Information to Display**:
+
 - Adoption metrics
 - Engagement metrics
 - Retention metrics
@@ -804,6 +839,7 @@ The UI consists of 9 primary views organized into three sections:
   - "Print Report" (print-friendly format)
 
 **UX Considerations**:
+
 - Clear, scannable KPI cards
 - Interactive charts (hover for details)
 - Responsive chart sizing
@@ -812,6 +848,7 @@ The UI consists of 9 primary views organized into three sections:
 - Comparative metrics (vs. previous period)
 
 **Accessibility Considerations**:
+
 - Text alternatives for charts (data tables)
 - Keyboard accessible date picker
 - ARIA labels for KPI values
@@ -819,6 +856,7 @@ The UI consists of 9 primary views organized into three sections:
 - Screen reader announcements for data updates
 
 **Security Considerations**:
+
 - Admin authentication required
 - Aggregate data only (no PII)
 - Rate limiting on analytics queries
@@ -1012,6 +1050,7 @@ The UI consists of 9 primary views organized into three sections:
 ### 4.1 Global Navigation Layout
 
 **Primary Navigation Bar** (present on all public views):
+
 - **Position**: Top of viewport, fixed/sticky on scroll
 - **Contents** (left to right):
   - **Logo/Wordmark** (left): "FootyGuess Daily" - links to Home
@@ -1029,6 +1068,7 @@ The UI consists of 9 primary views organized into three sections:
 - **Mobile**: Hamburger menu (all items in drawer)
 
 **Footer** (present on Home, Leaderboard, Credits):
+
 - Copyright notice
 - Links: Privacy Policy | Credits | About | Contact
 - Daily reset notice: "Leaderboard resets daily at 00:00 UTC"
@@ -1036,6 +1076,7 @@ The UI consists of 9 primary views organized into three sections:
 ### 4.2 Game View Layout (Full-Screen Focus)
 
 **Layout** (minimal navigation during gameplay):
+
 - **Header** (minimal, can hide on scroll):
   - Mode badge (left)
   - Progress indicator (center)
@@ -1053,12 +1094,14 @@ The UI consists of 9 primary views organized into three sections:
 - **No Footer** (distraction-free)
 
 **Exit Behavior**:
+
 - Exit button shows confirmation: "Leave game? Progress will be lost."
 - Exception: Daily mode saves progress in session storage (optional)
 
 ### 4.3 Admin Navigation Layout
 
 **Admin Navigation Sidebar** (persistent on all admin views):
+
 - **Position**: Left side, collapsible on mobile
 - **Contents**:
   - **Logo/Admin Branding** (top)
@@ -1071,6 +1114,7 @@ The UI consists of 9 primary views organized into three sections:
     - Logout button
 
 **Admin Content Area**:
+
 - **Header Bar** (top):
   - Page title
   - Breadcrumb navigation (optional)
@@ -1082,6 +1126,7 @@ The UI consists of 9 primary views organized into three sections:
 ### 4.4 Responsive Breakpoints
 
 **Mobile** (<768px):
+
 - Single column layouts
 - Hamburger menu for navigation
 - Stacked photo + map in Game View
@@ -1090,12 +1135,14 @@ The UI consists of 9 primary views organized into three sections:
 - Collapsible sections to save space
 
 **Tablet** (768px - 1024px):
+
 - Two-column layouts where applicable
 - Expanded navigation (optional)
 - Side-by-side photo + map in Game View (landscape)
 - Tables with horizontal scroll if needed
 
 **Desktop** (>1024px):
+
 - Multi-column layouts
 - Full navigation bar
 - Optimized use of horizontal space
@@ -1137,6 +1184,7 @@ ADMIN (separate auth)
 **Purpose**: Allow users to explore world geography and place a pin to guess event location.
 
 **Key Features**:
+
 - Mapbox GL JS integration
 - Single pin placement (click or tap)
 - Zoom controls (+/- buttons)
@@ -1146,6 +1194,7 @@ ADMIN (separate auth)
 - After submission: Shows two pins (guess + correct) with connecting line
 
 **Props/Configuration**:
+
 - `mode`: 'input' | 'feedback'
 - `userPin`: {lat, lon} | null
 - `correctPin`: {lat, lon} | null (for feedback mode)
@@ -1153,6 +1202,7 @@ ADMIN (separate auth)
 - `disabled`: boolean (during loading)
 
 **Accessibility**:
+
 - Keyboard controls (arrows to pan, +/- to zoom, Enter to place pin)
 - Screen reader announcements ("Pin placed at latitude X, longitude Y")
 - Alternative coordinate input for users unable to use map
@@ -1167,6 +1217,7 @@ ADMIN (separate auth)
 **Purpose**: Allow users to select a year between 1880 and 2025.
 
 **Key Features**:
+
 - Slider input with year display (primary UI)
 - Numeric input option (for precision)
 - Visual range indicator (1880 ←────●────→ 2025)
@@ -1174,6 +1225,7 @@ ADMIN (separate auth)
 - Keyboard accessible (arrow keys, type to jump)
 
 **Props/Configuration**:
+
 - `value`: number (1880-2025)
 - `onChange`: callback function
 - `min`: 1880
@@ -1181,6 +1233,7 @@ ADMIN (separate auth)
 - `disabled`: boolean
 
 **Accessibility**:
+
 - Label: "What year was this?"
 - ARIA slider role
 - Value announcements on change
@@ -1195,6 +1248,7 @@ ADMIN (separate auth)
 **Purpose**: Display visual and numerical feedback on guess accuracy.
 
 **Key Features**:
+
 - Dual map view (user pin + correct pin + connecting line)
 - Distance in km (calculated via Haversine formula)
 - Year difference
@@ -1203,6 +1257,7 @@ ADMIN (separate auth)
 - Animated reveal (optional)
 
 **Layout**:
+
 - Map section (top)
 - Metrics cards (bottom, 2-column grid):
   - Location: "245 km off → 8,775 pts"
@@ -1210,6 +1265,7 @@ ADMIN (separate auth)
   - Total: "17,575 / 20,000"
 
 **Accessibility**:
+
 - ARIA live region for score announcements
 - Text alternatives for visual map
 - Clear semantic structure (headings, lists)
@@ -1223,18 +1279,21 @@ ADMIN (separate auth)
 **Purpose**: Show player's position in the 5-photo round.
 
 **Key Features**:
+
 - 5 circles representing photos
 - Current photo highlighted/filled
 - Completed photos marked (checkmark or filled)
 - Upcoming photos outlined
 
 **Visual Design**:
+
 ```
 ○ ○ ● ○ ○  (on Photo 3)
 ✓ ✓ ● ○ ○  (alternative with completed markers)
 ```
 
 **Accessibility**:
+
 - Text alternative: "Photo 3 of 5"
 - ARIA current marker
 - Screen reader announcement on photo change
@@ -1248,6 +1307,7 @@ ADMIN (separate auth)
 **Purpose**: Display ranked list of daily submissions with scores and times.
 
 **Key Features**:
+
 - Responsive table (desktop) / card list (mobile)
 - Top-3 visual distinction (medals: 🥇🥈🥉)
 - Current user highlight (background color)
@@ -1256,9 +1316,11 @@ ADMIN (separate auth)
 - Tie-breaker tooltip
 
 **Columns**:
+
 - Rank | Nickname | Score | Time | Submitted At (optional on mobile)
 
 **Accessibility**:
+
 - Table semantics (thead, tbody, th with scope)
 - Row headers for screen readers
 - Clear focus indicators
@@ -1273,6 +1335,7 @@ ADMIN (separate auth)
 **Purpose**: Allow users to set or update their display nickname.
 
 **Key Features**:
+
 - Text input with validation
 - Real-time character counter (12 / 20)
 - Validation feedback (inline, immediate)
@@ -1281,11 +1344,13 @@ ADMIN (separate auth)
 - Save button (disabled until valid)
 
 **Validation Rules**:
+
 - Length: 3-20 characters
 - Pattern: `^[a-zA-Z0-9 _-]+$`
 - Profanity filter (server-side, client feedback)
 
 **Accessibility**:
+
 - Label associated with input
 - Error messages linked (aria-describedby)
 - ARIA live region for validation updates
@@ -1300,6 +1365,7 @@ ADMIN (separate auth)
 **Purpose**: Display photo with metadata and optional actions.
 
 **Key Features**:
+
 - Responsive image (thumbnail or full-size)
 - Event name, year, location
 - Score (if applicable)
@@ -1308,11 +1374,13 @@ ADMIN (separate auth)
 - Action buttons (context-dependent)
 
 **Variants**:
+
 - **Summary Card**: Shows scores, errors, event details
 - **Admin Card**: Shows eligibility, actions (edit, delete)
 - **Credits Card**: Shows license, source link
 
 **Accessibility**:
+
 - Alt text for images
 - Heading hierarchy (h3 for event name)
 - Expandable description accessible
@@ -1327,6 +1395,7 @@ ADMIN (separate auth)
 **Purpose**: Display focused content overlaying main view.
 
 **Key Features**:
+
 - Overlay backdrop (semi-transparent)
 - Centered content area
 - Close button (X) or Cancel action
@@ -1334,6 +1403,7 @@ ADMIN (separate auth)
 - Scroll within modal if content exceeds viewport
 
 **Accessibility**:
+
 - Focus trap (tab cycles within modal)
 - Focus moves to modal on open
 - Focus returns to trigger on close
@@ -1351,6 +1421,7 @@ ADMIN (separate auth)
 **Purpose**: Provide non-intrusive feedback for user actions.
 
 **Key Features**:
+
 - Auto-dismiss after 3-5 seconds (configurable)
 - Manual dismiss (X button)
 - Stacked notifications (bottom-right or top-right)
@@ -1358,6 +1429,7 @@ ADMIN (separate auth)
 - Icon for type
 
 **Accessibility**:
+
 - ARIA live region (polite or assertive based on type)
 - Screen reader announcements
 - Focus management (optional: focus on dismiss if critical)
@@ -1371,12 +1443,14 @@ ADMIN (separate auth)
 **Purpose**: Indicate loading state and maintain layout stability.
 
 **Variants**:
+
 - **Skeleton Loader**: For content placeholders (photo cards, tables)
 - **Spinner**: For button loading states
 - **Progress Bar**: For file uploads (admin)
 - **Full-Page Loader**: For initial app load
 
 **Accessibility**:
+
 - ARIA live region: "Loading content..."
 - Focus management (prevent interaction during load)
 - Timeout fallback (show error if load fails)
@@ -1390,17 +1464,20 @@ ADMIN (separate auth)
 **Purpose**: Communicate errors clearly and offer recovery actions.
 
 **Key Features**:
+
 - Error message (clear, friendly language)
 - Error icon
 - Suggested action (retry, go back, contact support)
 - Contextual help (e.g., "Check your internet connection")
 
 **Variants**:
+
 - **Inline Error**: Form validation, API failures
 - **Page-Level Error**: 404, 500, network offline
 - **Empty State**: No data available (e.g., "No submissions yet")
 
 **Accessibility**:
+
 - ARIA live region for dynamic errors
 - Error messages linked to form fields
 - Focus on error or first invalid field
@@ -1415,6 +1492,7 @@ ADMIN (separate auth)
 **Purpose**: Display dates and times in consistent, accessible format.
 
 **Key Features**:
+
 - Formatted display: "October 21, 2025"
 - Time display: "2:15" or "02:15:30"
 - Relative time (optional): "2 hours ago"
@@ -1422,6 +1500,7 @@ ADMIN (separate auth)
 - Tooltip for full timestamp (hover)
 
 **Accessibility**:
+
 - time element with datetime attribute
 - Screen reader friendly format
 - Timezone clarity (UTC vs local)
@@ -1432,33 +1511,33 @@ ADMIN (separate auth)
 
 ### Mapping of PRD User Stories to UI Elements
 
-| User Story ID | User Story Title | Primary View(s) | Key UI Components | Notes |
-|---------------|------------------|-----------------|-------------------|-------|
-| US-001 | Play a Normal round | Home → Game → Round Summary | Mode selection button, Interactive Map, Year Picker, Photo Feedback, Round Summary cards | Full flow from mode selection to results |
-| US-002 | Play the Daily round | Home → Game → Round Summary → Leaderboard | Daily Challenge button, Nickname prompt, Game View with timer, Submission confirmation | Includes first-attempt tracking notice |
-| US-003 | Place a pin on map | Game View | Interactive Map Component (Mapbox) | Includes zoom, pan, pin placement, keyboard controls |
-| US-004 | Select a year | Game View | Year Picker Component (slider + input) | Bounded 1880-2025, validation |
-| US-005 | See per-photo feedback | Game View | Photo Feedback Component | Dual pins, connecting line, score breakdown |
-| US-006 | Round summary | Round Summary View | Summary header, Photo breakdown cards, Total score display | Event details revealed |
-| US-007 | Leaderboard submission (first attempt) | Round Summary View | Submission logic, Rank display, "Already submitted" notice | Device token enforcement |
-| US-008 | View Top-10 leaderboard | Leaderboard View | Leaderboard Table Component, Date selector | Tie-breakers applied server-side |
-| US-009 | Set or edit nickname | Nickname Settings View | Nickname Form Component | Validation, profanity filter, consent |
-| US-010 | Anonymous device token | All views (background) | Middleware, localStorage/cookie | Transparent to user, drives first-attempt rule |
-| US-011 | Reveal event details | Round Summary View | Photo Card Components with descriptions | Shows after round completion |
-| US-012 | Daily scheduler | Admin Daily Sets View | Schedule status card, Daily sets list, Create form | Admin-only, ensures content pipeline |
-| US-013 | Content ingestion | Admin Dashboard | Upload Photo modal, Metadata form, Validation messages | Admin-only, validation on client and server |
-| US-014 | Performance | All views | Optimized components, lazy loading, CDN images | <2s load, <200ms map latency targets |
-| US-015 | Analytics events | All views (background) | Event tracking calls to API | Minimal performance impact |
-| US-016 | Privacy and retention | Nickname Settings, Footer | Privacy notice, Consent checkbox, Policy link | Minimal data collection messaging |
-| US-017 | Error handling | All views | Error State Components, Retry buttons, Offline detection | Clear messaging, recovery actions |
-| US-018 | Secure submissions | Round Summary (background) | Server-side validation, Rate limiting | Transparent to UI, security backend |
-| US-019 | Credits and licensing | Credits View | Credits List, Photo Card Components | Searchable, filterable, with source links |
-| US-020 | Accessibility | All views | ARIA labels, keyboard navigation, focus management | WCAG AA compliance |
-| US-021 | Multiple Daily plays | Game View, Round Summary | "Already submitted" banner, Practice mode notice | Allows replay without re-submission |
-| US-022 | Session timing | Game View | Timer Component (Daily mode) | Starts on photo 1, stops on final submit |
-| US-023 | Image optimization | All views | Responsive images, lazy loading, CDN | Sharp images, fast load |
-| US-024 | Admin schedule view | Admin Daily Sets View | Schedule status card, Calendar view (optional) | Shows next 7-20 days, flags issues |
-| US-025 | Consent for nickname | Nickname Settings View | Consent checkbox, Privacy notice | Required before first leaderboard submission |
+| User Story ID | User Story Title                       | Primary View(s)                           | Key UI Components                                                                        | Notes                                                |
+| ------------- | -------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| US-001        | Play a Normal round                    | Home → Game → Round Summary               | Mode selection button, Interactive Map, Year Picker, Photo Feedback, Round Summary cards | Full flow from mode selection to results             |
+| US-002        | Play the Daily round                   | Home → Game → Round Summary → Leaderboard | Daily Challenge button, Nickname prompt, Game View with timer, Submission confirmation   | Includes first-attempt tracking notice               |
+| US-003        | Place a pin on map                     | Game View                                 | Interactive Map Component (Mapbox)                                                       | Includes zoom, pan, pin placement, keyboard controls |
+| US-004        | Select a year                          | Game View                                 | Year Picker Component (slider + input)                                                   | Bounded 1880-2025, validation                        |
+| US-005        | See per-photo feedback                 | Game View                                 | Photo Feedback Component                                                                 | Dual pins, connecting line, score breakdown          |
+| US-006        | Round summary                          | Round Summary View                        | Summary header, Photo breakdown cards, Total score display                               | Event details revealed                               |
+| US-007        | Leaderboard submission (first attempt) | Round Summary View                        | Submission logic, Rank display, "Already submitted" notice                               | Device token enforcement                             |
+| US-008        | View Top-10 leaderboard                | Leaderboard View                          | Leaderboard Table Component, Date selector                                               | Tie-breakers applied server-side                     |
+| US-009        | Set or edit nickname                   | Nickname Settings View                    | Nickname Form Component                                                                  | Validation, profanity filter, consent                |
+| US-010        | Anonymous device token                 | All views (background)                    | Middleware, localStorage/cookie                                                          | Transparent to user, drives first-attempt rule       |
+| US-011        | Reveal event details                   | Round Summary View                        | Photo Card Components with descriptions                                                  | Shows after round completion                         |
+| US-012        | Daily scheduler                        | Admin Daily Sets View                     | Schedule status card, Daily sets list, Create form                                       | Admin-only, ensures content pipeline                 |
+| US-013        | Content ingestion                      | Admin Dashboard                           | Upload Photo modal, Metadata form, Validation messages                                   | Admin-only, validation on client and server          |
+| US-014        | Performance                            | All views                                 | Optimized components, lazy loading, CDN images                                           | <2s load, <200ms map latency targets                 |
+| US-015        | Analytics events                       | All views (background)                    | Event tracking calls to API                                                              | Minimal performance impact                           |
+| US-016        | Privacy and retention                  | Nickname Settings, Footer                 | Privacy notice, Consent checkbox, Policy link                                            | Minimal data collection messaging                    |
+| US-017        | Error handling                         | All views                                 | Error State Components, Retry buttons, Offline detection                                 | Clear messaging, recovery actions                    |
+| US-018        | Secure submissions                     | Round Summary (background)                | Server-side validation, Rate limiting                                                    | Transparent to UI, security backend                  |
+| US-019        | Credits and licensing                  | Credits View                              | Credits List, Photo Card Components                                                      | Searchable, filterable, with source links            |
+| US-020        | Accessibility                          | All views                                 | ARIA labels, keyboard navigation, focus management                                       | WCAG AA compliance                                   |
+| US-021        | Multiple Daily plays                   | Game View, Round Summary                  | "Already submitted" banner, Practice mode notice                                         | Allows replay without re-submission                  |
+| US-022        | Session timing                         | Game View                                 | Timer Component (Daily mode)                                                             | Starts on photo 1, stops on final submit             |
+| US-023        | Image optimization                     | All views                                 | Responsive images, lazy loading, CDN                                                     | Sharp images, fast load                              |
+| US-024        | Admin schedule view                    | Admin Daily Sets View                     | Schedule status card, Calendar view (optional)                                           | Shows next 7-20 days, flags issues                   |
+| US-025        | Consent for nickname                   | Nickname Settings View                    | Consent checkbox, Privacy notice                                                         | Required before first leaderboard submission         |
 
 ---
 
@@ -1466,60 +1545,60 @@ ADMIN (separate auth)
 
 ### Core Gameplay Requirements
 
-| Requirement | UI Solution |
-|-------------|-------------|
-| 5 photos per round | Progress Indicator Component (5 circles), Photo counter ("Photo 3 of 5") |
-| Map pin placement | Interactive Map Component with single pin, zoom/pan controls |
-| Year selection (1880-2025) | Year Picker Component with slider and bounded validation |
-| Linear scoring (caps at 10k per dimension) | Score display in Photo Feedback Component, Server calculates |
-| Per-photo feedback (km error, year delta, scores) | Photo Feedback Component with dual pins, metrics cards |
-| End-of-round summary | Round Summary View with total score, time, and photo breakdown |
+| Requirement                                       | UI Solution                                                              |
+| ------------------------------------------------- | ------------------------------------------------------------------------ |
+| 5 photos per round                                | Progress Indicator Component (5 circles), Photo counter ("Photo 3 of 5") |
+| Map pin placement                                 | Interactive Map Component with single pin, zoom/pan controls             |
+| Year selection (1880-2025)                        | Year Picker Component with slider and bounded validation                 |
+| Linear scoring (caps at 10k per dimension)        | Score display in Photo Feedback Component, Server calculates             |
+| Per-photo feedback (km error, year delta, scores) | Photo Feedback Component with dual pins, metrics cards                   |
+| End-of-round summary                              | Round Summary View with total score, time, and photo breakdown           |
 
 ### Mode Requirements
 
-| Requirement | UI Solution |
-|-------------|-------------|
-| Normal mode (unlimited, not saved) | "Play Normal" button on Home, no nickname required, results not persisted |
-| Daily mode (first attempt counts) | "Play Daily" button, nickname prompt, submission to leaderboard, "Already submitted" handling |
-| Daily reset at 00:00 UTC | Date selector on Leaderboard, notice in footer, Admin scheduling interface |
+| Requirement                        | UI Solution                                                                                   |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| Normal mode (unlimited, not saved) | "Play Normal" button on Home, no nickname required, results not persisted                     |
+| Daily mode (first attempt counts)  | "Play Daily" button, nickname prompt, submission to leaderboard, "Already submitted" handling |
+| Daily reset at 00:00 UTC           | Date selector on Leaderboard, notice in footer, Admin scheduling interface                    |
 
 ### Leaderboard Requirements
 
-| Requirement | UI Solution |
-|-------------|-------------|
-| Daily Top-10 global leaderboard | Leaderboard View with ranked table, date selector |
+| Requirement                         | UI Solution                                          |
+| ----------------------------------- | ---------------------------------------------------- |
+| Daily Top-10 global leaderboard     | Leaderboard View with ranked table, date selector    |
 | Tie-breakers (time, then timestamp) | Server-side sorting, tooltip explaining tie-breaking |
-| Nickname (3-20 chars, validated) | Nickname Form Component with real-time validation |
-| Profanity filter | Server-side filtering, client-side error feedback |
+| Nickname (3-20 chars, validated)    | Nickname Form Component with real-time validation    |
+| Profanity filter                    | Server-side filtering, client-side error feedback    |
 
 ### Privacy Requirements
 
-| Requirement | UI Solution |
-|-------------|-------------|
-| Minimal data collection (no email/IP) | No login forms, anonymous device token (transparent) |
-| Anonymous device token | Generated on first visit, stored in localStorage/cookie |
-| Consent for public display | Checkbox in Nickname Settings, privacy notice |
-| 30-90 day retention | Privacy Policy text, no UI beyond documentation |
+| Requirement                           | UI Solution                                             |
+| ------------------------------------- | ------------------------------------------------------- |
+| Minimal data collection (no email/IP) | No login forms, anonymous device token (transparent)    |
+| Anonymous device token                | Generated on first visit, stored in localStorage/cookie |
+| Consent for public display            | Checkbox in Nickname Settings, privacy notice           |
+| 30-90 day retention                   | Privacy Policy text, no UI beyond documentation         |
 
 ### Platform & Performance Requirements
 
-| Requirement | UI Solution |
-|-------------|-------------|
-| Web-first, mobile-responsive | Responsive layouts, mobile-first CSS, touch-optimized controls |
-| Mapbox integration | Interactive Map Component using Mapbox GL JS |
-| Initial load <2s on 4G | Code splitting, lazy loading, optimized assets |
-| Map interactions <200ms | Optimized Mapbox configuration, debouncing where applicable |
-| Accessibility (keyboard nav, ARIA) | All components accessible, WCAG AA compliance |
+| Requirement                        | UI Solution                                                    |
+| ---------------------------------- | -------------------------------------------------------------- |
+| Web-first, mobile-responsive       | Responsive layouts, mobile-first CSS, touch-optimized controls |
+| Mapbox integration                 | Interactive Map Component using Mapbox GL JS                   |
+| Initial load <2s on 4G             | Code splitting, lazy loading, optimized assets                 |
+| Map interactions <200ms            | Optimized Mapbox configuration, debouncing where applicable    |
+| Accessibility (keyboard nav, ARIA) | All components accessible, WCAG AA compliance                  |
 
 ### Content & Operations Requirements
 
-| Requirement | UI Solution |
-|-------------|-------------|
-| 100 unique photos | Admin Dashboard for management, upload interface |
-| Photo metadata schema | Upload form with all required fields, validation |
-| Daily scheduling (7-day buffer) | Admin Daily Sets View with schedule status, warnings |
-| Fallback for removed photos | Admin interface to manage eligibility, backup sets |
-| Rate limits | Error messages with retry-after info, toast notifications |
+| Requirement                     | UI Solution                                               |
+| ------------------------------- | --------------------------------------------------------- |
+| 100 unique photos               | Admin Dashboard for management, upload interface          |
+| Photo metadata schema           | Upload form with all required fields, validation          |
+| Daily scheduling (7-day buffer) | Admin Daily Sets View with schedule status, warnings      |
+| Fallback for removed photos     | Admin interface to manage eligibility, backup sets        |
+| Rate limits                     | Error messages with retry-after info, toast notifications |
 
 ---
 
@@ -1528,6 +1607,7 @@ ADMIN (separate auth)
 ### Pain Point 1: "I don't know how to play"
 
 **UI Solutions**:
+
 - Clear, concise explanation on Home View (hero section)
 - "How to Play" expandable section or modal
 - Visual示例 of gameplay (optional screenshot or animation)
@@ -1539,6 +1619,7 @@ ADMIN (separate auth)
 ### Pain Point 2: "I accidentally submitted the wrong guess"
 
 **UI Solutions**:
+
 - Submit button only enabled when both pin and year selected
 - Clear visual state of pin placement (confirm pin is where intended)
 - Feedback shown after submit (non-destructive, can see results)
@@ -1550,6 +1631,7 @@ ADMIN (separate auth)
 ### Pain Point 3: "I can't find where to set my nickname"
 
 **UI Solutions**:
+
 - Inline nickname prompt on first Daily attempt (within game flow)
 - Visible nickname display in header/nav when set (with icon)
 - Clear "Settings" or "Nickname" link in user menu
@@ -1561,6 +1643,7 @@ ADMIN (separate auth)
 ### Pain Point 4: "I already played Daily today but can't see my score"
 
 **UI Solutions**:
+
 - "Already played today" badge on Daily Challenge card (Home View)
 - Display previous submission score on Home (optional)
 - Leaderboard shows user's rank (if in Top-10) or position (future enhancement)
@@ -1572,6 +1655,7 @@ ADMIN (separate auth)
 ### Pain Point 5: "The map is hard to use on mobile"
 
 **UI Solutions**:
+
 - Large touch targets for zoom buttons (min 44x44px)
 - Responsive map sizing (optimized for viewport)
 - Clear pin placement indicator (larger pin icon)
@@ -1585,6 +1669,7 @@ ADMIN (separate auth)
 ### Pain Point 6: "I don't know if my submission worked"
 
 **UI Solutions**:
+
 - Loading state during submission (spinner, "Submitting...")
 - Success confirmation with rank: "Submitted! You're ranked #7 today!"
 - Error message with retry option: "Submission failed. Retry?"
@@ -1597,12 +1682,14 @@ ADMIN (separate auth)
 ### Pain Point 7: "I can't see my ranking if I'm not in Top-10"
 
 **UI Solutions** (MVP scope):
+
 - Show Top-10 only (as per PRD requirements)
 - Display total submissions count for context: "245 players today"
 - **Future enhancement**: Show user's rank below Top-10 (e.g., "Your rank: #25")
 - **Future enhancement**: Percentile display (e.g., "Top 15%")
 
 **Current MVP approach**:
+
 - Focus on Top-10 competitive aspect
 - Total submissions provides context of participation level
 
@@ -1611,6 +1698,7 @@ ADMIN (separate auth)
 ### Pain Point 8: "I want to see past daily challenges"
 
 **UI Solutions**:
+
 - Date selector on Leaderboard View (today, yesterday, last 7 days)
 - Ability to view historical leaderboards (data retained 30-90 days)
 - **Future enhancement**: Archive of past daily sets (playable for practice)
@@ -1621,6 +1709,7 @@ ADMIN (separate auth)
 ### Pain Point 9: "The game is too hard / too easy"
 
 **UI Solutions** (primarily content curation, limited UI):
+
 - Admin analytics show average scores and difficulty ratings per photo
 - Admin can balance daily sets with mix of difficulty levels
 - **Future**: Difficulty indicator on photos (easy/medium/hard)
@@ -1632,6 +1721,7 @@ ADMIN (separate auth)
 ### Pain Point 10: "I want to compete with friends, not strangers"
 
 **UI Solutions** (out of scope for MVP, but noted):
+
 - **MVP**: Global leaderboard only
 - **Future**: Friend codes, private leaderboards
 - **Future**: Social sharing ("Challenge your friends!")
@@ -1789,18 +1879,18 @@ ADMIN (separate auth)
 
 ## 12. Component Reusability Matrix
 
-| Component | Used In | Variants |
-|-----------|---------|----------|
-| **Button** | All views | Primary, Secondary, Destructive, Disabled, Loading |
-| **Card** | Round Summary, Leaderboard, Admin Dashboard, Credits | Photo Card, Stats Card, KPI Card, Leaderboard Entry |
-| **Modal** | All views | Upload, Confirm Delete, Nickname Setup, How to Play |
-| **Form Input** | Nickname Settings, Admin Upload | Text, Number, Textarea, Dropdown, Checkbox |
-| **Table** | Leaderboard, Admin Lists | Sortable, Filterable, Responsive (cards on mobile) |
-| **Progress Indicator** | Game View | 5-step circular, Linear progress bar (upload) |
-| **Toast Notification** | All views | Success, Error, Info, Warning |
-| **Loading Skeleton** | All views | Card skeleton, Table skeleton, Image skeleton |
-| **Error State** | All views | Inline error, Page error, Empty state |
-| **Date Picker** | Admin Daily Sets, Analytics | Single date, Date range |
+| Component              | Used In                                              | Variants                                            |
+| ---------------------- | ---------------------------------------------------- | --------------------------------------------------- |
+| **Button**             | All views                                            | Primary, Secondary, Destructive, Disabled, Loading  |
+| **Card**               | Round Summary, Leaderboard, Admin Dashboard, Credits | Photo Card, Stats Card, KPI Card, Leaderboard Entry |
+| **Modal**              | All views                                            | Upload, Confirm Delete, Nickname Setup, How to Play |
+| **Form Input**         | Nickname Settings, Admin Upload                      | Text, Number, Textarea, Dropdown, Checkbox          |
+| **Table**              | Leaderboard, Admin Lists                             | Sortable, Filterable, Responsive (cards on mobile)  |
+| **Progress Indicator** | Game View                                            | 5-step circular, Linear progress bar (upload)       |
+| **Toast Notification** | All views                                            | Success, Error, Info, Warning                       |
+| **Loading Skeleton**   | All views                                            | Card skeleton, Table skeleton, Image skeleton       |
+| **Error State**        | All views                                            | Inline error, Page error, Empty state               |
+| **Date Picker**        | Admin Daily Sets, Analytics                          | Single date, Date range                             |
 
 ---
 
@@ -1846,21 +1936,21 @@ ADMIN (separate auth)
 
 ## 14. Edge Cases Handling Summary
 
-| Edge Case | UI Handling |
-|-----------|-------------|
-| No daily set available today | Error message on Home, CTA to play Normal mode, Admin alert |
-| Already submitted daily challenge | Badge on Home, notice in Game View, comparison in Round Summary |
-| Network error during submission | Error message, "Retry" button, cache data for later retry |
-| Invalid/profane nickname | Inline error, clear message, suggest alternative |
-| Map fails to load | Error message, "Retry" button, fallback to coordinate input (optional) |
-| Insufficient photos for normal mode | Error message, "Service unavailable", contact admin |
-| Device token not available (privacy settings) | Graceful degradation, disable Daily submission, show notice |
-| Admin deleting used photo | Server rejects (409 Conflict), error message "Cannot delete used photo" |
-| Admin scheduling past date | Warning message, allow with confirmation (for testing) |
-| Duplicate daily set for same date | Server rejects (409 Conflict), error message "Set already exists" |
-| Slow network (photos not loading) | Loading skeleton, timeout message, "Retry" option |
-| User navigates away mid-game | Confirmation dialog "Leave game? Progress will be lost" (Daily mode: save to session storage) |
-| Leaderboard date with no submissions | Empty state "No submissions yet for this date" |
+| Edge Case                                     | UI Handling                                                                                   |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| No daily set available today                  | Error message on Home, CTA to play Normal mode, Admin alert                                   |
+| Already submitted daily challenge             | Badge on Home, notice in Game View, comparison in Round Summary                               |
+| Network error during submission               | Error message, "Retry" button, cache data for later retry                                     |
+| Invalid/profane nickname                      | Inline error, clear message, suggest alternative                                              |
+| Map fails to load                             | Error message, "Retry" button, fallback to coordinate input (optional)                        |
+| Insufficient photos for normal mode           | Error message, "Service unavailable", contact admin                                           |
+| Device token not available (privacy settings) | Graceful degradation, disable Daily submission, show notice                                   |
+| Admin deleting used photo                     | Server rejects (409 Conflict), error message "Cannot delete used photo"                       |
+| Admin scheduling past date                    | Warning message, allow with confirmation (for testing)                                        |
+| Duplicate daily set for same date             | Server rejects (409 Conflict), error message "Set already exists"                             |
+| Slow network (photos not loading)             | Loading skeleton, timeout message, "Retry" option                                             |
+| User navigates away mid-game                  | Confirmation dialog "Leave game? Progress will be lost" (Daily mode: save to session storage) |
+| Leaderboard date with no submissions          | Empty state "No submissions yet for this date"                                                |
 
 ---
 
@@ -1913,6 +2003,7 @@ This UI architecture for **FootyGuess Daily** provides a comprehensive blueprint
 The architecture supports the 2-week MVP timeline while maintaining flexibility for future enhancements. All 25 user stories from the PRD are mapped to specific UI elements, ensuring complete coverage of requirements.
 
 **Key Success Factors**:
+
 1. Focus on core gameplay loop (5 photos, guess, feedback, results)
 2. Frictionless Daily mode participation (inline nickname, auto-submission)
 3. Compelling leaderboard competition (Top-10, clear rankings)

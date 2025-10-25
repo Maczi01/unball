@@ -9,15 +9,18 @@ Each round consists of 5 photos. For each photo, users place a pin on an interac
 ## 2. View Routing
 
 **Paths:**
+
 - `/play/normal` - Normal mode (unlimited plays, results not saved)
 - `/play/daily` - Daily challenge mode (first attempt counts for leaderboard)
 
 **Implementation:**
+
 - Astro page: `src/pages/play/[mode].astro`
 - Mode param validation: `mode === 'normal' || mode === 'daily'`
 - For invalid mode, redirect to `/play/normal`
 
 **Page Responsibilities:**
+
 - Validate mode parameter
 - Fetch daily set for Daily mode (GET `/api/daily/sets/today`)
 - Generate random photo set for Normal mode (GET `/api/normal/photos`)
@@ -66,24 +69,29 @@ GamePage (Astro, src/pages/play/[mode].astro)
 Server-side page component that handles routing, data fetching, and initial render of the game. Validates the mode parameter, fetches appropriate data (daily set or random photos), checks submission status for Daily mode, and passes initial props to the React GameView component.
 
 **Main elements:**
+
 - `<GameView>` React component
 - Error boundary for fetch failures
 - Loading state during SSR data fetch
 
 **Handled interactions:**
+
 - None (server-side only)
 
 **Handled validation:**
+
 - Mode parameter validation (`normal` or `daily`)
 - Daily set availability (handle 404)
 - Submission check for Daily mode
 
 **Types:**
+
 - `DailySetResponseDTO` (from API)
 - `SubmissionCheckResponseDTO` (from API)
 - `GameMode` type: `'normal' | 'daily'`
 
 **Props:**
+
 - None (page component, uses Astro params)
 
 ---
@@ -94,11 +102,13 @@ Server-side page component that handles routing, data fetching, and initial rend
 Main container component managing the entire game flow. Orchestrates state for 5 photos, current guess, timer, scores, and progression through the round. Handles transitions between photos, calculates client-side scores for immediate feedback, and coordinates final submission.
 
 **Main elements:**
+
 - `<div>` container with responsive layout (Tailwind)
 - Conditional rendering based on game phase (guessing, feedback, summary)
 - Child components for header, photo, map, year picker, submit, feedback, summary
 
 **Handled interactions:**
+
 - `onPinPlace(lat, lon)` - User places pin on map
 - `onYearSelect(year)` - User selects year
 - `onSubmitGuess()` - User submits current guess
@@ -107,6 +117,7 @@ Main container component managing the entire game flow. Orchestrates state for 5
 - `onExit()` - User attempts to exit game
 
 **Handled validation:**
+
 - Both pin and year must be selected before submit enabled
 - Year within range 1880-2025
 - Coordinates within valid range (lat -90 to 90, lon -180 to 180)
@@ -114,6 +125,7 @@ Main container component managing the entire game flow. Orchestrates state for 5
 - Timer validation (0 < total_time_ms < 86400000)
 
 **Types:**
+
 - `GameViewModel` (state shape)
 - `PhotoState[]` (5 photos)
 - `GuessDTO` (current guess)
@@ -121,6 +133,7 @@ Main container component managing the entire game flow. Orchestrates state for 5
 - `PhotoScoreResultDTO` (feedback data)
 
 **Props:**
+
 ```typescript
 interface GameViewProps {
   mode: GameMode;
@@ -137,20 +150,25 @@ interface GameViewProps {
 Banner notification displayed at the top of the game view when a user has already submitted today's Daily challenge. Informs the user that this is a practice round and won't affect their leaderboard position.
 
 **Main elements:**
+
 - `<div>` banner with info styling (blue background, icon)
 - Text message
 - Optional dismiss button
 
 **Handled interactions:**
+
 - `onDismiss()` - User dismisses notice
 
 **Handled validation:**
+
 - None (informational only)
 
 **Types:**
+
 - None
 
 **Props:**
+
 ```typescript
 interface AlreadySubmittedNoticeProps {
   onDismiss?: () => void;
@@ -165,20 +183,25 @@ interface AlreadySubmittedNoticeProps {
 Top bar showing game mode, progress through 5 photos, timer (Daily mode), and exit button. Provides constant context and navigation option.
 
 **Main elements:**
+
 - `<header>` with flex layout
 - Mode badge, progress indicator, timer, exit button
 
 **Handled interactions:**
+
 - `onExit()` - User clicks exit button
 
 **Handled validation:**
+
 - None
 
 **Types:**
+
 - `GameMode`
 - `number` for currentPhoto, totalPhotos, elapsedMs
 
 **Props:**
+
 ```typescript
 interface GameHeaderProps {
   mode: GameMode;
@@ -197,20 +220,25 @@ interface GameHeaderProps {
 Displays current game mode with appropriate styling and icon.
 
 **Main elements:**
+
 - `<span>` or `<Badge>` (shadcn/ui)
 - Mode text: "Normal Mode" or "Daily Challenge"
 - Optional icon
 
 **Handled interactions:**
+
 - None
 
 **Handled validation:**
+
 - None
 
 **Types:**
+
 - `GameMode`
 
 **Props:**
+
 ```typescript
 interface ModeBadgeProps {
   mode: GameMode;
@@ -225,20 +253,25 @@ interface ModeBadgeProps {
 Visual representation of progress through 5 photos, typically 5 circles with current photo highlighted.
 
 **Main elements:**
+
 - `<div>` flex container
 - 5 circle elements (filled/outlined based on state)
 - ARIA label for screen readers
 
 **Handled interactions:**
+
 - None
 
 **Handled validation:**
+
 - None
 
 **Types:**
+
 - `number` for current and total
 
 **Props:**
+
 ```typescript
 interface ProgressIndicatorProps {
   current: number; // 1-5
@@ -254,20 +287,25 @@ interface ProgressIndicatorProps {
 Displays elapsed time in MM:SS format. Only shown in Daily mode. Updates every second.
 
 **Main elements:**
+
 - `<div>` or `<span>` with formatted time
 - Label: "Time: "
 - ARIA live region for screen reader updates
 
 **Handled interactions:**
+
 - None (display only)
 
 **Handled validation:**
+
 - None
 
 **Types:**
+
 - `number` for elapsedMs
 
 **Props:**
+
 ```typescript
 interface TimerProps {
   elapsedMs: number;
@@ -282,6 +320,7 @@ interface TimerProps {
 Displays the current photo with loading skeleton, counter, and responsive sizing. Maintains aspect ratio and handles loading states.
 
 **Main elements:**
+
 - `<div>` container
 - `<img>` for photo (with srcset for responsive)
 - Loading skeleton while image loads
@@ -289,15 +328,19 @@ Displays the current photo with loading skeleton, counter, and responsive sizing
 - Alt text for accessibility
 
 **Handled interactions:**
+
 - `onLoad()` - Image finishes loading
 
 **Handled validation:**
+
 - None
 
 **Types:**
+
 - `DailySetPhotoDTO` or `NormalRoundPhotoDTO`
 
 **Props:**
+
 ```typescript
 interface PhotoDisplayProps {
   photo: DailySetPhotoDTO;
@@ -315,6 +358,7 @@ interface PhotoDisplayProps {
 Interactive Mapbox map for pin placement. Supports zoom, pan, pin drag, keyboard navigation. Shows user pin during guessing, both user and correct pins during feedback with connecting line and distance.
 
 **Main elements:**
+
 - Mapbox GL JS map instance
 - User pin marker (blue)
 - Correct pin marker (green, feedback only)
@@ -324,6 +368,7 @@ Interactive Mapbox map for pin placement. Supports zoom, pan, pin drag, keyboard
 - Keyboard navigation overlay (instructions)
 
 **Handled interactions:**
+
 - `onPinPlace(lat, lon)` - User clicks map to place pin
 - `onPinMove(lat, lon)` - User drags pin to new location
 - `onZoom(level)` - User zooms in/out
@@ -332,16 +377,19 @@ Interactive Mapbox map for pin placement. Supports zoom, pan, pin drag, keyboard
 - Keyboard: Arrow keys to pan, +/- to zoom, Enter to place pin
 
 **Handled validation:**
+
 - Coordinates within valid range:
   - Latitude: -90 to 90
   - Longitude: -180 to 180
 - Pin placement validation before enabling submit
 
 **Types:**
+
 - `PinLocation` for user and correct pins
 - `MapBounds` for viewport
 
 **Props:**
+
 ```typescript
 interface MapComponentProps {
   userPin: PinLocation | null;
@@ -362,6 +410,7 @@ interface MapComponentProps {
 Year selection interface with slider and numeric input. Bounded to 1880-2025. Touch-friendly with keyboard support.
 
 **Main elements:**
+
 - `<Slider>` component (shadcn/ui) for quick selection
 - `<Input>` numeric field for precise entry
 - Label: "What year was this?"
@@ -369,18 +418,22 @@ Year selection interface with slider and numeric input. Bounded to 1880-2025. To
 - Current selected year (large display)
 
 **Handled interactions:**
+
 - `onYearChange(year)` - User selects or types year
 
 **Handled validation:**
+
 - Year must be integer
 - Year >= 1880 and <= 2025
 - Invalid input shows error message
 - Submit disabled if invalid
 
 **Types:**
+
 - `number` for year
 
 **Props:**
+
 ```typescript
 interface YearPickerProps {
   selectedYear: number | null;
@@ -397,23 +450,28 @@ interface YearPickerProps {
 Primary CTA button for submitting current guess. Disabled until both pin and year are selected. Shows loading state during submission.
 
 **Main elements:**
+
 - `<Button>` (shadcn/ui)
 - Text: "Submit Guess"
 - Loading spinner during submission
 - Disabled state styling
 
 **Handled interactions:**
+
 - `onClick()` - User submits guess
 
 **Handled validation:**
+
 - Disabled if pin is null
 - Disabled if year is null
 - Disabled during submission (loading)
 
 **Types:**
+
 - `boolean` for isDisabled, isLoading
 
 **Props:**
+
 ```typescript
 interface SubmitButtonProps {
   isDisabled: boolean;
@@ -430,6 +488,7 @@ interface SubmitButtonProps {
 Displays results after guess submission. Shows score breakdown, distance and year errors, running total, and next button. Overlays on map to show both pins and connecting line.
 
 **Main elements:**
+
 - `<div>` overlay/card container
 - ScoreCard component
 - Running total display
@@ -437,16 +496,20 @@ Displays results after guess submission. Shows score breakdown, distance and yea
 - Celebration animations for high scores
 
 **Handled interactions:**
+
 - `onNext()` - User advances to next photo
 
 **Handled validation:**
+
 - None (display only)
 
 **Types:**
+
 - `PhotoScoreResultDTO` for current photo result
 - `number` for running total
 
 **Props:**
+
 ```typescript
 interface FeedbackSectionProps {
   result: PhotoScoreResultDTO;
@@ -465,6 +528,7 @@ interface FeedbackSectionProps {
 Detailed score breakdown showing distance error, year error, and points earned for location and time.
 
 **Main elements:**
+
 - `<div>` card container
 - Location score row: "Distance: X km → Y points"
 - Time score row: "Year difference: X years → Y points"
@@ -473,15 +537,19 @@ Detailed score breakdown showing distance error, year error, and points earned f
 - Event details: event_name, description
 
 **Handled interactions:**
+
 - None
 
 **Handled validation:**
+
 - None
 
 **Types:**
+
 - `PhotoScoreResultDTO`
 
 **Props:**
+
 ```typescript
 interface ScoreCardProps {
   result: PhotoScoreResultDTO;
@@ -497,6 +565,7 @@ interface ScoreCardProps {
 Final summary screen after completing 5 photos. Shows total score, total time, breakdown of each photo, and options to view leaderboard (Daily, first attempt) or play again. Includes nickname input for Daily mode first submission.
 
 **Main elements:**
+
 - `<div>` full-screen modal/overlay
 - Header: "Round Complete!"
 - Total score (large, prominent)
@@ -509,12 +578,14 @@ Final summary screen after completing 5 photos. Shows total score, total time, b
 - Share button (optional)
 
 **Handled interactions:**
+
 - `onViewLeaderboard()` - Navigate to leaderboard
 - `onPlayAgain()` - Start new round
 - `onNicknameSubmit(nickname)` - Submit nickname for Daily
 - `onConsentChange(checked)` - Consent checkbox
 
 **Handled validation:**
+
 - Nickname validation (Daily mode):
   - Length: 3-20 characters
   - Pattern: alphanumeric + space, hyphen, underscore
@@ -523,11 +594,13 @@ Final summary screen after completing 5 photos. Shows total score, total time, b
 - Consent must be checked before submission (Daily mode)
 
 **Types:**
+
 - `PhotoScoreResultDTO[]` for all photo results
 - `number` for totalScore, totalTimeMs
 - `DailySubmissionResponseDTO` after submission (includes rank)
 
 **Props:**
+
 ```typescript
 interface RoundSummaryProps {
   mode: GameMode;
@@ -550,26 +623,31 @@ interface RoundSummaryProps {
 Input field for entering nickname before Daily submission. Includes validation, error messages, and guidelines.
 
 **Main elements:**
+
 - `<Input>` (shadcn/ui)
 - Label: "Choose your nickname"
 - Character counter: "X / 20"
 - Validation error message
-- Guidelines text: "3-20 characters, letters, numbers, spaces, - and _ allowed"
+- Guidelines text: "3-20 characters, letters, numbers, spaces, - and \_ allowed"
 
 **Handled interactions:**
+
 - `onChange(value)` - User types nickname
 - `onSubmit()` - User confirms nickname
 
 **Handled validation:**
+
 - Length: 3-20 characters
 - Pattern: `/^[a-zA-Z0-9 _-]+$/`
 - Real-time validation feedback
 - Show error if invalid
 
 **Types:**
+
 - `string` for nickname
 
 **Props:**
+
 ```typescript
 interface NicknameInputProps {
   value: string;
@@ -586,6 +664,7 @@ interface NicknameInputProps {
 Single row in round summary showing thumbnail, event name, and score for one photo.
 
 **Main elements:**
+
 - `<div>` row container
 - Thumbnail image
 - Position: "Photo X"
@@ -594,15 +673,19 @@ Single row in round summary showing thumbnail, event name, and score for one pho
 - Expandable details (optional)
 
 **Handled interactions:**
+
 - `onClick()` - Expand details (optional)
 
 **Handled validation:**
+
 - None
 
 **Types:**
+
 - `PhotoScoreResultDTO`
 
 **Props:**
+
 ```typescript
 interface PhotoBreakdownProps {
   result: PhotoScoreResultDTO;
@@ -618,6 +701,7 @@ interface PhotoBreakdownProps {
 Reusable error message component displaying error state with retry/dismiss options.
 
 **Main elements:**
+
 - `<div>` alert container (shadcn/ui Alert)
 - Error icon
 - Error message text
@@ -626,17 +710,21 @@ Reusable error message component displaying error state with retry/dismiss optio
 - Fallback action button (e.g., "Try Normal mode")
 
 **Handled interactions:**
+
 - `onRetry()` - User retries failed operation
 - `onDismiss()` - User dismisses error
 - `onFallback()` - User chooses fallback action
 
 **Handled validation:**
+
 - None
 
 **Types:**
+
 - `GameError` type
 
 **Props:**
+
 ```typescript
 interface ErrorMessageProps {
   error: GameError;
@@ -721,7 +809,7 @@ type DailySubmissionResponseDTO = {
 /**
  * Game mode enum
  */
-type GameMode = 'normal' | 'daily';
+type GameMode = "normal" | "daily";
 
 /**
  * Pin location on map
@@ -738,7 +826,7 @@ type PhotoState = {
   photoData: DailySetPhotoDTO;
   guess: GuessDTO | null; // Set after submission
   result: PhotoScoreResultDTO | null; // Set after scoring
-  status: 'pending' | 'guessing' | 'submitted' | 'complete';
+  status: "pending" | "guessing" | "submitted" | "complete";
 };
 
 /**
@@ -763,7 +851,7 @@ type GameViewModel = {
  * Error state type
  */
 type GameError = {
-  type: 'map_load' | 'submission' | 'network' | 'no_daily_set' | 'invalid_guess';
+  type: "map_load" | "submission" | "network" | "no_daily_set" | "invalid_guess";
   message: string;
   retryable: boolean;
 };
@@ -855,14 +943,14 @@ const [showSummary, setShowSummary] = useState(false);
 
 ```typescript
 type GameAction =
-  | { type: 'SET_PHOTOS'; payload: DailySetPhotoDTO[] }
-  | { type: 'NEXT_PHOTO' }
-  | { type: 'SUBMIT_GUESS'; payload: { guess: GuessDTO; result: PhotoScoreResultDTO } }
-  | { type: 'SET_ERROR'; payload: GameError }
-  | { type: 'CLEAR_ERROR' }
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'UPDATE_TIMER'; payload: number }
-  | { type: 'COMPLETE_ROUND' };
+  | { type: "SET_PHOTOS"; payload: DailySetPhotoDTO[] }
+  | { type: "NEXT_PHOTO" }
+  | { type: "SUBMIT_GUESS"; payload: { guess: GuessDTO; result: PhotoScoreResultDTO } }
+  | { type: "SET_ERROR"; payload: GameError }
+  | { type: "CLEAR_ERROR" }
+  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "UPDATE_TIMER"; payload: number }
+  | { type: "COMPLETE_ROUND" };
 ```
 
 ### Custom Hooks
@@ -874,16 +962,18 @@ type GameAction =
 **Location:** `src/components/hooks/useGameTimer.ts`
 
 **Interface:**
+
 ```typescript
 function useGameTimer(isRunning: boolean): {
   elapsedMs: number;
   startTimer: () => void;
   pauseTimer: () => void;
   resetTimer: () => void;
-}
+};
 ```
 
 **Implementation:**
+
 - Uses `useRef` to store start timestamp
 - Uses `useEffect` with `setInterval` to update elapsed time every 100ms
 - Calculates elapsed as `Date.now() - startTime`
@@ -898,6 +988,7 @@ function useGameTimer(isRunning: boolean): {
 **Location:** `src/components/hooks/usePhotoGuess.ts`
 
 **Interface:**
+
 ```typescript
 function usePhotoGuess(): {
   pin: PinLocation | null;
@@ -906,10 +997,11 @@ function usePhotoGuess(): {
   setYear: (year: number) => void;
   clearGuess: () => void;
   isComplete: boolean;
-}
+};
 ```
 
 **Implementation:**
+
 - Uses `useState` for pin and year
 - `isComplete` computed: `pin !== null && year !== null`
 - `clearGuess` resets both to null
@@ -924,23 +1016,22 @@ function usePhotoGuess(): {
 **Location:** `src/lib/utils/scoreCalculation.ts`
 
 **Interface:**
+
 ```typescript
-function calculateScore(
-  guess: GuessDTO,
-  correct: { lat: number; lon: number; year: number }
-): PhotoScoreResultDTO
+function calculateScore(guess: GuessDTO, correct: { lat: number; lon: number; year: number }): PhotoScoreResultDTO;
 ```
 
 **Implementation:**
+
 - Haversine formula for distance calculation:
   ```typescript
   const R = 6371; // Earth radius in km
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c;
   ```
 - Location score: `Math.max(0, 10000 - distance * 5)`
@@ -956,15 +1047,17 @@ function calculateScore(
 **Location:** `src/components/hooks/useDeviceToken.ts`
 
 **Interface:**
+
 ```typescript
 function useDeviceToken(): {
   deviceToken: string | null;
   generateToken: () => string;
   isStorageAvailable: boolean;
-}
+};
 ```
 
 **Implementation:**
+
 - Checks localStorage availability on mount
 - Reads existing token from `localStorage.getItem('anon_device_token')`
 - Generates new UUID if not exists: `crypto.randomUUID()`
@@ -980,16 +1073,21 @@ function useDeviceToken(): {
 **Location:** `src/components/hooks/useSubmissionCheck.ts`
 
 **Interface:**
+
 ```typescript
-function useSubmissionCheck(mode: GameMode, deviceToken: string | null): {
+function useSubmissionCheck(
+  mode: GameMode,
+  deviceToken: string | null
+): {
   hasSubmitted: boolean;
   checkSubmission: () => Promise<void>;
   isLoading: boolean;
   error: Error | null;
-}
+};
 ```
 
 **Implementation:**
+
 - Only runs in Daily mode
 - Fetches GET `/api/daily/submissions/check` with device token in headers
 - Parses `SubmissionCheckResponseDTO`
@@ -1046,6 +1144,7 @@ function useSubmissionCheck(mode: GameMode, deviceToken: string | null): {
 **When:** On page load (Daily mode only)
 
 **Request:**
+
 - Method: GET
 - Headers: None
 - Body: None
@@ -1053,6 +1152,7 @@ function useSubmissionCheck(mode: GameMode, deviceToken: string | null): {
 **Response Type:** `DailySetResponseDTO`
 
 **Response Example:**
+
 ```json
 {
   "daily_set_id": "abc123",
@@ -1073,19 +1173,21 @@ function useSubmissionCheck(mode: GameMode, deviceToken: string | null): {
 ```
 
 **Error Handling:**
+
 - 404: No daily set published → Show error, suggest Normal mode
 - 500: Server error → Show error with retry
 - Network error: Show offline message
 
 **Implementation:**
+
 ```typescript
 // In GamePage (Astro)
-const response = await fetch('/api/daily/sets/today');
+const response = await fetch("/api/daily/sets/today");
 if (!response.ok) {
   if (response.status === 404) {
     // Redirect to Normal mode or show error
   }
-  throw new Error('Failed to fetch daily set');
+  throw new Error("Failed to fetch daily set");
 }
 const dailySet: DailySetResponseDTO = await response.json();
 ```
@@ -1099,6 +1201,7 @@ const dailySet: DailySetResponseDTO = await response.json();
 **When:** On page load (Daily mode only)
 
 **Request:**
+
 - Method: GET
 - Headers:
   - `X-Device-Token: <anon_device_token>`
@@ -1107,6 +1210,7 @@ const dailySet: DailySetResponseDTO = await response.json();
 **Response Type:** `SubmissionCheckResponseDTO`
 
 **Response Example:**
+
 ```json
 {
   "has_submitted": true,
@@ -1121,14 +1225,16 @@ const dailySet: DailySetResponseDTO = await response.json();
 ```
 
 **Error Handling:**
+
 - Any error: Log and assume not submitted (allow play)
 
 **Implementation:**
+
 ```typescript
-const response = await fetch('/api/daily/submissions/check', {
+const response = await fetch("/api/daily/submissions/check", {
   headers: {
-    'X-Device-Token': deviceToken
-  }
+    "X-Device-Token": deviceToken,
+  },
 });
 const data: SubmissionCheckResponseDTO = await response.json();
 ```
@@ -1142,6 +1248,7 @@ const data: SubmissionCheckResponseDTO = await response.json();
 **When:** After completing 5 photos (Daily mode, first attempt only)
 
 **Request:**
+
 - Method: POST
 - Headers:
   - `Content-Type: application/json`
@@ -1149,6 +1256,7 @@ const data: SubmissionCheckResponseDTO = await response.json();
 - Body: `DailySubmissionCommand`
 
 **Request Example:**
+
 ```json
 {
   "daily_set_id": "abc123",
@@ -1171,6 +1279,7 @@ const data: SubmissionCheckResponseDTO = await response.json();
 **Response Type:** `DailySubmissionResponseDTO`
 
 **Response Example:**
+
 ```json
 {
   "submission_id": "sub123",
@@ -1200,24 +1309,26 @@ const data: SubmissionCheckResponseDTO = await response.json();
 ```
 
 **Error Handling:**
+
 - 400: Invalid data → Show error with details
 - 409: Already submitted → Show error (shouldn't happen if check works)
 - 500: Server error → Show error with retry, warn data may not be saved
 - Network error: Show retry option
 
 **Implementation:**
+
 ```typescript
-const response = await fetch('/api/daily/submissions', {
-  method: 'POST',
+const response = await fetch("/api/daily/submissions", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'X-Device-Token': deviceToken
+    "Content-Type": "application/json",
+    "X-Device-Token": deviceToken,
   },
-  body: JSON.stringify(submissionData)
+  body: JSON.stringify(submissionData),
 });
 
 if (!response.ok) {
-  throw new Error('Submission failed');
+  throw new Error("Submission failed");
 }
 
 const result: DailySubmissionResponseDTO = await response.json();
@@ -1232,16 +1343,20 @@ const result: DailySubmissionResponseDTO = await response.json();
 **When:** After completing 5 photos (Normal mode)
 
 **Request:**
+
 - Method: POST
 - Headers:
   - `Content-Type: application/json`
 - Body: `CalculateScoreCommand`
 
 **Request Example:**
+
 ```json
 {
   "round_id": "round123",
-  "guesses": [ /* 5 GuessDTO items */ ],
+  "guesses": [
+    /* 5 GuessDTO items */
+  ],
   "total_time_ms": 180000
 }
 ```
@@ -1249,25 +1364,30 @@ const result: DailySubmissionResponseDTO = await response.json();
 **Response Type:** `ScoreResponseDTO`
 
 **Response Example:**
+
 ```json
 {
   "total_score": 85000,
   "total_time_ms": 180000,
-  "photos": [ /* 5 PhotoScoreResultDTO items */ ]
+  "photos": [
+    /* 5 PhotoScoreResultDTO items */
+  ]
 }
 ```
 
 **Error Handling:**
+
 - Same as Daily submission
 
 **Implementation:**
+
 ```typescript
-const response = await fetch('/api/normal/calculate-score', {
-  method: 'POST',
+const response = await fetch("/api/normal/calculate-score", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   },
-  body: JSON.stringify(scoreData)
+  body: JSON.stringify(scoreData),
 });
 
 const result: ScoreResponseDTO = await response.json();
@@ -1282,18 +1402,21 @@ const result: ScoreResponseDTO = await response.json();
 **When:** Various events during gameplay
 
 **Request:**
+
 - Method: POST
 - Headers:
   - `Content-Type: application/json`
 - Body: `AnalyticsEventCommand`
 
 **Events to Track:**
+
 - `start_round`: When game loads
 - `guess_submitted`: After each photo submission
 - `round_complete`: After 5 photos
 - `daily_submission`: When Daily submitted to leaderboard
 
 **Request Example:**
+
 ```json
 {
   "event_type": "guess_submitted",
@@ -1308,17 +1431,19 @@ const result: ScoreResponseDTO = await response.json();
 ```
 
 **Error Handling:**
+
 - Fire and forget, don't block UI
 - Log errors silently
 
 **Implementation:**
+
 ```typescript
 // Fire and forget
-fetch('/api/analytics/events', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(eventData)
-}).catch(err => console.warn('Analytics error:', err));
+fetch("/api/analytics/events", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(eventData),
+}).catch((err) => console.warn("Analytics error:", err));
 ```
 
 ## 8. User Interactions
@@ -1328,6 +1453,7 @@ fetch('/api/analytics/events', {
 **User Action:** Navigates to `/play/daily` or `/play/normal`
 
 **System Response:**
+
 - Astro page fetches data (daily set or random photos)
 - Daily mode: Checks submission status
 - Shows loading state
@@ -1336,6 +1462,7 @@ fetch('/api/analytics/events', {
 - Tracks `start_round` analytics event
 
 **UI Updates:**
+
 - Loading spinner while fetching
 - First photo displays
 - Map initializes at default view (world)
@@ -1350,11 +1477,13 @@ fetch('/api/analytics/events', {
 **User Action:** Photo loads and displays
 
 **System Response:**
+
 - Image loads from CDN
 - Shows loading skeleton until loaded
 - Photo counter updates: "Photo 1 of 5"
 
 **UI Updates:**
+
 - Photo displays in PhotoDisplay component
 - Alt text for screen readers
 - Thumbnail in background while loading
@@ -1366,12 +1495,14 @@ fetch('/api/analytics/events', {
 **User Action:** Clicks/taps location on map
 
 **System Response:**
+
 - Calls `onPinPlace(lat, lon)`
 - Updates `currentGuess.pin`
 - Enables pin dragging
 - Updates submit button state
 
 **UI Updates:**
+
 - Blue pin marker appears at clicked location
 - Pin can be dragged to new location
 - Coordinates update (optional display)
@@ -1385,10 +1516,12 @@ fetch('/api/analytics/events', {
 **User Action:** Drags pin to new location
 
 **System Response:**
+
 - Calls `onPinMove(lat, lon)` continuously
 - Updates `currentGuess.pin`
 
 **UI Updates:**
+
 - Pin follows cursor/touch
 - Smooth animation
 - Coordinates update in real-time
@@ -1400,10 +1533,12 @@ fetch('/api/analytics/events', {
 **User Action:** Zooms with controls/gestures, pans by dragging
 
 **System Response:**
+
 - Mapbox handles zoom/pan
 - Pin stays at same geographic location
 
 **UI Updates:**
+
 - Map viewport changes
 - Zoom level indicator updates
 - Pin appears to move on screen but stays at same lat/lon
@@ -1415,12 +1550,14 @@ fetch('/api/analytics/events', {
 **User Action:** Moves slider or types year in input
 
 **System Response:**
+
 - Calls `onYearChange(year)`
 - Updates `currentGuess.year`
 - Validates range (1880-2025)
 - Updates submit button state
 
 **UI Updates:**
+
 - Selected year displays prominently
 - Slider thumb moves
 - Input value updates
@@ -1434,6 +1571,7 @@ fetch('/api/analytics/events', {
 **User Action:** Clicks "Submit Guess" button
 
 **System Response:**
+
 1. Creates `GuessDTO` from `currentGuess` and current `photo_id`
 2. Calls `calculateScore` with guess and correct answer (needs API call for Normal mode or stored answer)
    - **Note:** Correct answer not available until submission. Need to call scoring endpoint first.
@@ -1454,6 +1592,7 @@ fetch('/api/analytics/events', {
 7. Tracks `guess_submitted` analytics event
 
 **UI Updates:**
+
 - Submit button shows loading spinner
 - Map overlay appears with:
   - User pin (blue) at guessed location
@@ -1464,11 +1603,14 @@ fetch('/api/analytics/events', {
 - "Next Photo" button appears
 
 **API Call:**
+
 ```typescript
 // Per-photo scoring (recommended approach)
-POST /api/photos/{photo_id}/score
-Body: { guessed_lat, guessed_lon, guessed_year }
-Response: PhotoScoreResultDTO
+POST / api / photos / { photo_id } / score;
+Body: {
+  (guessed_lat, guessed_lon, guessed_year);
+}
+Response: PhotoScoreResultDTO;
 ```
 
 ---
@@ -1478,11 +1620,13 @@ Response: PhotoScoreResultDTO
 **User Action:** Feedback section displays after submission
 
 **System Response:**
+
 - Shows score breakdown
 - Updates running total
 - Reveals event details (name, description)
 
 **UI Updates:**
+
 - ScoreCard shows:
   - Distance: "245 km"
   - Location Score: "8,775 / 10,000"
@@ -1501,6 +1645,7 @@ Response: PhotoScoreResultDTO
 **User Action:** Clicks "Next Photo" button
 
 **System Response:**
+
 1. Dispatches `NEXT_PHOTO` action
 2. Increments `currentPhotoIndex`
 3. Clears `currentGuess`
@@ -1508,6 +1653,7 @@ Response: PhotoScoreResultDTO
 5. Loads next photo
 
 **UI Updates:**
+
 - Feedback section fades out
 - Next photo fades in
 - Map resets to default view, pin cleared
@@ -1523,11 +1669,13 @@ Response: PhotoScoreResultDTO
 **User Action:** Submits guess for photo 5
 
 **System Response:**
+
 1. Same as submit guess, but:
 2. Instead of "Next Photo", shows "See Results" button
 3. Clicking "See Results" triggers final submission
 
 **UI Updates:**
+
 - Final feedback shows
 - "See Results" button instead of "Next Photo"
 - Clicking button shows RoundSummary
@@ -1539,6 +1687,7 @@ Response: PhotoScoreResultDTO
 **User Action:** Round summary displays after photo 5
 
 **System Response:**
+
 - Calls final submission API:
   - Normal mode: `/api/normal/calculate-score` (if not already called per-photo)
   - Daily mode (first attempt): Shows nickname input first
@@ -1547,6 +1696,7 @@ Response: PhotoScoreResultDTO
 - Updates summary with server scores
 
 **UI Updates:**
+
 - Full-screen RoundSummary overlay
 - Header: "Round Complete!"
 - Total score (large): "85,000 / 100,000"
@@ -1569,13 +1719,15 @@ Response: PhotoScoreResultDTO
 **User Action:** Enters nickname, checks consent, clicks "Submit to Leaderboard"
 
 **System Response:**
-1. Validates nickname (3-20 chars, alphanumeric + _ - space)
+
+1. Validates nickname (3-20 chars, alphanumeric + \_ - space)
 2. Creates `DailySubmissionCommand` with all data
 3. Calls `POST /api/daily/submissions`
 4. Receives `DailySubmissionResponseDTO` with rank
 5. Updates summary with leaderboard rank
 
 **UI Updates:**
+
 - Nickname validation feedback (real-time)
 - Submit button disabled until valid
 - Loading state during submission
@@ -1589,9 +1741,11 @@ Response: PhotoScoreResultDTO
 **User Action:** Clicks "View Leaderboard" button
 
 **System Response:**
+
 - Navigates to `/leaderboard` or `/leaderboard/current`
 
 **UI Updates:**
+
 - Page transition to leaderboard view
 
 ---
@@ -1601,10 +1755,12 @@ Response: PhotoScoreResultDTO
 **User Action:** Clicks "Play Again" button
 
 **System Response:**
+
 - Normal mode: Fetches new random photos, resets state
 - Daily mode: Same daily set, resets state, shows AlreadySubmittedNotice
 
 **UI Updates:**
+
 - Summary closes
 - Game resets to photo 1
 - Timer resets (Daily)
@@ -1617,11 +1773,13 @@ Response: PhotoScoreResultDTO
 **User Action:** Clicks exit button in header
 
 **System Response:**
+
 1. Shows confirmation dialog: "Your progress will be lost. Are you sure?"
 2. User confirms or cancels
 3. If confirmed, navigates to home or previous page
 
 **UI Updates:**
+
 - Dialog appears
 - If confirmed: Navigation transition
 - If cancelled: Dialog closes, game continues
@@ -1633,9 +1791,11 @@ Response: PhotoScoreResultDTO
 **User Action:** Error message displays, clicks "Retry"
 
 **System Response:**
+
 - Retries failed operation (e.g., fetch daily set, submit guess)
 
 **UI Updates:**
+
 - Loading state
 - Error clears if successful
 - Error persists with new message if fails again
@@ -1647,11 +1807,13 @@ Response: PhotoScoreResultDTO
 **Condition:** Year must be between 1880 and 2025 (inclusive)
 
 **Validation:**
+
 - Type: Integer only
 - Range: `year >= 1880 && year <= 2025`
 - Pattern: `/^\d{4}$/` (4-digit number)
 
 **Implementation:**
+
 ```typescript
 function validateYear(year: number): boolean {
   return Number.isInteger(year) && year >= 1880 && year <= 2025;
@@ -1663,12 +1825,13 @@ const handleYearChange = (value: number) => {
     onYearChange(value);
     setError(null);
   } else {
-    setError('Year must be between 1880 and 2025');
+    setError("Year must be between 1880 and 2025");
   }
 };
 ```
 
 **UI Effect:**
+
 - Valid: No error, submit enabled (if pin also placed)
 - Invalid: Red border, error message below input, submit disabled
 
@@ -1679,11 +1842,13 @@ const handleYearChange = (value: number) => {
 **Condition:** Pin must be placed, coordinates must be valid
 
 **Validation:**
+
 - Latitude: `-90 <= lat <= 90`
 - Longitude: `-180 <= lon <= 180`
 - Pin placement: `pin !== null`
 
 **Implementation:**
+
 ```typescript
 function validateCoordinates(lat: number, lon: number): boolean {
   return lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
@@ -1694,12 +1859,13 @@ const handlePinPlace = (lat: number, lon: number) => {
   if (validateCoordinates(lat, lon)) {
     onPinPlace(lat, lon);
   } else {
-    console.error('Invalid coordinates');
+    console.error("Invalid coordinates");
   }
 };
 ```
 
 **UI Effect:**
+
 - Valid: Pin displays, submit enabled (if year also selected)
 - Invalid: Should not be possible via Mapbox UI, but log error if occurs
 
@@ -1710,12 +1876,14 @@ const handlePinPlace = (lat: number, lon: number) => {
 **Condition:** Both pin and year must be set
 
 **Validation:**
+
 - `currentGuess.pin !== null`
 - `currentGuess.year !== null`
 - `validateYear(currentGuess.year) === true`
 - `validateCoordinates(currentGuess.pin.lat, currentGuess.pin.lon) === true`
 
 **Implementation:**
+
 ```typescript
 const isDisabled =
   currentGuess.pin === null ||
@@ -1731,6 +1899,7 @@ const isDisabled =
 ```
 
 **UI Effect:**
+
 - Disabled: Gray, no hover effect, cursor not-allowed
 - Enabled: Blue, hover effect, cursor pointer
 
@@ -1741,13 +1910,15 @@ const isDisabled =
 **Condition:** All 5 photos must be completed before final submission
 
 **Validation:**
+
 - `currentPhotoIndex === 4` (last photo, 0-indexed)
 - `photos.filter(p => p.status === 'complete').length === 5`
 - `guesses.length === 5`
 
 **Implementation:**
+
 ```typescript
-const isRoundComplete = photos.every(p => p.status === 'complete');
+const isRoundComplete = photos.every((p) => p.status === "complete");
 
 if (isRoundComplete) {
   // Show RoundSummary instead of next photo
@@ -1756,6 +1927,7 @@ if (isRoundComplete) {
 ```
 
 **UI Effect:**
+
 - After photo 5 feedback: "See Results" button instead of "Next Photo"
 - Clicking triggers final submission flow
 
@@ -1766,12 +1938,14 @@ if (isRoundComplete) {
 **Condition:** Nickname must be valid for leaderboard submission
 
 **Validation:**
+
 - Length: `nickname.length >= 3 && nickname.length <= 20`
 - Pattern: `/^[a-zA-Z0-9 _-]+$/`
 - No leading/trailing spaces: `nickname.trim() === nickname`
 - Server validates profanity (handle rejection)
 
 **Implementation:**
+
 ```typescript
 const NICKNAME_REGEX = /^[a-zA-Z0-9 _-]+$/;
 
@@ -1779,19 +1953,19 @@ function validateNickname(nickname: string): NicknameValidation {
   const trimmed = nickname.trim();
 
   if (trimmed !== nickname) {
-    return { isValid: false, error: 'No leading or trailing spaces' };
+    return { isValid: false, error: "No leading or trailing spaces" };
   }
 
   if (trimmed.length < 3) {
-    return { isValid: false, error: 'Nickname must be at least 3 characters' };
+    return { isValid: false, error: "Nickname must be at least 3 characters" };
   }
 
   if (trimmed.length > 20) {
-    return { isValid: false, error: 'Nickname must be at most 20 characters' };
+    return { isValid: false, error: "Nickname must be at most 20 characters" };
   }
 
   if (!NICKNAME_REGEX.test(trimmed)) {
-    return { isValid: false, error: 'Only letters, numbers, spaces, hyphens, and underscores allowed' };
+    return { isValid: false, error: "Only letters, numbers, spaces, hyphens, and underscores allowed" };
   }
 
   return { isValid: true };
@@ -1799,6 +1973,7 @@ function validateNickname(nickname: string): NicknameValidation {
 ```
 
 **UI Effect:**
+
 - Real-time validation on input change
 - Character counter: "15 / 20"
 - Error message below input if invalid
@@ -1812,9 +1987,11 @@ function validateNickname(nickname: string): NicknameValidation {
 **Condition:** Consent must be given before submission
 
 **Validation:**
+
 - `consentGiven === true`
 
 **Implementation:**
+
 ```typescript
 const [consentGiven, setConsentGiven] = useState(false);
 
@@ -1835,6 +2012,7 @@ const canSubmit = validateNickname(nickname).isValid && consentGiven;
 ```
 
 **UI Effect:**
+
 - Submit button disabled until consent checked
 - Checkbox with label explaining consent
 
@@ -1845,11 +2023,13 @@ const canSubmit = validateNickname(nickname).isValid && consentGiven;
 **Condition:** Total time must be reasonable (0 < time < 24 hours)
 
 **Validation:**
+
 - `total_time_ms > 0`
 - `total_time_ms < 86400000` (24 hours)
 - Cap at reasonable max like 1 hour for safety
 
 **Implementation:**
+
 ```typescript
 const MAX_TIME_MS = 3600000; // 1 hour
 
@@ -1860,6 +2040,7 @@ const getTotalTime = () => {
 ```
 
 **UI Effect:**
+
 - Timer displays MM:SS
 - Caps at max to prevent overflow
 - Validation happens before submission
@@ -1871,6 +2052,7 @@ const getTotalTime = () => {
 **Scenario:** Mapbox fails to load due to network, API key issue, or browser incompatibility
 
 **Detection:**
+
 - Mapbox error event listener
 - Timeout after 10 seconds
 
@@ -1878,16 +2060,18 @@ const getTotalTime = () => {
 "Unable to load map. Please check your internet connection and refresh the page."
 
 **Actions:**
+
 - Show ErrorMessage component
 - Provide "Retry" button → reloads page
 - Provide "Report Issue" button → opens feedback form
 - Disable gameplay (cannot play without map)
 
 **Logging:**
+
 ```typescript
-console.error('[Map] Load failed:', error);
+console.error("[Map] Load failed:", error);
 // Track analytics event
-trackEvent('error', { type: 'map_load', message: error.message });
+trackEvent("error", { type: "map_load", message: error.message });
 ```
 
 ---
@@ -1897,6 +2081,7 @@ trackEvent('error', { type: 'map_load', message: error.message });
 **Scenario:** GET `/api/daily/sets/today` returns 404 (no set published for today)
 
 **Detection:**
+
 - Response status === 404
 - Response body: `{ error: "No daily set published for today", fallback: "Try Normal mode instead" }`
 
@@ -1904,13 +2089,15 @@ trackEvent('error', { type: 'map_load', message: error.message });
 "Today's Daily Challenge isn't ready yet. Try Normal mode instead!"
 
 **Actions:**
+
 - Show ErrorMessage component
 - Provide "Play Normal Mode" button → navigates to `/play/normal`
 - Provide "Go Home" button → navigates to home
 
 **Logging:**
+
 ```typescript
-console.warn('[DailySet] No set available for today');
+console.warn("[DailySet] No set available for today");
 ```
 
 ---
@@ -1920,28 +2107,33 @@ console.warn('[DailySet] No set available for today');
 **Scenario:** POST to submission endpoint fails (network, server error, timeout)
 
 **Detection:**
+
 - Response status >= 400
 - Network error (fetch throws)
 - Timeout after 30 seconds
 
 **User Message:**
+
 - Network error: "You appear to be offline. Check your connection and retry."
 - Server error: "Couldn't submit your results. Want to retry?"
 - Timeout: "Submission is taking too long. Want to retry?"
 
 **Actions:**
+
 - Show ErrorMessage component
 - Provide "Retry" button → attempts submission again
 - Provide "Continue Anyway" button → shows results without submitting (Daily mode)
 - Keep guess data for retry
 
 **Logging:**
+
 ```typescript
-console.error('[Submission] Failed:', error);
-trackEvent('error', { type: 'submission', message: error.message });
+console.error("[Submission] Failed:", error);
+trackEvent("error", { type: "submission", message: error.message });
 ```
 
 **Additional:**
+
 - Inform user: "Your results may not be recorded on the leaderboard"
 - Allow viewing results locally even if submission fails
 
@@ -1952,6 +2144,7 @@ trackEvent('error', { type: 'submission', message: error.message });
 **Scenario:** User loses network connection during gameplay
 
 **Detection:**
+
 - `window.navigator.onLine === false`
 - Fetch errors with network failure messages
 - Periodic connectivity check
@@ -1960,14 +2153,16 @@ trackEvent('error', { type: 'submission', message: error.message });
 "You're offline. Connect to the internet to submit your results."
 
 **Actions:**
+
 - Show warning banner (not blocking)
 - Disable submissions
 - Allow local gameplay (client-side scoring)
 - When online again, allow submission
 
 **Logging:**
+
 ```typescript
-console.warn('[Network] Offline detected');
+console.warn("[Network] Offline detected");
 ```
 
 ---
@@ -1977,6 +2172,7 @@ console.warn('[Network] Offline detected');
 **Scenario:** Guess validation fails before submission (edge case, should be prevented by UI)
 
 **Detection:**
+
 - Validation functions return false
 - Server rejects with 400 Bad Request
 
@@ -1984,15 +2180,17 @@ console.warn('[Network] Offline detected');
 "Oops! Your guess data is invalid. Please try again."
 
 **Actions:**
+
 - Show ErrorMessage component
 - Reset current guess
 - Allow re-guessing
 - Provide "Report Issue" if persists
 
 **Logging:**
+
 ```typescript
-console.error('[Validation] Invalid guess:', guess);
-trackEvent('error', { type: 'invalid_guess', data: guess });
+console.error("[Validation] Invalid guess:", guess);
+trackEvent("error", { type: "invalid_guess", data: guess });
 ```
 
 ---
@@ -2002,6 +2200,7 @@ trackEvent('error', { type: 'invalid_guess', data: guess });
 **Scenario:** User already submitted today, tries to submit again (shouldn't happen with proper checks)
 
 **Detection:**
+
 - `SubmissionCheckResponseDTO.has_submitted === true`
 - Server returns 409 Conflict
 
@@ -2009,14 +2208,16 @@ trackEvent('error', { type: 'invalid_guess', data: guess });
 "You've already submitted today's challenge. This is a practice round."
 
 **Actions:**
+
 - Show AlreadySubmittedNotice banner
 - Disable leaderboard submission
 - Show results without rank
 - Allow playing for practice
 
 **Logging:**
+
 ```typescript
-console.info('[Submission] Already submitted, practice mode');
+console.info("[Submission] Already submitted, practice mode");
 ```
 
 ---
@@ -2026,6 +2227,7 @@ console.info('[Submission] Already submitted, practice mode');
 **Scenario:** Server rejects nickname due to profanity filter
 
 **Detection:**
+
 - Server returns 400 with specific error code/message
 - Response: `{ error: "Nickname not allowed", code: "profanity" }`
 
@@ -2033,14 +2235,16 @@ console.info('[Submission] Already submitted, practice mode');
 "This nickname isn't allowed. Please choose another."
 
 **Actions:**
+
 - Show error below nickname input
 - Keep all scores and data
 - Allow re-entering nickname
 - Provide guidelines: "Use appropriate language, 3-20 characters"
 
 **Logging:**
+
 ```typescript
-console.warn('[Nickname] Rejected:', nickname);
+console.warn("[Nickname] Rejected:", nickname);
 ```
 
 ---
@@ -2050,6 +2254,7 @@ console.warn('[Nickname] Rejected:', nickname);
 **Scenario:** localStorage unavailable or blocked (private browsing, browser settings)
 
 **Detection:**
+
 - `useDeviceToken` hook returns `isStorageAvailable === false`
 - localStorage throws on access
 
@@ -2057,14 +2262,16 @@ console.warn('[Nickname] Rejected:', nickname);
 "Daily mode requires browser storage. Enable cookies/storage or try Normal mode."
 
 **Actions:**
+
 - Show warning on page load
 - Provide "Play Normal Mode" button
 - Provide "Learn More" button → help article
 - Disable Daily submissions
 
 **Logging:**
+
 ```typescript
-console.warn('[Storage] localStorage unavailable');
+console.warn("[Storage] localStorage unavailable");
 ```
 
 ---
@@ -2074,6 +2281,7 @@ console.warn('[Storage] localStorage unavailable');
 **Scenario:** Photo image fails to load (404, CDN issue, network)
 
 **Detection:**
+
 - `<img>` onError event
 - Timeout after 10 seconds
 
@@ -2081,14 +2289,16 @@ console.warn('[Storage] localStorage unavailable');
 "Photo couldn't load. Want to retry or skip?"
 
 **Actions:**
+
 - Show placeholder with error icon
 - Provide "Retry" button → attempts reload
 - Provide "Skip Photo" button → marks as skipped, moves to next (edge case, logs for admin)
 
 **Logging:**
+
 ```typescript
-console.error('[Photo] Load failed:', photoUrl);
-trackEvent('error', { type: 'photo_load', photo_id });
+console.error("[Photo] Load failed:", photoUrl);
+trackEvent("error", { type: "photo_load", photo_id });
 ```
 
 ---
@@ -2098,6 +2308,7 @@ trackEvent('error', { type: 'photo_load', photo_id });
 **Scenario:** Client-side score calculation fails (unexpected edge case)
 
 **Detection:**
+
 - Try-catch around `calculateScore` function
 - Invalid result (NaN, negative, > max)
 
@@ -2105,15 +2316,17 @@ trackEvent('error', { type: 'photo_load', photo_id });
 (No user-facing message, handled silently)
 
 **Actions:**
+
 - Log error with details
 - Show generic "Calculating..." message
 - Rely on server calculation
 - Don't block progression
 
 **Logging:**
+
 ```typescript
-console.error('[Score] Calculation failed:', error);
-trackEvent('error', { type: 'score_calc', details: error.message });
+console.error("[Score] Calculation failed:", error);
+trackEvent("error", { type: "score_calc", details: error.message });
 ```
 
 ## 11. Implementation Steps
@@ -2121,7 +2334,9 @@ trackEvent('error', { type: 'score_calc', details: error.message });
 ### Step 1: Set Up Project Structure
 
 **Tasks:**
+
 1. Create directory structure:
+
    ```
    src/
    ├── pages/
@@ -2158,6 +2373,7 @@ trackEvent('error', { type: 'score_calc', details: error.message });
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install mapbox-gl
    npm install @types/mapbox-gl -D
@@ -2170,6 +2386,7 @@ trackEvent('error', { type: 'score_calc', details: error.message });
    ```
 
 **Validation:**
+
 - Directories created
 - Dependencies installed
 - Environment variable set
@@ -2179,6 +2396,7 @@ trackEvent('error', { type: 'score_calc', details: error.message });
 ### Step 2: Define Types and ViewModels
 
 **Tasks:**
+
 1. Open `src/types.ts`
 2. Add new types defined in Section 5:
    - `GameMode`
@@ -2194,9 +2412,10 @@ trackEvent('error', { type: 'score_calc', details: error.message });
 3. Export types for use in components
 
 **Example:**
+
 ```typescript
 // In src/types.ts
-export type GameMode = 'normal' | 'daily';
+export type GameMode = "normal" | "daily";
 
 export type PinLocation = {
   lat: number;
@@ -2207,6 +2426,7 @@ export type PinLocation = {
 ```
 
 **Validation:**
+
 - Types compile without errors
 - Types available for import in components
 
@@ -2215,6 +2435,7 @@ export type PinLocation = {
 ### Step 3: Implement Custom Hooks
 
 **Tasks:**
+
 1. Create `src/components/hooks/useGameTimer.ts`
    - Implements timer logic with start/pause/reset
    - Returns `elapsedMs` updated every 100ms
@@ -2238,6 +2459,7 @@ export type PinLocation = {
    - Returns `PhotoScoreResultDTO` (partial, without event details)
 
 **Validation:**
+
 - All hooks export correct interfaces
 - Timer updates correctly
 - Device token generates and persists
@@ -2248,11 +2470,13 @@ export type PinLocation = {
 ### Step 4: Build Map Component
 
 **Tasks:**
+
 1. Create `src/components/game/MapComponent.tsx`
 2. Initialize Mapbox GL JS:
+
    ```typescript
-   import mapboxgl from 'mapbox-gl';
-   import 'mapbox-gl/dist/mapbox-gl.css';
+   import mapboxgl from "mapbox-gl";
+   import "mapbox-gl/dist/mapbox-gl.css";
 
    mapboxgl.accessToken = import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN;
    ```
@@ -2272,6 +2496,7 @@ export type PinLocation = {
 5. Handle loading states and errors
 
 **Validation:**
+
 - Map loads successfully
 - Pin placement works on click
 - Pin dragging works
@@ -2284,8 +2509,10 @@ export type PinLocation = {
 ### Step 5: Build Year Picker Component
 
 **Tasks:**
+
 1. Create `src/components/game/YearPicker.tsx`
 2. Use Shadcn/ui `Slider` component:
+
    ```tsx
    <Slider
      min={1880}
@@ -2297,12 +2524,13 @@ export type PinLocation = {
    ```
 
 3. Add numeric input for precise entry:
+
    ```tsx
    <Input
      type="number"
      min={1880}
      max={2025}
-     value={selectedYear ?? ''}
+     value={selectedYear ?? ""}
      onChange={(e) => handleYearChange(parseInt(e.target.value))}
    />
    ```
@@ -2313,6 +2541,7 @@ export type PinLocation = {
    - Disable submit if invalid
 
 **Validation:**
+
 - Slider moves smoothly from 1880 to 2025
 - Input accepts numbers and validates range
 - Error shows for out-of-range values
@@ -2323,6 +2552,7 @@ export type PinLocation = {
 ### Step 6: Build Game Header Components
 
 **Tasks:**
+
 1. Create `src/components/game/ModeBadge.tsx`
    - Display "Normal Mode" or "Daily Challenge" with appropriate styling
 
@@ -2340,6 +2570,7 @@ export type PinLocation = {
    - Responsive layout (stack on mobile)
 
 **Validation:**
+
 - Header displays all elements correctly
 - Timer updates every second
 - Progress indicator highlights current photo
@@ -2350,6 +2581,7 @@ export type PinLocation = {
 ### Step 7: Build Photo Display Component
 
 **Tasks:**
+
 1. Create `src/components/game/PhotoDisplay.tsx`
 2. Display image with:
    - Responsive sizing (Tailwind aspect-ratio)
@@ -2358,6 +2590,7 @@ export type PinLocation = {
    - Photo counter: "Photo X of 5"
 
 3. Handle image loading:
+
    ```tsx
    const [isLoading, setIsLoading] = useState(true);
 
@@ -2366,10 +2599,11 @@ export type PinLocation = {
      alt={`Football photo ${currentIndex + 1} of ${totalPhotos}`}
      onLoad={() => setIsLoading(false)}
      onError={() => handleImageError()}
-   />
+   />;
    ```
 
 **Validation:**
+
 - Image displays correctly
 - Loading skeleton shows while loading
 - Counter displays correctly
@@ -2380,6 +2614,7 @@ export type PinLocation = {
 ### Step 8: Build Feedback and Scoring Components
 
 **Tasks:**
+
 1. Create `src/components/game/ScoreCard.tsx`
    - Display location score, time score, total score
    - Show km error and year error
@@ -2396,6 +2631,7 @@ export type PinLocation = {
    - Responsive layout
 
 **Validation:**
+
 - Feedback displays after submission
 - Scores shown correctly
 - Map shows both pins and line
@@ -2406,6 +2642,7 @@ export type PinLocation = {
 ### Step 9: Build Round Summary Component
 
 **Tasks:**
+
 1. Create `src/components/game/PhotoBreakdown.tsx`
    - Display thumbnail, event name, score for one photo
    - Expandable for more details (optional)
@@ -2431,6 +2668,7 @@ export type PinLocation = {
    - Handle errors (nickname rejection, network failure)
 
 **Validation:**
+
 - Summary displays after 5 photos
 - Nickname validation works correctly
 - Submission succeeds and shows rank
@@ -2442,12 +2680,14 @@ export type PinLocation = {
 ### Step 10: Build Main GameView Component
 
 **Tasks:**
+
 1. Create `src/components/game/GameView.tsx`
 2. Set up state management:
+
    ```typescript
    const [gameState, dispatch] = useReducer(gameReducer, initialState);
    const { pin, year, setPin, setYear, clearGuess, isComplete } = usePhotoGuess();
-   const { elapsedMs, startTimer, pauseTimer } = useGameTimer(gameState.mode === 'daily');
+   const { elapsedMs, startTimer, pauseTimer } = useGameTimer(gameState.mode === "daily");
    const { deviceToken } = useDeviceToken();
    const { hasSubmitted } = useSubmissionCheck(gameState.mode, deviceToken);
    ```
@@ -2461,6 +2701,7 @@ export type PinLocation = {
    - Handle round completion → show summary, call final submission API
 
 4. Render child components:
+
    ```tsx
    return (
      <div className="game-container">
@@ -2481,17 +2722,18 @@ export type PinLocation = {
    ```typescript
    function gameReducer(state: GameViewModel, action: GameAction): GameViewModel {
      switch (action.type) {
-       case 'SUBMIT_GUESS':
+       case "SUBMIT_GUESS":
          // Update current photo with guess and result
          // Increment total score
          // Mark photo as complete
-         return { ...state, /* updates */ };
+         return { ...state /* updates */ };
        // ... other actions
      }
    }
    ```
 
 **Validation:**
+
 - GameView orchestrates all components correctly
 - State updates flow through all children
 - Game progresses through 5 photos
@@ -2502,70 +2744,70 @@ export type PinLocation = {
 ### Step 11: Build Astro Page and Data Fetching
 
 **Tasks:**
+
 1. Create `src/pages/play/[mode].astro`
 2. Validate mode parameter:
+
    ```typescript
    const { mode } = Astro.params;
-   if (mode !== 'normal' && mode !== 'daily') {
-     return Astro.redirect('/play/normal');
+   if (mode !== "normal" && mode !== "daily") {
+     return Astro.redirect("/play/normal");
    }
    ```
 
 3. Fetch data based on mode:
+
    ```typescript
    let initialData;
    let isAlreadySubmitted = false;
 
-   if (mode === 'daily') {
+   if (mode === "daily") {
      // Fetch daily set
-     const dailyResponse = await fetch('/api/daily/sets/today');
+     const dailyResponse = await fetch("/api/daily/sets/today");
      if (!dailyResponse.ok) {
        // Handle error: redirect to normal or show error page
      }
      initialData = await dailyResponse.json();
 
      // Check submission status
-     const deviceToken = Astro.cookies.get('anon_device_token')?.value;
+     const deviceToken = Astro.cookies.get("anon_device_token")?.value;
      if (deviceToken) {
-       const checkResponse = await fetch('/api/daily/submissions/check', {
-         headers: { 'X-Device-Token': deviceToken }
+       const checkResponse = await fetch("/api/daily/submissions/check", {
+         headers: { "X-Device-Token": deviceToken },
        });
        const checkData = await checkResponse.json();
        isAlreadySubmitted = checkData.has_submitted;
      }
    } else {
      // Fetch random photos for Normal mode
-     const normalResponse = await fetch('/api/normal/photos');
+     const normalResponse = await fetch("/api/normal/photos");
      initialData = await normalResponse.json();
    }
    ```
 
 4. Render GameView:
+
    ```astro
    ---
-   import GameView from '@/components/game/GameView';
+   import GameView from "@/components/game/GameView";
    export const prerender = false;
    // ... fetch logic above
    ---
 
    <html>
      <head>
-       <title>FootyGuess Daily - {mode === 'daily' ? 'Daily Challenge' : 'Normal Mode'}</title>
+       <title>FootyGuess Daily - {mode === "daily" ? "Daily Challenge" : "Normal Mode"}</title>
        <!-- Mapbox CSS -->
-       <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+       <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
      </head>
      <body>
-       <GameView
-         client:load
-         mode={mode}
-         initialData={initialData}
-         isAlreadySubmitted={isAlreadySubmitted}
-       />
+       <GameView client:load mode={mode} initialData={initialData} isAlreadySubmitted={isAlreadySubmitted} />
      </body>
    </html>
    ```
 
 **Validation:**
+
 - Page loads for both /play/normal and /play/daily
 - Invalid mode redirects to /play/normal
 - Daily mode fetches daily set correctly
@@ -2578,6 +2820,7 @@ export type PinLocation = {
 ### Step 12: Implement Error Handling
 
 **Tasks:**
+
 1. Create `src/components/ui/ErrorMessage.tsx` (if not exists)
 2. Handle all error scenarios defined in Section 10:
    - Map loading failure
@@ -2597,16 +2840,18 @@ export type PinLocation = {
    - Log errors for monitoring
 
 4. Add error boundaries:
+
    ```tsx
    // In GameView or parent
-   import { ErrorBoundary } from 'react-error-boundary';
+   import { ErrorBoundary } from "react-error-boundary";
 
    <ErrorBoundary fallback={<ErrorFallback />}>
      <GameView {...props} />
-   </ErrorBoundary>
+   </ErrorBoundary>;
    ```
 
 **Validation:**
+
 - All error scenarios handled gracefully
 - Error messages clear and actionable
 - Retry buttons work correctly
@@ -2618,26 +2863,24 @@ export type PinLocation = {
 ### Step 13: Implement Analytics Tracking
 
 **Tasks:**
+
 1. Create analytics helper:
+
    ```typescript
    // src/lib/utils/analytics.ts
-   export async function trackEvent(
-     eventType: string,
-     eventData: Record<string, any>,
-     deviceToken: string | null
-   ) {
+   export async function trackEvent(eventType: string, eventData: Record<string, any>, deviceToken: string | null) {
      try {
-       await fetch('/api/analytics/events', {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
+       await fetch("/api/analytics/events", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
          body: JSON.stringify({
            event_type: eventType,
            event_data: eventData,
-           anon_device_token: deviceToken
-         })
+           anon_device_token: deviceToken,
+         }),
        });
      } catch (err) {
-       console.warn('Analytics error:', err);
+       console.warn("Analytics error:", err);
        // Don't block UI
      }
    }
@@ -2650,6 +2893,7 @@ export type PinLocation = {
    - `daily_submission`: When submitting to leaderboard
 
 **Validation:**
+
 - Events tracked at appropriate times
 - Events don't block UI
 - Errors logged but don't affect gameplay
@@ -2659,6 +2903,7 @@ export type PinLocation = {
 ### Step 14: Add Accessibility Features
 
 **Tasks:**
+
 1. In MapComponent:
    - Add ARIA labels: `aria-label="Interactive world map"`
    - Add keyboard navigation instructions
@@ -2679,6 +2924,7 @@ export type PinLocation = {
 5. Test with screen reader (NVDA or VoiceOver)
 
 **Validation:**
+
 - All interactive elements keyboard accessible
 - Tab order logical
 - Screen reader announces important updates
@@ -2689,6 +2935,7 @@ export type PinLocation = {
 ### Step 15: Style and Responsive Design
 
 **Tasks:**
+
 1. Apply Tailwind styles to all components
 2. Ensure responsive layout:
    - Mobile: Stack components vertically, full-width map
@@ -2704,6 +2951,7 @@ export type PinLocation = {
 5. Test dark mode (if supported)
 
 **Validation:**
+
 - Layout works on all screen sizes
 - No horizontal scroll on mobile
 - Touch targets large enough
@@ -2714,6 +2962,7 @@ export type PinLocation = {
 ### Step 16: Test End-to-End Flow
 
 **Tasks:**
+
 1. Test Normal mode:
    - Load page
    - Play through 5 photos
@@ -2742,6 +2991,7 @@ export type PinLocation = {
    - Simulate map loading failure
 
 **Validation:**
+
 - All flows complete successfully
 - Data persists correctly
 - Errors handled gracefully
@@ -2752,6 +3002,7 @@ export type PinLocation = {
 ### Step 17: Performance Optimization
 
 **Tasks:**
+
 1. Optimize images:
    - Use srcset for responsive images
    - Lazy load next photos
@@ -2773,6 +3024,7 @@ export type PinLocation = {
    - Custom timing for map interactions
 
 **Validation:**
+
 - Initial load < 2 seconds on 4G
 - Map interactions < 200ms median latency
 - Lighthouse score > 90
@@ -2783,6 +3035,7 @@ export type PinLocation = {
 ### Step 18: Final Testing and Deployment
 
 **Tasks:**
+
 1. Cross-browser testing:
    - Chrome, Firefox, Safari, Edge
    - Mobile browsers: Safari iOS, Chrome Android
@@ -2808,6 +3061,7 @@ export type PinLocation = {
 6. Deploy to production
 
 **Validation:**
+
 - All browsers work correctly
 - Accessibility passes audit
 - Security vulnerabilities addressed
@@ -2821,6 +3075,7 @@ export type PinLocation = {
 This implementation plan provides a comprehensive guide to building the Game View for FootyGuess Daily. The view supports both Normal and Daily modes, handles complex state across 5 photos, integrates with Mapbox for interactive map-based guessing, validates user input, calculates scores, and submits to leaderboards.
 
 Key considerations:
+
 - **State management** using useReducer and custom hooks
 - **API integration** with proper error handling
 - **Accessibility** with keyboard navigation and screen reader support

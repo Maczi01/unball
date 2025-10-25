@@ -16,8 +16,8 @@ import type { Database } from "@/db/database.types";
  * Used across multiple list endpoints
  */
 export type PaginationDTO = {
-	page: number;
-	limit: number;
+  page: number;
+  limit: number;
   total_items: number;
   total_pages: number;
 };
@@ -25,14 +25,11 @@ export type PaginationDTO = {
 /**
  * Type helper to extract table row types
  */
-export type DbTable<T extends keyof Database["public"]["Tables"]> =
-	Database["public"]["Tables"][T]["Row"];
+export type DbTable<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"];
 
-export type DbInsert<T extends keyof Database["public"]["Tables"]> =
-	Database["public"]["Tables"][T]["Insert"];
+export type DbInsert<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Insert"];
 
-export type DbUpdate<T extends keyof Database["public"]["Tables"]> =
-	Database["public"]["Tables"][T]["Update"];
+export type DbUpdate<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Update"];
 
 // =============================================================================
 // NORMAL MODE GAMEPLAY
@@ -43,12 +40,12 @@ export type DbUpdate<T extends keyof Database["public"]["Tables"]> =
  * Derived from photos_metadata view
  */
 export type NormalRoundPhotoDTO = {
-	photo_id: string; // Renamed from 'id' for consistency
-	photo_url: string;
-	thumbnail_url: string | null;
-	competition: string | null;
-	place: string | null;
-	tags: string[] | null;
+  photo_id: string; // Renamed from 'id' for consistency
+  photo_url: string;
+  thumbnail_url: string | null;
+  competition: string | null;
+  place: string | null;
+  tags: string[] | null;
 };
 
 /**
@@ -56,8 +53,8 @@ export type NormalRoundPhotoDTO = {
  * Contains a round ID and 5 random photos
  */
 export type NormalRoundResponseDTO = {
-	round_id: string;
-	photos: NormalRoundPhotoDTO[];
+  round_id: string;
+  photos: NormalRoundPhotoDTO[];
 };
 
 /**
@@ -65,10 +62,10 @@ export type NormalRoundResponseDTO = {
  * Used in both Normal and Daily mode submissions
  */
 export type GuessDTO = {
-	photo_id: string;
-	guessed_lat: number;
-	guessed_lon: number;
-	guessed_year: number;
+  photo_id: string;
+  guessed_lat: number;
+  guessed_lon: number;
+  guessed_year: number;
 };
 
 /**
@@ -76,9 +73,9 @@ export type GuessDTO = {
  * Request body for POST /api/normal/calculate-score
  */
 export type CalculateScoreCommand = {
-	round_id: string;
-	guesses: GuessDTO[];
-	total_time_ms: number;
+  round_id: string;
+  guesses: GuessDTO[];
+  total_time_ms: number;
 };
 
 /**
@@ -86,20 +83,21 @@ export type CalculateScoreCommand = {
  * Combines calculated scores with photo details
  */
 export type PhotoScoreResultDTO = {
-	photo_id: string;
-	location_score: number;
-	time_score: number;
-	total_score: number;
-	km_error: number;
-	year_error: number;
-	correct_lat: number;
-	correct_lon: number;
-	correct_year: number;
-	event_name: string;
-	description: string | null;
-	source_url: string | null;
-	license: string;
-	credit: string;
+  photo_id: string;
+  location_score: number;
+  time_score: number;
+  total_score: number;
+  km_error: number;
+  year_error: number;
+  correct_lat: number;
+  correct_lon: number;
+  correct_year: number;
+  event_name: string;
+  description: string | null;
+  place: string | null;
+  source_url: string | null;
+  license: string;
+  credit: string;
 };
 
 /**
@@ -107,9 +105,9 @@ export type PhotoScoreResultDTO = {
  * Contains total scores and per-photo breakdowns
  */
 export type ScoreResponseDTO = {
-	total_score: number;
-	total_time_ms: number;
-	photos: PhotoScoreResultDTO[];
+  total_score: number;
+  total_time_ms: number;
+  photos: PhotoScoreResultDTO[];
 };
 
 // =============================================================================
@@ -121,13 +119,13 @@ export type ScoreResponseDTO = {
  * Combines daily_set_photos.position with photo metadata
  */
 export type DailySetPhotoDTO = {
-	photo_id: string;
-	position: number;
-	photo_url: string;
-	thumbnail_url: string | null;
-	competition: string | null;
-	place: string | null;
-	tags: string[] | null;
+  photo_id: string;
+  position: number;
+  photo_url: string;
+  thumbnail_url: string | null;
+  competition: string | null;
+  place: string | null;
+  tags: string[] | null;
 };
 
 /**
@@ -135,8 +133,8 @@ export type DailySetPhotoDTO = {
  * Contains today's daily set
  */
 export type DailySetResponseDTO = Pick<DbTable<"daily_sets">, "date_utc"> & {
-	daily_set_id: string; // Derived from daily_sets.id
-	photos: DailySetPhotoDTO[];
+  daily_set_id: string; // Derived from daily_sets.id
+  photos: DailySetPhotoDTO[];
 };
 
 /**
@@ -144,11 +142,11 @@ export type DailySetResponseDTO = Pick<DbTable<"daily_sets">, "date_utc"> & {
  * Subset of daily_submissions with calculated rank
  */
 export type SubmissionDetailsDTO = {
-	id: string;
-	total_score: number;
-	total_time_ms: number;
-	submission_timestamp: string;
-	leaderboard_rank: number;
+  id: string;
+  total_score: number;
+  total_time_ms: number;
+  submission_timestamp: string;
+  leaderboard_rank: number;
 };
 
 /**
@@ -156,8 +154,8 @@ export type SubmissionDetailsDTO = {
  * Indicates if user has already submitted today
  */
 export type SubmissionCheckResponseDTO = {
-	has_submitted: boolean;
-	submission: SubmissionDetailsDTO | null;
+  has_submitted: boolean;
+  submission: SubmissionDetailsDTO | null;
 };
 
 /**
@@ -165,12 +163,12 @@ export type SubmissionCheckResponseDTO = {
  * Request body for POST /api/daily/submissions
  */
 export type DailySubmissionCommand = {
-	daily_set_id: string;
-	date_utc: string;
-	nickname: string;
-	consent_given: boolean;
-	guesses: GuessDTO[];
-	total_time_ms: number;
+  daily_set_id: string;
+  date_utc: string;
+  nickname: string;
+  consent_given: boolean;
+  guesses: GuessDTO[];
+  total_time_ms: number;
 };
 
 /**
@@ -178,11 +176,11 @@ export type DailySubmissionCommand = {
  * Contains submission confirmation and revealed answers
  */
 export type DailySubmissionResponseDTO = {
-	submission_id: string;
-	total_score: number;
-	total_time_ms: number;
-	leaderboard_rank: number;
-	photos: PhotoScoreResultDTO[];
+  submission_id: string;
+  total_score: number;
+  total_time_ms: number;
+  leaderboard_rank: number;
+  photos: PhotoScoreResultDTO[];
 };
 
 // =============================================================================
@@ -194,10 +192,10 @@ export type DailySubmissionResponseDTO = {
  * Derived from daily_submissions with calculated rank
  */
 export type LeaderboardEntryDTO = Pick<
-	DbTable<"daily_submissions">,
-	"nickname" | "total_score" | "total_time_ms" | "submission_timestamp"
+  DbTable<"daily_submissions">,
+  "nickname" | "total_score" | "total_time_ms" | "submission_timestamp"
 > & {
-	rank: number;
+  rank: number;
 };
 
 /**
@@ -205,9 +203,9 @@ export type LeaderboardEntryDTO = Pick<
  * Top 10 (or more) rankings for a specific date
  */
 export type LeaderboardResponseDTO = {
-	date_utc: string;
-	leaderboard: LeaderboardEntryDTO[];
-	total_submissions: number;
+  date_utc: string;
+  leaderboard: LeaderboardEntryDTO[];
+  total_submissions: number;
 };
 
 // =============================================================================
@@ -225,8 +223,8 @@ export type DeviceNicknameDTO = DbTable<"device_nicknames">;
  * Request body for PUT /api/devices/nickname
  */
 export type UpdateDeviceNicknameCommand = {
-	nickname: string;
-	consent_given: boolean;
+  nickname: string;
+  consent_given: boolean;
 };
 
 /**
@@ -234,7 +232,7 @@ export type UpdateDeviceNicknameCommand = {
  * Derived from users table with renamed id field
  */
 export type UserProfileDTO = Omit<DbTable<"users">, "id"> & {
-	user_id: string;
+  user_id: string;
 };
 
 /**
@@ -242,8 +240,8 @@ export type UserProfileDTO = Omit<DbTable<"users">, "id"> & {
  * Request body for PATCH /api/users/me/profile
  */
 export type UpdateUserProfileCommand = {
-	nickname: string;
-	consent_given: boolean;
+  nickname: string;
+  consent_given: boolean;
 };
 
 // =============================================================================
@@ -255,8 +253,8 @@ export type UpdateUserProfileCommand = {
  * Request body for POST /api/analytics/events
  */
 export type AnalyticsEventCommand = Pick<
-	DbInsert<"analytics_events">,
-	"event_type" | "event_data" | "anon_device_token"
+  DbInsert<"analytics_events">,
+  "event_type" | "event_data" | "anon_device_token"
 >;
 
 /**
@@ -264,7 +262,7 @@ export type AnalyticsEventCommand = Pick<
  * Confirmation with event ID
  */
 export type AnalyticsEventResponseDTO = Pick<DbTable<"analytics_events">, "created_at"> & {
-	event_id: number; // Derived from analytics_events.id
+  event_id: number; // Derived from analytics_events.id
 };
 
 // =============================================================================
@@ -276,10 +274,10 @@ export type AnalyticsEventResponseDTO = Pick<DbTable<"analytics_events">, "creat
  * Subset of photos table with attribution fields
  */
 export type PhotoCreditDTO = Pick<
-	DbTable<"photos">,
-	"event_name" | "source_url" | "license" | "credit" | "year_utc"
+  DbTable<"photos">,
+  "event_name" | "source_url" | "license" | "credit" | "year_utc"
 > & {
-	photo_id: string; // Derived from photos.id
+  photo_id: string; // Derived from photos.id
 };
 
 /**
@@ -287,8 +285,8 @@ export type PhotoCreditDTO = Pick<
  * Paginated list of photo credits
  */
 export type CreditsResponseDTO = {
-	credits: PhotoCreditDTO[];
-	pagination: PaginationDTO;
+  credits: PhotoCreditDTO[];
+  pagination: PaginationDTO;
 };
 
 // =============================================================================
@@ -301,10 +299,10 @@ export type CreditsResponseDTO = {
  * Note: photo_file is handled separately as multipart upload
  */
 export type CreatePhotoCommand = Omit<
-	DbInsert<"photos">,
-	"id" | "created_at" | "updated_at" | "photo_url" | "thumbnail_url"
+  DbInsert<"photos">,
+  "id" | "created_at" | "updated_at" | "photo_url" | "thumbnail_url"
 > & {
-	photo_file?: File | Blob; // Added for multipart upload handling
+  photo_file?: File | Blob; // Added for multipart upload handling
 };
 
 /**
@@ -318,17 +316,17 @@ export type AdminPhotoDTO = DbTable<"photos">;
  * Subset of photos with key fields
  */
 export type AdminPhotoListItemDTO = Pick<
-	DbTable<"photos">,
-	| "id"
-	| "photo_url"
-	| "thumbnail_url"
-	| "event_name"
-	| "year_utc"
-	| "lat"
-	| "lon"
-	| "is_daily_eligible"
-	| "first_used_in_daily_date"
-	| "created_at"
+  DbTable<"photos">,
+  | "id"
+  | "photo_url"
+  | "thumbnail_url"
+  | "event_name"
+  | "year_utc"
+  | "lat"
+  | "lon"
+  | "is_daily_eligible"
+  | "first_used_in_daily_date"
+  | "created_at"
 >;
 
 /**
@@ -336,8 +334,8 @@ export type AdminPhotoListItemDTO = Pick<
  * Paginated list of photos
  */
 export type AdminPhotosResponseDTO = {
-	photos: AdminPhotoListItemDTO[];
-	pagination: PaginationDTO;
+  photos: AdminPhotoListItemDTO[];
+  pagination: PaginationDTO;
 };
 
 /**
@@ -346,10 +344,10 @@ export type AdminPhotosResponseDTO = {
  * All fields are optional (partial update)
  */
 export type UpdatePhotoCommand = Partial<
-	Omit<
-		DbUpdate<"photos">,
-		"id" | "created_at" | "updated_at" | "photo_url" | "thumbnail_url" | "first_used_in_daily_date"
-	>
+  Omit<
+    DbUpdate<"photos">,
+    "id" | "created_at" | "updated_at" | "photo_url" | "thumbnail_url" | "first_used_in_daily_date"
+  >
 >;
 
 // =============================================================================
@@ -361,8 +359,8 @@ export type UpdatePhotoCommand = Partial<
  * Request body for POST /api/admin/daily-sets
  */
 export type CreateDailySetCommand = {
-	date_utc: string;
-	photo_ids: string[]; // Must be exactly 5 unique photo IDs
+  date_utc: string;
+  photo_ids: string[]; // Must be exactly 5 unique photo IDs
 };
 
 /**
@@ -370,11 +368,11 @@ export type CreateDailySetCommand = {
  * Combines daily_set_photos with photo details
  */
 export type AdminDailySetPhotoDTO = {
-	photo_id: string;
-	position: number;
-	event_name: string;
-	photo_url: string;
-	year_utc: number;
+  photo_id: string;
+  position: number;
+  event_name: string;
+  photo_url: string;
+  year_utc: number;
 };
 
 /**
@@ -382,23 +380,20 @@ export type AdminDailySetPhotoDTO = {
  * Combines daily_sets with photo array
  */
 export type AdminDailySetDTO = Pick<
-	DbTable<"daily_sets">,
-	"date_utc" | "is_published" | "created_at" | "updated_at"
+  DbTable<"daily_sets">,
+  "date_utc" | "is_published" | "created_at" | "updated_at"
 > & {
-	daily_set_id: string; // Derived from daily_sets.id
-	photos: AdminDailySetPhotoDTO[];
+  daily_set_id: string; // Derived from daily_sets.id
+  photos: AdminDailySetPhotoDTO[];
 };
 
 /**
  * Summary daily set information for admin list view
  * Includes photo count
  */
-export type AdminDailySetListItemDTO = Pick<
-	DbTable<"daily_sets">,
-	"date_utc" | "is_published" | "created_at"
-> & {
-	daily_set_id: string; // Derived from daily_sets.id
-	photo_count: number;
+export type AdminDailySetListItemDTO = Pick<DbTable<"daily_sets">, "date_utc" | "is_published" | "created_at"> & {
+  daily_set_id: string; // Derived from daily_sets.id
+  photo_count: number;
 };
 
 /**
@@ -406,9 +401,9 @@ export type AdminDailySetListItemDTO = Pick<
  * Indicates content health and planning
  */
 export type ScheduleStatusDTO = {
-	days_scheduled_ahead: number;
-	next_unpublished_date: string | null;
-	warning: string | null;
+  days_scheduled_ahead: number;
+  next_unpublished_date: string | null;
+  warning: string | null;
 };
 
 /**
@@ -416,9 +411,9 @@ export type ScheduleStatusDTO = {
  * Paginated list with schedule overview
  */
 export type AdminDailySetsResponseDTO = {
-	daily_sets: AdminDailySetListItemDTO[];
-	pagination: PaginationDTO;
-	schedule_status: ScheduleStatusDTO;
+  daily_sets: AdminDailySetListItemDTO[];
+  pagination: PaginationDTO;
+  schedule_status: ScheduleStatusDTO;
 };
 
 // =============================================================================
@@ -430,33 +425,33 @@ export type AdminDailySetsResponseDTO = {
  * Response for GET /api/admin/analytics/overview
  */
 export type AdminAnalyticsOverviewDTO = {
-	period: {
-		from_date: string;
-		to_date: string;
-	};
-	adoption: {
-		unique_players: number;
-		new_players: number;
-	};
-	engagement: {
-		total_rounds: number;
-		round_completion_rate: number;
-		median_session_time_seconds: number;
-		daily_participation_rate: number;
-	};
-	retention: {
-		day_1_retention: number;
-		day_7_returning_users: number;
-	};
-	performance: {
-		median_load_time_ms: number;
-		median_map_latency_ms: number;
-	};
-	content_health: {
-		days_scheduled_ahead: number;
-		photo_pool_size: number;
-		photos_available_for_daily: number;
-	};
+  period: {
+    from_date: string;
+    to_date: string;
+  };
+  adoption: {
+    unique_players: number;
+    new_players: number;
+  };
+  engagement: {
+    total_rounds: number;
+    round_completion_rate: number;
+    median_session_time_seconds: number;
+    daily_participation_rate: number;
+  };
+  retention: {
+    day_1_retention: number;
+    day_7_returning_users: number;
+  };
+  performance: {
+    median_load_time_ms: number;
+    median_map_latency_ms: number;
+  };
+  content_health: {
+    days_scheduled_ahead: number;
+    photo_pool_size: number;
+    photos_available_for_daily: number;
+  };
 };
 
 /**
@@ -470,8 +465,8 @@ export type AdminAnalyticsEventDTO = DbTable<"analytics_events">;
  * Paginated list of analytics events
  */
 export type AdminAnalyticsEventsResponseDTO = {
-	events: AdminAnalyticsEventDTO[];
-	pagination: PaginationDTO;
+  events: AdminAnalyticsEventDTO[];
+  pagination: PaginationDTO;
 };
 
 // =============================================================================
@@ -483,10 +478,10 @@ export type AdminAnalyticsEventsResponseDTO = {
  * Used across all API endpoints
  */
 export type ErrorResponseDTO = {
-	error: string;
-	details?: string[];
-	code?: string;
-	timestamp: string;
+  error: string;
+  details?: string[];
+  code?: string;
+  timestamp: string;
 };
 
 // =============================================================================
@@ -498,36 +493,36 @@ export type ErrorResponseDTO = {
  * These match the constraints defined in the API plan
  */
 export const ValidationConstants = {
-	NICKNAME: {
-		MIN_LENGTH: 3,
-		MAX_LENGTH: 20,
-		REGEX: /^[a-zA-Z0-9 _-]+$/,
-	},
-	YEAR: {
-		MIN: 1880,
-		MAX: 2025,
-	},
-	COORDINATES: {
-		LAT_MIN: -90,
-		LAT_MAX: 90,
-		LON_MIN: -180,
-		LON_MAX: 180,
-	},
-	TIME: {
-		MIN_MS: 0,
-		MAX_MS: 86400000, // 24 hours
-	},
-	DAILY_SET: {
-		PHOTO_COUNT: 5,
-	},
-	FILE_UPLOAD: {
-		MAX_SIZE_MB: 10,
-		ALLOWED_FORMATS: ["jpg", "jpeg", "png", "webp"] as const,
-	},
-	PAGINATION: {
-		DEFAULT_LIMIT: 50,
-		MAX_LIMIT: 100,
-	},
+  NICKNAME: {
+    MIN_LENGTH: 3,
+    MAX_LENGTH: 20,
+    REGEX: /^[a-zA-Z0-9 _-]+$/,
+  },
+  YEAR: {
+    MIN: 1880,
+    MAX: 2025,
+  },
+  COORDINATES: {
+    LAT_MIN: -90,
+    LAT_MAX: 90,
+    LON_MIN: -180,
+    LON_MAX: 180,
+  },
+  TIME: {
+    MIN_MS: 0,
+    MAX_MS: 86400000, // 24 hours
+  },
+  DAILY_SET: {
+    PHOTO_COUNT: 5,
+  },
+  FILE_UPLOAD: {
+    MAX_SIZE_MB: 10,
+    ALLOWED_FORMATS: ["jpg", "jpeg", "png", "webp"] as const,
+  },
+  PAGINATION: {
+    DEFAULT_LIMIT: 50,
+    MAX_LIMIT: 100,
+  },
 } as const;
 
 // =============================================================================
@@ -543,8 +538,8 @@ export type GameMode = "normal" | "daily";
  * Pin location on map
  */
 export type PinLocation = {
-	lat: number; // -90 to 90
-	lon: number; // -180 to 180
+  lat: number; // -90 to 90
+  lon: number; // -180 to 180
 };
 
 /**
@@ -552,10 +547,10 @@ export type PinLocation = {
  * Supports both Normal mode (NormalRoundPhotoDTO) and Daily mode (DailySetPhotoDTO)
  */
 export type PhotoState = {
-	photoData: NormalRoundPhotoDTO | DailySetPhotoDTO;
-	guess: GuessDTO | null; // Set after submission
-	result: PhotoScoreResultDTO | null; // Set after scoring
-	status: "pending" | "guessing" | "submitted" | "complete";
+  photoData: NormalRoundPhotoDTO | DailySetPhotoDTO;
+  guess: GuessDTO | null; // Set after submission
+  result: PhotoScoreResultDTO | null; // Set after scoring
+  status: "pending" | "guessing" | "submitted" | "complete";
 };
 
 /**
@@ -563,59 +558,59 @@ export type PhotoState = {
  * Manages entire game flow across 5 photos
  */
 export type GameViewModel = {
-	mode: GameMode;
-	dailySetId: string | null; // null for Normal mode
-	dateUtc: string | null; // null for Normal mode
-	photos: PhotoState[]; // Always 5 items
-	currentPhotoIndex: number; // 0-4
-	startTime: number; // Unix timestamp (ms)
-	elapsedTime: number; // Milliseconds
-	totalScore: number; // Running total across photos
-	isAlreadySubmitted: boolean; // Daily mode: already submitted today
-	isLoading: boolean; // Loading state for submissions
-	error: GameError | null; // Current error state
+  mode: GameMode;
+  dailySetId: string | null; // null for Normal mode
+  dateUtc: string | null; // null for Normal mode
+  photos: PhotoState[]; // Always 5 items
+  currentPhotoIndex: number; // 0-4
+  startTime: number; // Unix timestamp (ms)
+  elapsedTime: number; // Milliseconds
+  totalScore: number; // Running total across photos
+  isAlreadySubmitted: boolean; // Daily mode: already submitted today
+  isLoading: boolean; // Loading state for submissions
+  error: GameError | null; // Current error state
 };
 
 /**
  * Error state type
  */
 export type GameError = {
-	type: "map_load" | "submission" | "network" | "no_daily_set" | "invalid_guess";
-	message: string;
-	retryable: boolean;
+  type: "map_load" | "submission" | "network" | "no_daily_set" | "invalid_guess";
+  message: string;
+  retryable: boolean;
 };
 
 /**
  * Current guess state (before submission)
  */
 export type CurrentGuess = {
-	pin: PinLocation | null;
-	year: number | null;
+  pin: PinLocation | null;
+  year: number | null;
 };
 
 /**
  * Timer state
  */
 export type TimerState = {
-	startTime: number; // Unix timestamp
-	elapsedMs: number;
-	isRunning: boolean;
+  startTime: number; // Unix timestamp
+  elapsedMs: number;
+  isRunning: boolean;
 };
 
 /**
  * Map viewport bounds
  */
 export type MapBounds = {
-	north: number;
-	south: number;
-	east: number;
-	west: number;
+  north: number;
+  south: number;
+  east: number;
+  west: number;
 };
 
 /**
  * Nickname validation result
  */
 export type NicknameValidation = {
-	isValid: boolean;
-	error?: string;
+  isValid: boolean;
+  error?: string;
 };

@@ -56,16 +56,19 @@ npm run format          # Format code with Prettier
 ## Architecture & Key Patterns
 
 ### Component Strategy
+
 - **Astro components (`.astro`)**: Default for static content and layouts
 - **React components (`.tsx`)**: Only when interactivity/client-side state is needed
 - Never use `"use client"` or other Next.js directives (this is Astro, not Next.js)
 
 ### Rendering & Deployment
+
 - Configured for **server-side rendering** (`output: "server"` in `astro.config.mjs`)
 - Node adapter in standalone mode for deployment
 - Port 3000 for local development
 
 ### API Routes (Astro Endpoints)
+
 - Located in `src/pages/api/`
 - Use uppercase HTTP method names: `GET`, `POST`, etc.
 - Always set `export const prerender = false`
@@ -74,12 +77,14 @@ npm run format          # Format code with Prettier
 - Access Supabase via `context.locals.supabase`, not direct imports
 
 ### Supabase Integration
+
 - Database client and types live in `src/db/`
 - Always use the `SupabaseClient` type from `src/db/supabase.client.ts`
 - Never import directly from `@supabase/supabase-js` for typing
 - Validate data with Zod schemas before database operations
 
 ### Styling with Tailwind
+
 - Use `cn()` utility from `@/lib/utils` for conditional classes (combines `clsx` + `twMerge`)
 - Leverage arbitrary values: `w-[123px]`
 - Use `@layer` directive for custom utilities/components
@@ -90,6 +95,7 @@ npm run format          # Format code with Prettier
 ## Coding Standards
 
 ### Error Handling Pattern
+
 ```typescript
 // Handle errors and edge cases at the top (guard clauses)
 if (!input) {
@@ -110,6 +116,7 @@ return { success: true, data };
 - Implement proper error logging with user-friendly messages
 
 ### React Best Practices
+
 - Functional components with hooks only (no class components)
 - Extract logic into custom hooks in `src/components/hooks/`
 - Use `React.memo()` for expensive components with stable props
@@ -121,6 +128,7 @@ return { success: true, data };
 - Use `useTransition` for non-urgent state updates
 
 ### Astro Patterns
+
 - Leverage View Transitions API (ClientRouter) for smooth navigation
 - Use content collections with type safety for structured content
 - Middleware goes in `src/middleware/index.ts`
@@ -130,6 +138,7 @@ return { success: true, data };
 - Hybrid rendering where needed (per-page SSR control)
 
 ### Accessibility (ARIA)
+
 - Use semantic HTML first; ARIA only when necessary
 - Implement ARIA landmarks (main, navigation, search)
 - Use `aria-expanded`, `aria-controls` for expandable content
@@ -141,6 +150,7 @@ return { success: true, data };
 - Avoid redundant ARIA on native elements
 
 ### Linting & Formatting
+
 - ESLint runs with TypeScript, Astro, React, and accessibility plugins
 - Prettier configured with Astro plugin
 - Pre-commit hooks auto-fix issues via `lint-staged`

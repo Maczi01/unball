@@ -30,6 +30,7 @@ This will install `tsx` (TypeScript executor) needed to run the seed script.
 ### Step 2: (Optional) Add Real Photos
 
 Replace the placeholder files in `/public` folder with actual football photos:
+
 - `photo1.jpg` - Champions League themed
 - `photo2.jpg` - World Cup themed
 - `photo3.jpg` - Premier League themed
@@ -97,6 +98,7 @@ curl http://localhost:3001/api/daily/sets/today
 ```
 
 Or test in **Postman**:
+
 - Method: `GET`
 - URL: `http://localhost:3001/api/daily/sets/today`
 
@@ -115,7 +117,7 @@ Or test in **Postman**:
       "competition": "UEFA Champions League",
       "place": "Madrid, Spain",
       "tags": ["club", "european", "final"]
-    },
+    }
     // ... 4 more photos
   ]
 }
@@ -190,6 +192,7 @@ DELETE FROM photos WHERE id IN (
 ## 📚 Next Steps
 
 Once the endpoint is working:
+
 1. Test with Postman (import curl commands)
 2. Verify no answer fields are leaked (lat, lon, year_utc, event_name, description)
 3. Check caching headers (`Cache-Control: public, max-age=300`)

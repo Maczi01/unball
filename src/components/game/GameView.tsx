@@ -366,11 +366,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
             <YearPicker selectedYear={year} onYearChange={setYear} disabled={false} />
 
             {/* Submit button */}
-            <SubmitButton
-              isDisabled={!isComplete}
-              isLoading={gameState.isLoading}
-              onClick={handleSubmitGuess}
-            />
+            <SubmitButton isDisabled={!isComplete} isLoading={gameState.isLoading} onClick={handleSubmitGuess} />
           </div>
 
           {/* Right column: Map */}
