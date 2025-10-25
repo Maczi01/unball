@@ -19,8 +19,8 @@ const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
 const photos = [
   {
     id: "11111111-1111-1111-1111-111111111111",
-    photo_url: "/photo1.jpg",
-    thumbnail_url: "/photo1.jpg",
+    photo_url: "https://tomkinstimes.com/wp-content/uploads/2020/02/Origi-v-Spurs-CL-final-e1581933165219.jpg",
+    thumbnail_url: "https://tomkinstimes.com/wp-content/uploads/2020/02/Origi-v-Spurs-CL-final-e1581933165219.jpg",
     event_name: "Champions League Final 2019",
     competition: "UEFA Champions League",
     year_utc: 2019,
@@ -36,8 +36,10 @@ const photos = [
   },
   {
     id: "22222222-2222-2222-2222-222222222222",
-    photo_url: "/photo2.jpg",
-    thumbnail_url: "/photo2.jpg",
+    photo_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Germany_and_Argentina_face_off_in_the_final_of_the_World_Cup_2014_-2014-07-13_%286%29.jpg/1280px-Germany_and_Argentina_face_off_in_the_final_of_the_World_Cup_2014_-2014-07-13_%286%29.jpg",
+    thumbnail_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Germany_and_Argentina_face_off_in_the_final_of_the_World_Cup_2014_-2014-07-13_%286%29.jpg/1280px-Germany_and_Argentina_face_off_in_the_final_of_the_World_Cup_2014_-2014-07-13_%286%29.jpg",
     event_name: "FIFA World Cup Final 2014",
     competition: "FIFA World Cup",
     year_utc: 2014,
@@ -53,8 +55,8 @@ const photos = [
   },
   {
     id: "33333333-3333-3333-3333-333333333333",
-    photo_url: "/photo3.jpg",
-    thumbnail_url: "/photo3.jpg",
+    photo_url: "https://www.reuters.com/resizer/v2/ISCEQPPMMBJFVOQUDIAMNVYZYU.jpg?auth=9b9c07fca45d702010a4c4bb49ad7c95b2ac5504330234871600e8c85f6a562d&width=640&quality=80",
+    thumbnail_url: "https://www.reuters.com/resizer/v2/ISCEQPPMMBJFVOQUDIAMNVYZYU.jpg?auth=9b9c07fca45d702010a4c4bb49ad7c95b2ac5504330234871600e8c85f6a562d&width=640&quality=80",
     event_name: "Premier League Match 2023",
     competition: "Premier League",
     year_utc: 2023,
@@ -70,8 +72,8 @@ const photos = [
   },
   {
     id: "44444444-4444-4444-4444-444444444444",
-    photo_url: "/photo4.jpg",
-    thumbnail_url: "/photo4.jpg",
+    photo_url: "https://phantom.estaticos-marca.com/7f8fa237b1a0575e2d50b938a5ad01fa/crop/0x4/2046x1152/resize/660/f/webp/assets/multimedia/imagenes/2022/03/20/16478074388951.jpg",
+    thumbnail_url: "https://phantom.estaticos-marca.com/7f8fa237b1a0575e2d50b938a5ad01fa/crop/0x4/2046x1152/resize/660/f/webp/assets/multimedia/imagenes/2022/03/20/16478074388951.jpg",
     event_name: "El Clásico 2022",
     competition: "La Liga",
     year_utc: 2022,
@@ -87,8 +89,8 @@ const photos = [
   },
   {
     id: "55555555-5555-5555-5555-555555555555",
-    photo_url: "/photo5.jpg",
-    thumbnail_url: "/photo5.jpg",
+    photo_url: "https://cdn.punchng.com/wp-content/uploads/2021/07/11233524/Italy-vs-Englad.jpg",
+    thumbnail_url: "https://cdn.punchng.com/wp-content/uploads/2021/07/11233524/Italy-vs-Englad.jpg",
     event_name: "UEFA Euro 2020 Final",
     competition: "UEFA European Championship",
     year_utc: 2021,
@@ -104,12 +106,119 @@ const photos = [
   },
 ];
 
+// Additional photos for variety (not linked to daily set by default)
+const morePhotos = [
+  // 1️⃣ 1966 FIFA World Cup Final — England vs West Germany (Wembley)
+  {
+    id: "11111116-1111-1111-1111-111111111111",
+    photo_url: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Geoff_Hurst_goal_1966_World_Cup_final.jpg",
+    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Geoff_Hurst_goal_1966_World_Cup_final.jpg",
+    event_name: "1966 FIFA World Cup Final",
+    competition: "FIFA World Cup",
+    year_utc: 1966,
+    place: "London, England",
+    lat: 51.556021,
+    lon: -0.279519,
+    description:
+      'England beats West Germany 4–2 at Wembley. Geoff Hurst scores a hat-trick and the iconic "did it cross the line?" goal.',
+    source_url: "https://en.wikipedia.org/wiki/1966_FIFA_World_Cup_Final",
+    license: "CC BY-SA 4.0",
+    credit: "Getty Images",
+    is_daily_eligible: true,
+    tags: ["worldcup", "final", "england"],
+  },
+
+  // 2️⃣ 1986 World Cup QF — Maradona’s “Hand of God” & “Goal of the Century”
+  {
+    id: "22222226-2222-2222-2222-222222222222",
+    photo_url: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Maradona_hand_of_god_goal_1986.jpg",
+    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Maradona_hand_of_god_goal_1986.jpg",
+    event_name: "1986 FIFA World Cup Quarter-final",
+    competition: "FIFA World Cup",
+    year_utc: 1986,
+    place: "Mexico City, Mexico",
+    lat: 19.3029,
+    lon: -99.1505,
+    description:
+      'Diego Maradona scores the infamous "Hand of God" goal and later the "Goal of the Century" as Argentina beats England 2–1.',
+    source_url:
+      "https://en.wikipedia.org/wiki/Argentina_v_England_(1986_FIFA_World_Cup)",
+    license: "CC BY-SA 4.0",
+    credit: "El Gráfico",
+    is_daily_eligible: true,
+    tags: ["maradona", "worldcup", "argentina"],
+  },
+
+  // 3️⃣ 1999 UEFA Champions League Final — Manchester United comeback vs Bayern
+  {
+    id: "33333336-3333-3333-3333-333333333333",
+    photo_url: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Man_United_1999_final_celebration.jpg",
+    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Man_United_1999_final_celebration.jpg",
+    event_name: "1999 UEFA Champions League Final",
+    competition: "UEFA Champions League",
+    year_utc: 1999,
+    place: "Barcelona, Spain",
+    lat: 41.3809,
+    lon: 2.1228,
+    description:
+      "Manchester United scores twice in stoppage time to defeat Bayern Munich 2–1 in a dramatic comeback at Camp Nou.",
+    source_url: "https://en.wikipedia.org/wiki/1999_UEFA_Champions_League_Final",
+    license: "CC BY-SA 4.0",
+    credit: "UEFA",
+    is_daily_eligible: true,
+    tags: ["championsleague", "comeback", "manutd"],
+  },
+
+  // 4️⃣ 2005 UEFA Champions League Final — Liverpool’s Miracle of Istanbul
+  {
+    id: "44444446-4444-4444-4444-444444444444",
+    photo_url: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Liverpool_AC_Milan_2005_final_penalties.jpg",
+    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Liverpool_AC_Milan_2005_final_penalties.jpg",
+    event_name: "2005 UEFA Champions League Final",
+    competition: "UEFA Champions League",
+    year_utc: 2005,
+    place: "Istanbul, Turkey",
+    lat: 40.987,
+    lon: 29.0361,
+    description:
+      "Liverpool comes back from 3–0 down to draw 3–3 and beat AC Milan on penalties in the most famous comeback in football history.",
+    source_url: "https://en.wikipedia.org/wiki/2005_UEFA_Champions_League_Final",
+    license: "CC BY-SA 4.0",
+    credit: "UEFA",
+    is_daily_eligible: true,
+    tags: ["liverpool", "championsleague", "comeback"],
+  },
+
+  // 5️⃣ 2022 FIFA World Cup Final — Argentina vs France (Messi vs Mbappé)
+  {
+    id: "55555565-aaaa-bbbb-cccc-666666666666",
+    photo_url: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Messi_World_Cup_2022_trophy.jpg",
+    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Messi_World_Cup_2022_trophy.jpg",
+    event_name: "2022 FIFA World Cup Final",
+    competition: "FIFA World Cup",
+    year_utc: 2022,
+    place: "Lusail, Qatar",
+    lat: 25.4160,
+    lon: 51.4900,
+    description:
+      "Argentina defeats France on penalties after a 3–3 thriller. Messi finally lifts the World Cup, Mbappé scores a hat-trick.",
+    source_url: "https://en.wikipedia.org/wiki/2022_FIFA_World_Cup_Final",
+    license: "CC BY-SA 4.0",
+    credit: "FIFA/Getty Images",
+    is_daily_eligible: true,
+    tags: ["worldcup", "messi", "argentina", "final"],
+  },
+];
+
+// Combine all photos for insertion into database
+const allPhotos = [...photos, ...morePhotos];
+
 async function seedData() {
   console.log("🌱 Starting seed...\n");
 
-  // 1. Insert photos
-  console.log("📸 Inserting 5 test photos...");
-  const { data: photosData, error: photosError } = await supabase.from("photos").insert(photos).select();
+  // 1. Insert all photos into database
+  console.log(`📸 Inserting ${allPhotos.length} test photos...`);
+  const { data: photosData, error: photosError } = await supabase.from("photos").insert(allPhotos).select();
 
   if (photosError) {
     console.error("❌ Error inserting photos:", photosError);
@@ -139,10 +248,10 @@ async function seedData() {
 
   console.log(`✅ Created daily set: ${dailySetData.id}\n`);
 
-  // 3. Link photos to daily set
-  console.log("🔗 Linking photos to daily set...");
+  // 3. Link ONLY FIRST 5 photos to daily set (positions 1-5)
+  console.log("🔗 Linking first 5 photos to daily set...");
 
-  const dailySetPhotos = photos.map((photo, index) => ({
+  const dailySetPhotos = photos.slice(0, 5).map((photo, index) => ({
     daily_set_id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
     photo_id: photo.id,
     position: index + 1,
