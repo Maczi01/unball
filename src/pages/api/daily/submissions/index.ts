@@ -7,32 +7,23 @@ export const prerender = false;
 
 /**
  * POST /api/daily/submissions
- * Submits Daily challenge results to leaderboard
+ * Submits Daily challenge results
+ * - Authenticated users: saves to leaderboard
+ * - Anonymous users: shows potential rank without saving
  *
- * @returns 200 - Submission confirmed with rank
+ * @returns 200 - Submission confirmed with rank/potential rank
  * @returns 400 - Invalid submission data
- * @returns 409 - Already submitted today
+ * @returns 401 - Not authenticated (for duplicate check on logged users)
+ * @returns 409 - Already submitted today (authenticated users only)
  * @returns 500 - Server error
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Get device token from header
-    const deviceToken = request.headers.get("X-Device-Token");
+    // Get user from session (if authenticated)
+    const userId = locals.user?.id ?? null;
 
-    if (!deviceToken) {
-      return new Response(
-        JSON.stringify({
-          error: "Device token is required",
-          timestamp: new Date().toISOString(),
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
+    // Get device token from header (optional for authenticated users)
+    const deviceToken = request.headers.get("X-Device-Token") ?? null;
 
     // Parse request body
     const body = (await request.json()) as DailySubmissionCommand;
@@ -96,14 +87,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // Submit to database with server-side scoring
-    const result = await submitDailyChallenge(locals.supabase, deviceToken, body);
+    // Submit with server-side scoring
+    const result = await submitDailyChallenge(locals.supabase, body, userId, deviceToken);
 
     const response: DailySubmissionResponseDTO = {
       submission_id: result.submission_id,
       total_score: result.total_score,
       total_time_ms,
       leaderboard_rank: result.leaderboard_rank,
+      potential_rank: result.potential_rank,
+      is_saved: result.is_saved,
       photos: result.photos,
     };
 

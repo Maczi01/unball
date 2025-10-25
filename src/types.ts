@@ -174,12 +174,16 @@ export type DailySubmissionCommand = {
 /**
  * Response for POST /api/daily/submissions
  * Contains submission confirmation and revealed answers
+ * - For authenticated users: includes submission_id and leaderboard_rank
+ * - For anonymous users: includes potential_rank without saving
  */
 export type DailySubmissionResponseDTO = {
-  submission_id: string;
+  submission_id: string | null;
   total_score: number;
   total_time_ms: number;
-  leaderboard_rank: number;
+  leaderboard_rank: number | null;
+  potential_rank: number | null;
+  is_saved: boolean;
   photos: PhotoScoreResultDTO[];
 };
 

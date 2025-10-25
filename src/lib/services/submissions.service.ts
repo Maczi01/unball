@@ -9,24 +9,40 @@ import type {
 import { calculateDistance, calculateLocationScore, calculateTimeScore } from "@/lib/utils/scoreCalculation";
 
 /**
- * Checks if a device has already submitted for a specific date
+ * Checks if a user/device has already submitted for a specific date
  * @param supabase - Supabase client from context.locals
- * @param deviceToken - Anonymous device token
  * @param dateUtc - Date in YYYY-MM-DD format
+ * @param userId - Optional user ID (for authenticated users)
+ * @param deviceToken - Optional anonymous device token (for anonymous users)
  * @returns Submission check response with details if exists
  */
 export async function checkDailySubmission(
   supabase: SupabaseClient,
-  deviceToken: string,
-  dateUtc: string
+  dateUtc: string,
+  userId?: string | null,
+  deviceToken?: string | null
 ): Promise<SubmissionCheckResponseDTO> {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from("daily_submissions")
-      .select("id, total_score, total_time_ms, submission_timestamp")
-      .eq("date_utc", dateUtc)
-      .eq("anon_device_token", deviceToken)
-      .maybeSingle();
+      .select("id, total_score, total_time_ms, submission_timestamp, user_id")
+      .eq("date_utc", dateUtc);
+
+    // If authenticated, check by user_id
+    if (userId) {
+      query = query.eq("user_id", userId);
+    } else if (deviceToken) {
+      // For anonymous users, check by device token
+      query = query.eq("anon_device_token", deviceToken).is("user_id", null);
+    } else {
+      // No user_id or device token - cannot check
+      return {
+        has_submitted: false,
+        submission: null,
+      };
+    }
+
+    const { data, error } = await query.maybeSingle();
 
     if (error) {
       throw error;
@@ -39,14 +55,16 @@ export async function checkDailySubmission(
       };
     }
 
-    // Calculate rank for this submission
-    const rank = await calculateLeaderboardRank(
-      supabase,
-      dateUtc,
-      data.total_score,
-      data.total_time_ms,
-      data.submission_timestamp
-    );
+    // Calculate rank only if saved to leaderboard (has user_id)
+    const rank = data.user_id
+      ? await calculateLeaderboardRank(
+          supabase,
+          dateUtc,
+          data.total_score,
+          data.total_time_ms,
+          data.submission_timestamp
+        )
+      : null;
 
     const submission: SubmissionDetailsDTO = {
       id: data.id,
@@ -67,29 +85,37 @@ export async function checkDailySubmission(
 }
 
 /**
- * Submits a daily challenge to the leaderboard
+ * Submits a daily challenge
+ * - For authenticated users: saves to leaderboard
+ * - For anonymous users: calculates potential rank without saving
  * @param supabase - Supabase client from context.locals
- * @param deviceToken - Anonymous device token
  * @param command - Submission data with guesses
- * @returns Submission ID, total score, rank, and photo results
+ * @param userId - Optional user ID (for authenticated users)
+ * @param deviceToken - Optional anonymous device token
+ * @returns Submission ID (if saved), total score, rank/potential rank, and photo results
  */
 export async function submitDailyChallenge(
   supabase: SupabaseClient,
-  deviceToken: string,
-  command: DailySubmissionCommand
+  command: DailySubmissionCommand,
+  userId?: string | null,
+  deviceToken?: string | null
 ): Promise<{
-  submission_id: string;
+  submission_id: string | null;
   total_score: number;
-  leaderboard_rank: number;
+  leaderboard_rank: number | null;
+  potential_rank: number | null;
+  is_saved: boolean;
   photos: PhotoScoreResultDTO[];
 }> {
   try {
     const { daily_set_id, date_utc, nickname, consent_given, guesses, total_time_ms } = command;
 
-    // 1. Check for duplicate submission
-    const existingSubmission = await checkDailySubmission(supabase, deviceToken, date_utc);
-    if (existingSubmission.has_submitted) {
-      throw new Error("DUPLICATE_SUBMISSION");
+    // 1. Check for duplicate submission (only for authenticated users)
+    if (userId) {
+      const existingSubmission = await checkDailySubmission(supabase, date_utc, userId, null);
+      if (existingSubmission.has_submitted) {
+        throw new Error("DUPLICATE_SUBMISSION");
+      }
     }
 
     // 2. Fetch correct answers for all photos
@@ -158,62 +184,60 @@ export async function submitDailyChallenge(
 
     const totalScore = photoResults.reduce((sum, result) => sum + result.total_score, 0);
 
-    // 5. Store submission in database
-    const { data: submission, error: submissionError } = await supabase
-      .from("daily_submissions")
-      .insert({
-        daily_set_id,
-        date_utc,
-        anon_device_token: deviceToken,
-        nickname,
-        total_score: totalScore,
-        total_time_ms,
-      })
-      .select("id, submission_timestamp")
-      .single();
-
-    if (submissionError) {
-      // Check for unique constraint violation
-      if (submissionError.code === "23505") {
-        throw new Error("DUPLICATE_SUBMISSION");
-      }
-      throw submissionError;
-    }
-
-    // 6. Store/update nickname in device_nicknames table
-    if (consent_given) {
-      const { error: nicknameError } = await supabase.from("device_nicknames").upsert(
-        {
+    // 5. Save to leaderboard ONLY if authenticated
+    if (userId) {
+      const { data: submission, error: submissionError } = await supabase
+        .from("daily_submissions")
+        .insert({
+          daily_set_id,
+          date_utc,
+          user_id: userId,
           anon_device_token: deviceToken,
           nickname,
-          consent_given_at: new Date().toISOString(),
-        },
-        {
-          onConflict: "anon_device_token",
+          total_score: totalScore,
+          total_time_ms,
+        })
+        .select("id, submission_timestamp")
+        .single();
+
+      if (submissionError) {
+        // Check for unique constraint violation
+        if (submissionError.code === "23505") {
+          throw new Error("DUPLICATE_SUBMISSION");
         }
+        throw submissionError;
+      }
+
+      // 6. Calculate actual leaderboard rank
+      const rank = await calculateLeaderboardRank(
+        supabase,
+        date_utc,
+        totalScore,
+        total_time_ms,
+        submission.submission_timestamp
       );
 
-      if (nicknameError) {
-        console.error("[Submissions Service] Error storing nickname:", nicknameError);
-        // Don't fail the submission if nickname storage fails
-      }
+      return {
+        submission_id: submission.id,
+        total_score: totalScore,
+        leaderboard_rank: rank,
+        potential_rank: null,
+        is_saved: true,
+        photos: photoResults,
+      };
+    } else {
+      // 5b. Anonymous user - calculate potential rank without saving
+      const potentialRank = await calculatePotentialRank(supabase, date_utc, totalScore, total_time_ms);
+
+      return {
+        submission_id: null,
+        total_score: totalScore,
+        leaderboard_rank: null,
+        potential_rank: potentialRank,
+        is_saved: false,
+        photos: photoResults,
+      };
     }
-
-    // 7. Calculate leaderboard rank
-    const rank = await calculateLeaderboardRank(
-      supabase,
-      date_utc,
-      totalScore,
-      total_time_ms,
-      submission.submission_timestamp
-    );
-
-    return {
-      submission_id: submission.id,
-      total_score: totalScore,
-      leaderboard_rank: rank,
-      photos: photoResults,
-    };
   } catch (error) {
     console.error("[Submissions Service] Error submitting daily challenge:", error);
     throw error;
@@ -223,6 +247,7 @@ export async function submitDailyChallenge(
 /**
  * Calculates leaderboard rank for a submission using tie-breaking logic
  * Tie-breaking order: score DESC, time ASC, timestamp ASC
+ * Only counts authenticated users (user_id IS NOT NULL)
  * @param supabase - Supabase client
  * @param dateUtc - Date in YYYY-MM-DD format
  * @param score - Total score
@@ -238,11 +263,12 @@ async function calculateLeaderboardRank(
   timestamp: string
 ): Promise<number> {
   try {
-    // Count submissions that rank higher (better) than this one
+    // Count authenticated submissions that rank higher (better) than this one
     const { count, error } = await supabase
       .from("daily_submissions")
       .select("*", { count: "exact", head: true })
       .eq("date_utc", dateUtc)
+      .not("user_id", "is", null)
       .or(
         `total_score.gt.${score},and(total_score.eq.${score},total_time_ms.lt.${timeMs}),and(total_score.eq.${score},total_time_ms.eq.${timeMs},submission_timestamp.lt.${timestamp})`
       );
@@ -255,6 +281,48 @@ async function calculateLeaderboardRank(
     return (count ?? 0) + 1;
   } catch (error) {
     console.error("[Submissions Service] Error calculating rank:", error);
+    throw error;
+  }
+}
+
+/**
+ * Calculates potential rank for an anonymous user
+ * Shows where they would place if they created an account
+ * Only counts authenticated users (user_id IS NOT NULL)
+ * @param supabase - Supabase client
+ * @param dateUtc - Date in YYYY-MM-DD format
+ * @param score - Total score
+ * @param timeMs - Total time in milliseconds
+ * @returns Potential rank (1-based)
+ */
+async function calculatePotentialRank(
+  supabase: SupabaseClient,
+  dateUtc: string,
+  score: number,
+  timeMs: number
+): Promise<number> {
+  try {
+    // Count authenticated submissions with better or equal score/time
+    // Use current timestamp as tiebreaker assumption
+    const currentTime = new Date().toISOString();
+
+    const { count, error } = await supabase
+      .from("daily_submissions")
+      .select("*", { count: "exact", head: true })
+      .eq("date_utc", dateUtc)
+      .not("user_id", "is", null)
+      .or(
+        `total_score.gt.${score},and(total_score.eq.${score},total_time_ms.lt.${timeMs}),and(total_score.eq.${score},total_time_ms.eq.${timeMs},submission_timestamp.lt.${currentTime})`
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    // Potential rank is count of better submissions + 1
+    return (count ?? 0) + 1;
+  } catch (error) {
+    console.error("[Submissions Service] Error calculating potential rank:", error);
     throw error;
   }
 }
