@@ -4,7 +4,7 @@
 
 ### photos
 
-Stores all game photos with complete metadata and daily eligibility tracking.
+Stores all approved game photos with complete metadata and daily eligibility tracking.
 
 | Column                   | Data Type                | Constraints                                     | Description                             |
 | ------------------------ | ------------------------ | ----------------------------------------------- | --------------------------------------- |
@@ -28,6 +28,38 @@ Stores all game photos with complete metadata and daily eligibility tracking.
 | notes                    | TEXT                     | NULL                                            | Internal notes for curators             |
 | created_at               | TIMESTAMP WITH TIME ZONE | NOT NULL DEFAULT NOW()                          | Record creation timestamp               |
 | updated_at               | TIMESTAMP WITH TIME ZONE | NOT NULL DEFAULT NOW()                          | Record update timestamp                 |
+
+### photo_submissions
+
+Stores user-submitted photos pending admin review and approval.
+
+| Column           | Data Type                | Constraints                                     | Description                                          |
+| ---------------- | ------------------------ | ----------------------------------------------- | ---------------------------------------------------- |
+| id               | UUID                     | PRIMARY KEY DEFAULT gen_random_uuid()           | Unique identifier                                    |
+| photo_url        | TEXT                     | NOT NULL                                        | URL to submitted photo in temporary storage          |
+| thumbnail_url    | TEXT                     | NULL                                            | URL to thumbnail version                             |
+| event_name       | VARCHAR(255)             | NOT NULL                                        | Name of the football event                           |
+| competition      | VARCHAR(255)             | NULL                                            | Competition/tournament name                          |
+| year_utc         | INTEGER                  | NOT NULL CHECK (year_utc BETWEEN 1880 AND 2025) | Year the event occurred                              |
+| place            | VARCHAR(255)             | NULL                                            | City/region/country of event                         |
+| lat              | DECIMAL(9,6)             | NOT NULL CHECK (lat BETWEEN -90 AND 90)         | Latitude coordinate                                  |
+| lon              | DECIMAL(9,6)             | NOT NULL CHECK (lon BETWEEN -180 AND 180)       | Longitude coordinate                                 |
+| description      | TEXT                     | NULL                                            | Event description                                    |
+| source_url       | TEXT                     | NULL                                            | Source URL for the photo                             |
+| license          | VARCHAR(100)             | NOT NULL                                        | License type (e.g., CC-BY-SA)                        |
+| credit           | VARCHAR(255)             | NOT NULL                                        | Photo credit/attribution                             |
+| tags             | TEXT[]                   | NULL                                            | Array of tags for categorization                     |
+| notes            | TEXT                     | NULL                                            | Notes from submitter                                 |
+| submitter_email  | VARCHAR(255)             | NULL                                            | Optional email for contact                           |
+| user_id          | UUID                     | NULL REFERENCES auth.users(id) ON DELETE SET NULL | Authenticated user who submitted (optional)        |
+| anon_device_token| VARCHAR(255)             | NULL                                            | Anonymous device identifier (if not authenticated)   |
+| status           | VARCHAR(20)              | NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')) | Review status |
+| reviewed_by      | UUID                     | NULL REFERENCES auth.users(id) ON DELETE SET NULL | Admin who reviewed the submission                  |
+| review_notes     | TEXT                     | NULL                                            | Admin notes from review                              |
+| reviewed_at      | TIMESTAMP WITH TIME ZONE | NULL                                            | When the submission was reviewed                     |
+| approved_photo_id| UUID                     | NULL REFERENCES photos(id) ON DELETE SET NULL   | Photo ID if approved (links to created photo)        |
+| created_at       | TIMESTAMP WITH TIME ZONE | NOT NULL DEFAULT NOW()                          | Record creation timestamp                            |
+| updated_at       | TIMESTAMP WITH TIME ZONE | NOT NULL DEFAULT NOW()                          | Record update timestamp                              |
 
 ### daily_sets
 
@@ -138,6 +170,18 @@ Flexible event tracking for product analytics.
    - One user can have multiple daily submissions (one per day)
    - Cascade delete: removing a user removes their submissions
 
+5. **photos ← photo_submissions**
+   - One approved photo can be linked from one photo submission
+   - Set null on delete: removing a photo doesn't delete the submission record
+
+6. **users → photo_submissions (submitted by)**
+   - One user can submit multiple photos
+   - Set null on delete: removing a user keeps the submission record
+
+7. **users → photo_submissions (reviewed by)**
+   - One admin can review multiple submissions
+   - Set null on delete: removing an admin keeps the review record
+
 ### Many-to-Many Relationships
 
 1. **photos ←→ daily_sets** (via daily_set_photos)
@@ -199,6 +243,18 @@ ON daily_submissions (user_id);
 CREATE INDEX idx_daily_sets_date
 ON daily_sets (date_utc);
 
+-- Photo submissions by status (for admin review queue)
+CREATE INDEX idx_photo_submissions_status
+ON photo_submissions (status, created_at DESC);
+
+-- Photo submissions by submitter
+CREATE INDEX idx_photo_submissions_user
+ON photo_submissions (user_id);
+
+-- Photo submissions by device
+CREATE INDEX idx_photo_submissions_device
+ON photo_submissions (anon_device_token);
+
 -- Optional: GIN index for tag searches (if tag filtering becomes common)
 -- CREATE INDEX idx_photos_tags ON photos USING GIN (tags);
 ```
@@ -211,6 +267,7 @@ ON daily_sets (date_utc);
 
 ```sql
 ALTER TABLE photos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE photo_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE daily_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE device_nicknames ENABLE ROW LEVEL SECURITY;
@@ -323,6 +380,40 @@ WITH CHECK (true);
 CREATE POLICY "Users can update own nickname"
 ON device_nicknames FOR UPDATE
 USING (true);
+```
+
+### Photo Submissions Policies
+
+```sql
+-- Policy: Anyone can view their own submissions
+CREATE POLICY "Users can view own submissions"
+ON photo_submissions FOR SELECT
+USING (
+  (auth.uid() IS NOT NULL AND user_id = auth.uid()) OR
+  (auth.uid() IS NULL AND anon_device_token IS NOT NULL)
+);
+-- Note: Application validates anon_device_token matches requester
+
+-- Policy: Anyone can insert submissions
+CREATE POLICY "Users can insert submissions"
+ON photo_submissions FOR INSERT
+WITH CHECK (true);
+-- Note: Application enforces rate limiting
+
+-- Policy: Admins can view all submissions
+CREATE POLICY "Admins can view all submissions"
+ON photo_submissions FOR SELECT
+USING (auth.jwt() ->> 'role' = 'admin');
+
+-- Policy: Admins can update submissions (for review)
+CREATE POLICY "Admins can update submissions"
+ON photo_submissions FOR UPDATE
+USING (auth.jwt() ->> 'role' = 'admin');
+
+-- Policy: Admins can delete submissions
+CREATE POLICY "Admins can delete submissions"
+ON photo_submissions FOR DELETE
+USING (auth.jwt() ->> 'role' = 'admin');
 ```
 
 ### Analytics Events Policies

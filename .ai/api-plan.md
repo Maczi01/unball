@@ -5,6 +5,7 @@
 | Resource          | Database Table(s)                | Description                                         |
 | ----------------- | -------------------------------- | --------------------------------------------------- |
 | Photos            | `photos`                         | Game photos with metadata and eligibility tracking  |
+| Photo Submissions | `photo_submissions`              | User-submitted photos pending admin review          |
 | Daily Sets        | `daily_sets`, `daily_set_photos` | Pre-scheduled daily photo collections               |
 | Daily Submissions | `daily_submissions`              | First-attempt daily game submissions                |
 | Leaderboard       | `daily_submissions` (aggregated) | Top-10 rankings for daily challenges                |
@@ -646,7 +647,339 @@
 
 ---
 
-### 2.7 Admin - Photos Management
+### 2.7 Photo Submissions
+
+#### POST `/api/photo-submissions`
+
+**Description:** Submit a new photo for admin review and approval. Allows community contributions to the photo pool.
+
+**Authentication:** Optional (can be anonymous or authenticated)
+
+**Headers:**
+
+- `Authorization` (string, optional): Bearer {token} for registered users
+- `X-Device-Token` (string, optional): Anonymous device identifier
+- `Content-Type`: multipart/form-data
+
+**Request Payload (multipart):**
+
+```
+photo_file: [binary]
+event_name: "1998 FIFA World Cup Final"
+competition: "FIFA World Cup"
+year_utc: 1998
+place: "Paris, France"
+lat: 48.8566
+lon: 2.3522
+description: "France wins their first World Cup..."
+source_url: "https://example.com/source"
+license: "CC-BY-SA 4.0"
+credit: "Photographer Name"
+tags: ["world-cup", "final", "france"]
+notes: "Optional notes about the photo"
+submitter_email: "contributor@example.com"
+```
+
+**Validation Rules:**
+
+- photo_file required, max size 10MB, formats: jpg, jpeg, png, webp
+- event_name, license, credit: required (NOT NULL)
+- year_utc: required, must be in [1880, 2025]
+- lat: required, must be in [-90, 90]
+- lon: required, must be in [-180, 180]
+- tags: optional array of strings
+- submitter_email: optional, validated email format
+- Upload to temporary Supabase Storage bucket
+- Automatic thumbnail generation
+
+**Response Payload:**
+
+```json
+{
+  "submission_id": "uuid",
+  "status": "pending",
+  "message": "Photo submitted successfully and is pending admin review",
+  "created_at": "2025-10-19T14:00:00Z"
+}
+```
+
+**Success Response:**
+
+- **Code:** 201 Created
+- **Content:** Submission confirmation
+
+**Error Responses:**
+
+- **Code:** 400 Bad Request
+- **Content:** `{ "error": "Validation failed", "details": ["year_utc must be between 1880 and 2025"] }`
+- **Code:** 413 Payload Too Large
+- **Content:** `{ "error": "Photo file exceeds 10MB limit" }`
+- **Code:** 429 Too Many Requests
+- **Content:** `{ "error": "Submission rate limit exceeded", "retry_after": 3600 }`
+
+---
+
+### 2.8 Admin - Photo Submissions Review
+
+#### GET `/api/admin/photo-submissions`
+
+**Description:** List all photo submissions with filtering by status.
+
+**Authentication:** Required (Admin role)
+
+**Headers:**
+
+- `Authorization` (string, required): Bearer {admin-token}
+
+**Query Parameters:**
+
+- `page` (integer, optional): Page number (default: 1)
+- `limit` (integer, optional): Items per page (default: 50, max: 100)
+- `status` (string, optional): Filter by status ('pending', 'approved', 'rejected')
+- `from_date` (string, optional): Filter submissions from date (YYYY-MM-DD)
+- `to_date` (string, optional): Filter submissions to date (YYYY-MM-DD)
+
+**Response Payload:**
+
+```json
+{
+  "submissions": [
+    {
+      "id": "uuid",
+      "event_name": "1998 FIFA World Cup Final",
+      "year_utc": 1998,
+      "status": "pending",
+      "submitter_email": "contributor@example.com",
+      "thumbnail_url": "https://storage.example.com/submissions/uuid_thumb.jpg",
+      "created_at": "2025-10-19T14:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total_items": 25,
+    "total_pages": 1
+  },
+  "status_counts": {
+    "pending": 15,
+    "approved": 8,
+    "rejected": 2
+  }
+}
+```
+
+**Success Response:**
+
+- **Code:** 200 OK
+- **Content:** Paginated submission list
+
+---
+
+#### GET `/api/admin/photo-submissions/{id}`
+
+**Description:** Get detailed information for a specific photo submission.
+
+**Authentication:** Required (Admin role)
+
+**Headers:**
+
+- `Authorization` (string, required): Bearer {admin-token}
+
+**URL Parameters:**
+
+- `id` (uuid, required): Submission ID
+
+**Response Payload:**
+
+```json
+{
+  "id": "uuid",
+  "photo_url": "https://storage.example.com/submissions/uuid.jpg",
+  "thumbnail_url": "https://storage.example.com/submissions/uuid_thumb.jpg",
+  "event_name": "1998 FIFA World Cup Final",
+  "competition": "FIFA World Cup",
+  "year_utc": 1998,
+  "place": "Paris, France",
+  "lat": 48.8566,
+  "lon": 2.3522,
+  "description": "France wins their first World Cup...",
+  "source_url": "https://example.com/source",
+  "license": "CC-BY-SA 4.0",
+  "credit": "Photographer Name",
+  "tags": ["world-cup", "final", "france"],
+  "notes": "Optional notes about the photo",
+  "submitter_email": "contributor@example.com",
+  "status": "pending",
+  "reviewed_by": null,
+  "review_notes": null,
+  "created_at": "2025-10-19T14:00:00Z",
+  "updated_at": "2025-10-19T14:00:00Z"
+}
+```
+
+**Success Response:**
+
+- **Code:** 200 OK
+- **Content:** Full submission details
+
+**Error Responses:**
+
+- **Code:** 404 Not Found
+- **Content:** `{ "error": "Submission not found" }`
+
+---
+
+#### POST `/api/admin/photo-submissions/{id}/approve`
+
+**Description:** Approve a photo submission and create it as an active photo in the photos table.
+
+**Authentication:** Required (Admin role)
+
+**Headers:**
+
+- `Authorization` (string, required): Bearer {admin-token}
+
+**URL Parameters:**
+
+- `id` (uuid, required): Submission ID
+
+**Request Payload:**
+
+```json
+{
+  "review_notes": "Great quality photo, approved for daily sets",
+  "is_daily_eligible": true,
+  "metadata_overrides": {
+    "event_name": "Updated Event Name",
+    "tags": ["updated", "tags"]
+  }
+}
+```
+
+**Validation Rules:**
+
+- Submission must be in 'pending' status
+- metadata_overrides: optional, allows admin to update metadata before approval
+- Photo will be moved from temporary storage to permanent storage
+- is_daily_eligible defaults to true
+
+**Response Payload:**
+
+```json
+{
+  "submission_id": "uuid",
+  "photo_id": "uuid",
+  "status": "approved",
+  "photo_url": "https://storage.example.com/photos/uuid.jpg",
+  "reviewed_at": "2025-10-19T15:00:00Z",
+  "reviewed_by": "admin-uuid"
+}
+```
+
+**Success Response:**
+
+- **Code:** 200 OK
+- **Content:** Approval confirmation with created photo ID
+
+**Error Responses:**
+
+- **Code:** 400 Bad Request
+- **Content:** `{ "error": "Submission already reviewed" }`
+- **Code:** 404 Not Found
+- **Content:** `{ "error": "Submission not found" }`
+
+---
+
+#### POST `/api/admin/photo-submissions/{id}/reject`
+
+**Description:** Reject a photo submission with optional feedback.
+
+**Authentication:** Required (Admin role)
+
+**Headers:**
+
+- `Authorization` (string, required): Bearer {admin-token}
+
+**URL Parameters:**
+
+- `id` (uuid, required): Submission ID
+
+**Request Payload:**
+
+```json
+{
+  "review_notes": "Photo quality too low / copyright issues / duplicate",
+  "delete_file": true
+}
+```
+
+**Validation Rules:**
+
+- Submission must be in 'pending' status
+- review_notes: required when rejecting
+- delete_file: if true, removes photo from temporary storage (default: true)
+
+**Response Payload:**
+
+```json
+{
+  "submission_id": "uuid",
+  "status": "rejected",
+  "reviewed_at": "2025-10-19T15:00:00Z",
+  "reviewed_by": "admin-uuid"
+}
+```
+
+**Success Response:**
+
+- **Code:** 200 OK
+- **Content:** Rejection confirmation
+
+**Error Responses:**
+
+- **Code:** 400 Bad Request
+- **Content:** `{ "error": "Submission already reviewed" }`
+- **Code:** 404 Not Found
+- **Content:** `{ "error": "Submission not found" }`
+
+---
+
+#### DELETE `/api/admin/photo-submissions/{id}`
+
+**Description:** Delete a photo submission (any status).
+
+**Authentication:** Required (Admin role)
+
+**Headers:**
+
+- `Authorization` (string, required): Bearer {admin-token}
+
+**URL Parameters:**
+
+- `id` (uuid, required): Submission ID
+
+**Response Payload:**
+
+```json
+{
+  "message": "Photo submission deleted successfully",
+  "submission_id": "uuid"
+}
+```
+
+**Success Response:**
+
+- **Code:** 200 OK
+- **Content:** Deletion confirmation
+
+**Error Responses:**
+
+- **Code:** 404 Not Found
+- **Content:** `{ "error": "Submission not found" }`
+
+---
+
+### 2.9 Admin - Photos Management
 
 #### POST `/api/admin/photos`
 
@@ -917,7 +1250,7 @@ notes: "High quality, well-known event"
 
 ---
 
-### 2.8 Admin - Daily Sets Management
+### 2.10 Admin - Daily Sets Management
 
 #### POST `/api/admin/daily-sets`
 
@@ -1164,7 +1497,7 @@ notes: "High quality, well-known event"
 
 ---
 
-### 2.9 Admin - Analytics
+### 2.11 Admin - Analytics
 
 #### GET `/api/admin/analytics/overview`
 
@@ -1301,6 +1634,7 @@ notes: "High quality, well-known event"
 - GET `/api/daily/sets/today`
 - GET `/api/daily/leaderboard/*`
 - GET `/api/credits`
+- POST `/api/photo-submissions` (optional auth)
 
 **Anonymous Device (Device Token Required):**
 
@@ -1637,8 +1971,8 @@ LIMIT 10;
 
 This REST API plan provides comprehensive coverage of the FootyGuess Daily application requirements:
 
-- **8 main resource categories** with full CRUD operations
-- **30+ endpoints** covering gameplay, leaderboard, user management, analytics, and admin operations
+- **9 main resource categories** with full CRUD operations
+- **36+ endpoints** covering gameplay, photo submissions, leaderboard, user management, analytics, and admin operations
 - **Server-side validation** matching database schema constraints
 - **Security measures** including rate limiting, profanity filtering, and score verification
 - **Performance optimizations** via caching, pagination, and indexes

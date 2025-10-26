@@ -212,6 +212,8 @@ export type Database = {
       }
       photo_submissions: {
         Row: {
+          anon_device_token: string | null
+          approved_photo_id: string | null
           competition: string | null
           created_at: string
           credit: string
@@ -226,17 +228,21 @@ export type Database = {
           photo_url: string
           place: string | null
           rejection_reason: string | null
+          review_notes: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           source_url: string | null
           status: Database["public"]["Enums"]["submission_status"]
+          submitter_email: string | null
           tags: string[] | null
           thumbnail_url: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
           year_utc: number
         }
         Insert: {
+          anon_device_token?: string | null
+          approved_photo_id?: string | null
           competition?: string | null
           created_at?: string
           credit: string
@@ -251,17 +257,21 @@ export type Database = {
           photo_url: string
           place?: string | null
           rejection_reason?: string | null
+          review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           source_url?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
+          submitter_email?: string | null
           tags?: string[] | null
           thumbnail_url?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           year_utc: number
         }
         Update: {
+          anon_device_token?: string | null
+          approved_photo_id?: string | null
           competition?: string | null
           created_at?: string
           credit?: string
@@ -276,17 +286,40 @@ export type Database = {
           photo_url?: string
           place?: string | null
           rejection_reason?: string | null
+          review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           source_url?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
+          submitter_email?: string | null
           tags?: string[] | null
           thumbnail_url?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           year_utc?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "photo_submissions_approved_photo_id_fkey"
+            columns: ["approved_photo_id"]
+            isOneToOne: false
+            referencedRelation: "photos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_submissions_approved_photo_id_fkey"
+            columns: ["approved_photo_id"]
+            isOneToOne: false
+            referencedRelation: "photos_metadata"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_submissions_approved_photo_id_fkey"
+            columns: ["approved_photo_id"]
+            isOneToOne: false
+            referencedRelation: "photos_with_answers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "photo_submissions_reviewed_by_fkey"
             columns: ["reviewed_by"]
@@ -508,12 +541,19 @@ export type Database = {
       }
     }
     Functions: {
-      approve_photo_submission: {
-        Args: { admin_id: string; submission_id: string }
-        Returns: string
-      }
+      approve_photo_submission:
+        | {
+            Args: {
+              admin_id: string
+              metadata_overrides?: Json
+              set_daily_eligible?: boolean
+              submission_id: string
+            }
+            Returns: string
+          }
+        | { Args: { admin_id: string; submission_id: string }; Returns: string }
       reject_photo_submission: {
-        Args: { admin_id: string; reason: string; submission_id: string }
+        Args: { admin_id: string; notes: string; submission_id: string }
         Returns: undefined
       }
     }
