@@ -1,0 +1,103 @@
+---
+import type { User } from "@supabase/supabase-js";
+import UserMenu from "./UserMenu";
+
+interface Props {
+  user: User | null;
+}
+
+const { user } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<nav class="w-full backdrop-blur-lg bg-gradient-to-r from-green-900/80 via-emerald-900/80 to-teal-900/80 border-b border-emerald-500/20 shadow-lg flex-shrink-0">
+  <div class="container mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo & Brand -->
+      <a
+        href="/"
+        class="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-green-200 via-emerald-200 to-teal-200 text-transparent bg-clip-text hover:opacity-80 transition-opacity"
+      >
+        <span class="text-2xl">⚽</span>
+        <span class="hidden sm:inline">FootyGuess Daily</span>
+        <span class="sm:hidden">FootyGuess</span>
+      </a>
+
+      <!-- Main Navigation Links -->
+      <div class="hidden md:flex items-center gap-6">
+        <a
+          href="/play/normal"
+          class:list={[
+            "text-sm font-medium transition-colors hover:text-emerald-200",
+            currentPath.startsWith("/play/normal")
+              ? "text-emerald-200"
+              : "text-emerald-100/80"
+          ]}
+        >
+          🎮 Normal Mode
+        </a>
+        <a
+          href="/play/daily"
+          class:list={[
+            "text-sm font-medium transition-colors hover:text-amber-200",
+            currentPath.startsWith("/play/daily")
+              ? "text-amber-200"
+              : "text-emerald-100/80"
+          ]}
+        >
+          🏅 Daily Challenge
+        </a>
+      </div>
+
+      <!-- Auth State -->
+      <div class="flex items-center gap-3">
+        {
+          user ? (
+            <UserMenu client:load user={user} currentPath={currentPath} />
+          ) : (
+            <div class="flex items-center gap-2 sm:gap-3">
+              <a
+                href="/login"
+                class="text-sm font-medium text-emerald-100 hover:text-emerald-200 transition-colors px-3 py-1.5"
+              >
+                Log In
+              </a>
+              <a
+                href="/signup"
+                class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+              >
+                Sign Up
+              </a>
+            </div>
+          )
+        }
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Links (shown below header on mobile) -->
+    <div class="md:hidden flex items-center justify-center gap-4 pb-3 pt-1">
+      <a
+        href="/play/normal"
+        class:list={[
+          "text-xs font-medium transition-colors hover:text-emerald-200",
+          currentPath.startsWith("/play/normal")
+            ? "text-emerald-200"
+            : "text-emerald-100/70"
+        ]}
+      >
+        🎮 Normal
+      </a>
+      <a
+        href="/play/daily"
+        class:list={[
+          "text-xs font-medium transition-colors hover:text-amber-200",
+          currentPath.startsWith("/play/daily")
+            ? "text-amber-200"
+            : "text-emerald-100/70"
+        ]}
+      >
+        🏅 Daily
+      </a>
+    </div>
+  </div>
+</nav>

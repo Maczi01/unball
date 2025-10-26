@@ -47,6 +47,21 @@ export class AuthService {
       };
     }
 
+    // TODO: Add profanity filtering for nickname (PRD US-026, US-029)
+    // If nickname is provided, validate it for profanity
+    // Install: npm install bad-words
+    // Implementation:
+    // if (nickname) {
+    //   import Filter from 'bad-words';
+    //   const profanityFilter = new Filter();
+    //   if (profanityFilter.isProfane(nickname)) {
+    //     return {
+    //       success: false,
+    //       error: "Nickname contains inappropriate content",
+    //     };
+    //   }
+    // }
+
     // Sign up with Supabase Auth
     const { data: authData, error: authError } = await this.supabase.auth.signUp({
       email,
@@ -169,6 +184,18 @@ export class AuthService {
         error: "Nickname must be between 3 and 20 characters",
       };
     }
+
+    // TODO: Add profanity filtering (PRD US-026, US-029)
+    // Install: npm install bad-words
+    // Implementation:
+    // import Filter from 'bad-words';
+    // const profanityFilter = new Filter();
+    // if (profanityFilter.isProfane(nickname)) {
+    //   return {
+    //     success: false,
+    //     error: "Nickname contains inappropriate content",
+    //   };
+    // }
 
     // Check if nickname is already taken
     const { data: existing } = await this.supabase

@@ -1,6 +1,14 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import SignupForm from "@/components/auth/SignupForm";
+
+// Check if user is already authenticated
+const { user } = Astro.locals;
+
+// If already logged in, redirect to home
+if (user) {
+  return Astro.redirect("/");
+}
 ---
 
 <Layout title="Sign Up - FootyGuess Daily">

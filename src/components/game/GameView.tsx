@@ -283,7 +283,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
 
   if (!currentPhoto) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <div className="h-full flex items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="text-center">
           <p className="text-red-600 dark:text-red-400 text-lg font-semibold">Failed to load game data</p>
           <button
@@ -331,7 +331,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
 
   // Show main game interface
   return (
-    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden">
+    <div className="h-full bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden">
       {/* Header */}
       <GameHeader
         mode={mode}
