@@ -265,4 +265,86 @@ export class PhotoSubmissionsService {
 
     return stats;
   }
+
+  /**
+   * Get photo submissions with pagination and filtering
+   * For admin moderation dashboard
+   */
+  async getSubmissionsWithPagination(options: {
+    page: number;
+    limit: number;
+    status?: "pending" | "approved" | "rejected";
+    from_date?: string;
+    to_date?: string;
+  }) {
+    const { page, limit, status, from_date, to_date } = options;
+    const offset = (page - 1) * limit;
+
+    let query = this.supabase
+      .from("photo_submissions")
+      .select("id, event_name, year_utc, status, submitter_email, thumbnail_url, created_at", {
+        count: "exact",
+      });
+
+    // Apply status filter
+    if (status) {
+      query = query.eq("status", status);
+    }
+
+    // Apply date filters
+    if (from_date) {
+      query = query.gte("created_at", from_date);
+    }
+    if (to_date) {
+      query = query.lte("created_at", to_date);
+    }
+
+    // Apply pagination and ordering
+    query = query.order("created_at", { ascending: false }).range(offset, offset + limit - 1);
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      submissions: data || [],
+      total_count: count || 0,
+    };
+  }
+
+  /**
+   * Get status counts for all submissions
+   */
+  async getStatusCounts() {
+    const { data, error } = await this.supabase.from("photo_submissions").select("status");
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      pending: data.filter((s) => s.status === "pending").length,
+      approved: data.filter((s) => s.status === "approved").length,
+      rejected: data.filter((s) => s.status === "rejected").length,
+    };
+  }
+
+  /**
+   * Get single submission by ID
+   */
+  async getSubmissionById(submissionId: string) {
+    const { data, error } = await this.supabase
+      .from("photo_submissions")
+      .select("*")
+      .eq("id", submissionId)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
 }

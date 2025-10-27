@@ -682,3 +682,136 @@ export type SubmissionState = {
   error?: string; // General error message
   result?: PhotoSubmissionResponseDTO; // Success result
 };
+
+// =============================================================================
+// ADMIN - PHOTO SUBMISSIONS MODERATION
+// =============================================================================
+
+/**
+ * Summary item in admin photo submissions list
+ * Response item type for GET /api/admin/photo-submissions
+ */
+export type AdminPhotoSubmissionListItemDTO = {
+  id: string;
+  event_name: string;
+  year_utc: number;
+  status: Database["public"]["Enums"]["submission_status"];
+  submitter_email: string | null;
+  thumbnail_url: string | null;
+  created_at: string;
+};
+
+/**
+ * Complete photo submission details for admin review
+ * Response type for GET /api/admin/photo-submissions/{id}
+ */
+export type AdminPhotoSubmissionDetailDTO = DbTable<"photo_submissions">;
+
+/**
+ * Response for GET /api/admin/photo-submissions list endpoint
+ */
+export type AdminPhotoSubmissionsResponseDTO = {
+  submissions: AdminPhotoSubmissionListItemDTO[];
+  pagination: PaginationDTO;
+  status_counts: StatusCountsDTO;
+};
+
+/**
+ * Counts of submissions by status
+ */
+export type StatusCountsDTO = {
+  pending: number;
+  approved: number;
+  rejected: number;
+};
+
+/**
+ * Command to approve a photo submission
+ * Request body for POST /api/admin/photo-submissions/{id}/approve
+ */
+export type ApproveSubmissionCommand = {
+  review_notes?: string; // Optional, max 500 chars
+  is_daily_eligible?: boolean; // Default true
+  metadata_overrides?: Partial<{
+    event_name: string;
+    competition: string;
+    year_utc: number;
+    place: string;
+    description: string;
+    tags: string[];
+  }>;
+};
+
+/**
+ * Response for POST /api/admin/photo-submissions/{id}/approve
+ */
+export type ApproveSubmissionResponseDTO = {
+  submission_id: string;
+  photo_id: string;
+  status: "approved";
+  photo_url: string;
+  reviewed_at: string;
+  reviewed_by: string;
+};
+
+/**
+ * Command to reject a photo submission
+ * Request body for POST /api/admin/photo-submissions/{id}/reject
+ */
+export type RejectSubmissionCommand = {
+  review_notes: string; // Required, 1-500 chars
+  delete_file?: boolean; // Default true
+};
+
+/**
+ * Response for POST /api/admin/photo-submissions/{id}/reject
+ */
+export type RejectSubmissionResponseDTO = {
+  submission_id: string;
+  status: "rejected";
+  reviewed_at: string;
+  reviewed_by: string;
+};
+
+/**
+ * Submission status type (union of enum values)
+ */
+export type SubmissionStatus = Database["public"]["Enums"]["submission_status"];
+
+/**
+ * Filter state for submissions list
+ */
+export type SubmissionFilterState = {
+  status: SubmissionStatus | "all";
+  page: number;
+};
+
+/**
+ * State for moderation actions (approve/reject)
+ */
+export type ModerationActionState = {
+  status: "idle" | "submitting" | "success" | "error";
+  error?: string;
+};
+
+/**
+ * Complete view model for photo moderation dashboard
+ */
+export type PhotoSubmissionListViewModel = {
+  submissions: AdminPhotoSubmissionListItemDTO[];
+  filters: SubmissionFilterState;
+  pagination: PaginationState;
+  statusCounts: StatusCountsDTO;
+  isLoading: boolean;
+  error: string | null;
+};
+
+/**
+ * View model for detail modal
+ */
+export type SubmissionDetailViewModel = {
+  submission: AdminPhotoSubmissionDetailDTO | null;
+  isLoading: boolean;
+  error: string | null;
+  moderationAction: ModerationActionState;
+};

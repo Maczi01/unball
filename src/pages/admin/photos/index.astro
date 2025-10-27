@@ -1,0 +1,161 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import type { AdminPhotosResponseDTO } from "@/types";
+
+export const prerender = false;
+
+// Check authentication
+const { user } = Astro.locals;
+
+if (!user) {
+  return Astro.redirect("/login?redirect=/admin/photos");
+}
+
+// Check admin role
+const { data: userData, error: userError } = await Astro.locals.supabase
+  .from("users")
+  .select("role")
+  .eq("id", user.id)
+  .single();
+
+if (userError || !userData || userData.role !== "admin") {
+  return Astro.redirect("/?error=unauthorized");
+}
+
+// Fetch photos
+let photosData: AdminPhotosResponseDTO | null = null;
+
+try {
+  const response = await fetch(
+    `${Astro.url.origin}/api/admin/photos?page=1&limit=50`,
+    {
+      headers: {
+        Cookie: Astro.request.headers.get("Cookie") || "",
+      },
+    }
+  );
+
+  if (response.ok) {
+    photosData = await response.json();
+  }
+} catch (error) {
+  console.error("Failed to fetch photos:", error);
+}
+---
+
+<Layout title="Manage Photos - Admin" showNavigation={true}>
+  <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+      <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+              Manage Photos
+            </h1>
+            <p class="text-neutral-600 dark:text-neutral-400 mt-2">
+              {photosData ? `${photosData.pagination.total_items} photos total` : "Loading..."}
+            </p>
+          </div>
+          <a
+            href="/admin/photo-moderation"
+            class="inline-flex items-center justify-center rounded-md bg-neutral-900 dark:bg-neutral-100 px-4 py-2 text-sm font-medium text-white dark:text-neutral-900 shadow hover:bg-neutral-700 dark:hover:bg-neutral-300 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-colors"
+          >
+            Photo Moderation
+          </a>
+        </div>
+
+        {
+          photosData && photosData.photos.length > 0 ? (
+            // Photos Grid
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {photosData.photos.map((photo) => (
+                <a
+                  href={`/admin/photos/${photo.id}/edit`}
+                  class="block group"
+                >
+                  <div class="bg-white dark:bg-neutral-900 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <!-- Photo -->
+                    <div class="aspect-video bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
+                      {photo.thumbnail_url ? (
+                        <img
+                          src={photo.thumbnail_url}
+                          alt={photo.event_name}
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        />
+                      ) : (
+                        <div class="flex items-center justify-center h-full text-neutral-400">
+                          <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+
+                    <!-- Info -->
+                    <div class="p-4 space-y-2">
+                      <h3 class="font-semibold text-neutral-900 dark:text-neutral-100 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {photo.event_name}
+                      </h3>
+
+                      <div class="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                        <span>Year: {photo.year_utc}</span>
+                        {photo.is_daily_eligible && (
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                            Daily
+                          </span>
+                        )}
+                      </div>
+
+                      {photo.first_used_in_daily_date && (
+                        <p class="text-xs text-neutral-500">
+                          Used in daily: {new Date(photo.first_used_in_daily_date).toLocaleDateString()}
+                        </p>
+                      )}
+
+                      <div class="pt-2 flex items-center justify-between">
+                        <span class="text-xs text-neutral-500">
+                          {new Date(photo.created_at).toLocaleDateString()}
+                        </span>
+                        <span class="text-sm text-blue-600 dark:text-blue-400 group-hover:underline">
+                          Edit →
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            // Empty State
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+              <div class="rounded-full bg-neutral-100 dark:bg-neutral-800 p-6 mb-4">
+                <svg
+                  class="h-12 w-12 text-neutral-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
+                No photos found
+              </h3>
+              <p class="text-neutral-600 dark:text-neutral-400">
+                There are no photos in the database yet.
+              </p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</Layout>

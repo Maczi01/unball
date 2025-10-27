@@ -1,0 +1,53 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { PhotoModerationDashboard } from "@/components/PhotoModerationDashboard";
+import type { AdminPhotoSubmissionsResponseDTO } from "@/types";
+
+export const prerender = false;
+
+// Check authentication
+const { user } = Astro.locals;
+
+if (!user) {
+  return Astro.redirect("/login?redirect=/admin/photo-moderation");
+}
+
+// Check admin role
+const { data: userData, error: userError } = await Astro.locals.supabase
+  .from("users")
+  .select("role, email")
+  .eq("id", user.id)
+  .single();
+
+if (userError || !userData || userData.role !== "admin") {
+  return Astro.redirect("/?error=unauthorized");
+}
+
+// Optional: Fetch initial data for SSR (can be removed if client-side only is preferred)
+let initialData: AdminPhotoSubmissionsResponseDTO | undefined;
+
+try {
+  const response = await fetch(
+    `${Astro.url.origin}/api/admin/photo-submissions?page=1&limit=50`,
+    {
+      headers: {
+        Cookie: Astro.request.headers.get("Cookie") || "",
+      },
+    }
+  );
+
+  if (response.ok) {
+    initialData = await response.json();
+  }
+} catch (error) {
+  console.error("Failed to fetch initial data:", error);
+}
+---
+
+<Layout title="Photo Moderation - Admin" showNavigation={true}>
+  <PhotoModerationDashboard
+    client:load
+    initialData={initialData}
+    adminEmail={userData.email || ""}
+  />
+</Layout>
