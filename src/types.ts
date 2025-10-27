@@ -618,3 +618,67 @@ export type NicknameValidation = {
   isValid: boolean;
   error?: string;
 };
+
+// =============================================================================
+// PHOTO SUBMISSION - CLIENT-SIDE TYPES
+// =============================================================================
+
+/**
+ * Response after successful photo submission
+ * Confirms submission entered pending review status
+ */
+export type PhotoSubmissionResponseDTO = {
+  submission_id: string; // UUID
+  status: "pending"; // Always "pending" for new submissions
+  message: string; // Success message
+  created_at: string; // ISO 8601 timestamp
+};
+
+/**
+ * Form state for controlled inputs
+ * All fields as strings initially to handle empty states
+ * Converted to proper types on submission
+ */
+export type PhotoSubmissionFormData = {
+  photo_file: File | null;
+  event_name: string;
+  competition: string;
+  year_utc: string; // String in input, converts to number for API
+  place: string;
+  lat: string; // String in input, converts to number for API
+  lon: string; // String in input, converts to number for API
+  description: string;
+  source_url: string;
+  license: string;
+  credit: string;
+  tags: string[];
+  notes: string;
+  submitter_email: string;
+};
+
+/**
+ * Per-field validation errors
+ * Key matches PhotoSubmissionFormData keys
+ */
+export type ValidationErrors = {
+  [K in keyof PhotoSubmissionFormData]?: string;
+};
+
+/**
+ * File validation result with preview
+ */
+export type FileValidationResult = {
+  isValid: boolean;
+  error?: string;
+  preview?: string; // base64 or object URL for preview
+};
+
+/**
+ * Overall form submission state
+ * Tracks submission lifecycle from idle to success/error
+ */
+export type SubmissionState = {
+  status: "idle" | "validating" | "submitting" | "success" | "error";
+  error?: string; // General error message
+  result?: PhotoSubmissionResponseDTO; // Success result
+};

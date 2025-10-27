@@ -1,0 +1,97 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { PhotoSubmissionForm } from "@/components/PhotoSubmissionForm";
+
+// SSR required for auth check
+export const prerender = false;
+
+// Get auth state from middleware
+const { user, supabase } = Astro.locals;
+
+// Redirect to login if not authenticated
+if (!user) {
+  return Astro.redirect(`/login?redirect=${encodeURIComponent("/submit-photo")}`);
+}
+
+// Check if user has permission to submit photos
+const { data: userProfile, error: profileError } = await supabase
+  .from("users")
+  .select("can_add_photos, email, nickname")
+  .eq("id", user.id)
+  .single();
+
+// Handle profile fetch error
+if (profileError || !userProfile) {
+  console.error("Failed to fetch user profile:", profileError);
+  return Astro.redirect("/");
+}
+
+// Check permission
+const hasPermission = userProfile.can_add_photos;
+const userEmail = userProfile.email || user.email;
+---
+
+<Layout title="Submit Photo - FootyGuess Daily">
+  <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+      {
+        !hasPermission ? (
+          // Permission Error View
+          <div class="max-w-2xl mx-auto">
+            <div class="bg-white dark:bg-neutral-900 rounded-lg shadow-lg p-8 text-center">
+              <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950">
+                <svg
+                  class="h-8 w-8 text-red-600 dark:text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+
+              <h1 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
+                Permission Required
+              </h1>
+
+              <p class="text-neutral-600 dark:text-neutral-400 mb-6">
+                You don't have permission to submit photos at this time. Please
+                contact an administrator to request photo submission access.
+              </p>
+
+              <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a
+                  href="/"
+                  class="inline-flex items-center justify-center rounded-md bg-neutral-900 dark:bg-neutral-100 px-4 py-2 text-sm font-medium text-white dark:text-neutral-900 shadow hover:bg-neutral-700 dark:hover:bg-neutral-300 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-colors"
+                >
+                  Go to Home
+                </a>
+                <a
+                  href="/profile"
+                  class="inline-flex items-center justify-center rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-colors"
+                >
+                  View Profile
+                </a>
+              </div>
+
+              <div class="mt-8 pt-8 border-t border-neutral-200 dark:border-neutral-800">
+                <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                  Logged in as: <strong>{userEmail}</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          // Photo Submission Form
+          <PhotoSubmissionForm client:load userEmail={userEmail} />
+        )
+      }
+    </div>
+  </div>
+</Layout>
