@@ -37,6 +37,28 @@ export const PhotoModerationDashboard = ({
       <Toaster />
 
       <div className="space-y-6">
+        {/* Navigation */}
+        <div className="flex items-center justify-end gap-2 pb-4">
+          <a
+            href="/admin"
+            className="inline-flex items-center justify-center rounded-md bg-neutral-100 dark:bg-neutral-800 px-4 py-2 text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+          >
+            Dashboard
+          </a>
+          <a
+            href="/admin/photos"
+            className="inline-flex items-center justify-center rounded-md bg-neutral-100 dark:bg-neutral-800 px-4 py-2 text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+          >
+            Manage Photos
+          </a>
+          <a
+            href="/admin/users"
+            className="inline-flex items-center justify-center rounded-md bg-neutral-100 dark:bg-neutral-800 px-4 py-2 text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+          >
+            User Management
+          </a>
+        </div>
+
         <ModerationHeader
           currentStatus={state.currentStatus}
           statusCounts={state.statusCounts}

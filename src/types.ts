@@ -815,3 +815,74 @@ export type SubmissionDetailViewModel = {
   error: string | null;
   moderationAction: ModerationActionState;
 };
+
+/**
+ * Pagination state for client-side pagination
+ */
+export type PaginationState = {
+  current_page: number;
+  total_pages: number;
+  total_items: number;
+};
+
+// =============================================================================
+// ADMIN - USER MANAGEMENT
+// =============================================================================
+
+/**
+ * User role type (union of enum values)
+ */
+export type UserRole = Database["public"]["Enums"]["user_role"];
+
+/**
+ * Summary user information for admin list view
+ * Response item type for GET /api/admin/users
+ */
+export type AdminUserListItemDTO = {
+  id: string;
+  email: string | null;
+  nickname: string | null;
+  role: UserRole;
+  can_add_photos: boolean;
+  created_at: string;
+  consent_given_at: string | null;
+};
+
+/**
+ * Response for GET /api/admin/users list endpoint
+ */
+export type AdminUsersResponseDTO = {
+  users: AdminUserListItemDTO[];
+  pagination: PaginationDTO;
+  stats: UserStatsDTO;
+};
+
+/**
+ * User statistics summary
+ */
+export type UserStatsDTO = {
+  total_users: number;
+  total_admins: number;
+  users_with_photo_permission: number;
+  users_with_consent: number;
+};
+
+/**
+ * Command to update user permissions and role
+ * Request body for PATCH /api/admin/users/{id}
+ */
+export type UpdateUserPermissionsCommand = {
+  role?: UserRole;
+  can_add_photos?: boolean;
+};
+
+/**
+ * Response for PATCH /api/admin/users/{id}
+ */
+export type UpdateUserPermissionsResponseDTO = {
+  user_id: string;
+  email: string | null;
+  role: UserRole;
+  can_add_photos: boolean;
+  updated_at: string;
+};
