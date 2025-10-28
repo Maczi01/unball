@@ -96,4 +96,43 @@ export class PhotosService {
 
     return { success: true };
   }
+
+  /**
+   * Bulk update photos
+   */
+  async bulkUpdatePhotos(photoIds: string[], updates: Partial<UpdatePhotoCommand>) {
+    const { data, error } = await this.supabase
+      .from("photos")
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString(),
+      })
+      .in("id", photoIds)
+      .select();
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      success: true,
+      updated_count: data.length,
+    };
+  }
+
+  /**
+   * Bulk delete photos
+   */
+  async bulkDeletePhotos(photoIds: string[]) {
+    const { error } = await this.supabase.from("photos").delete().in("id", photoIds);
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      success: true,
+      deleted_count: photoIds.length,
+    };
+  }
 }
