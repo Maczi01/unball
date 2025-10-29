@@ -10,6 +10,7 @@
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [Available Scripts](#available-scripts)
+- [Testing](#testing)
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
 - [License](#license)
@@ -143,6 +144,71 @@ The project uses **Husky** and **lint-staged** to automatically:
 
 - Run ESLint fix on `.ts`, `.tsx`, `.astro` files before commit
 - Run Prettier on `.json`, `.css`, `.md` files before commit
+
+## Testing
+
+### Testing Strategy
+
+FootyGuess Daily follows a pragmatic testing approach focused on critical user flows and business logic:
+
+- **Unit Tests**: Core scoring algorithms, utility functions, and data transformations
+- **Integration Tests**: API endpoints, database operations, and Supabase interactions
+- **Component Tests**: Interactive React components (map, year picker, leaderboard)
+- **End-to-End Tests**: Complete game flows from photo display to score submission
+
+### Testing Tools
+
+- **[Vitest](https://vitest.dev/)** - Fast unit and integration testing framework
+- **[React Testing Library](https://testing-library.com/react)** - Component testing with accessibility focus
+- **[Playwright](https://playwright.dev/)** - End-to-end testing for critical user journeys
+- **[MSW (Mock Service Worker)](https://mswjs.io/)** - API mocking for isolated tests
+
+### Running Tests
+
+```bash
+# Unit and integration tests
+npm run test              # Run all tests
+npm run test:watch        # Run tests in watch mode
+npm run test:coverage     # Generate coverage report
+
+# E2E tests
+npm run test:e2e          # Run end-to-end tests
+npm run test:e2e:ui       # Run E2E tests with UI
+```
+
+### Test Coverage Goals
+
+- **Critical paths**: 90%+ coverage (scoring, leaderboard, daily scheduling)
+- **Business logic**: 80%+ coverage (services, utilities)
+- **UI components**: 70%+ coverage (interactive components)
+- **Overall project**: 75%+ coverage target
+
+### Key Test Scenarios
+
+1. **Scoring Accuracy**
+   - Location-based scoring with various distances
+   - Time-based scoring with various year differences
+   - Edge cases (exact matches, maximum distances)
+
+2. **Daily Mode**
+   - Unique daily challenge generation
+   - Score submission and leaderboard updates
+   - Tie-breaker logic verification
+
+3. **Normal Mode**
+   - Unlimited play functionality
+   - Random photo selection
+   - Instant feedback display
+
+4. **Leaderboard**
+   - Top-10 ranking calculation
+   - Anonymous token handling
+   - Completion time tracking
+
+5. **Performance**
+   - Initial load time (<2s)
+   - Map interaction responsiveness (<200ms)
+   - Mobile device compatibility
 
 ## Project Scope
 
