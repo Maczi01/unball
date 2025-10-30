@@ -5,8 +5,12 @@
  * Usage: npx tsx scripts/seed-test-data.ts
  */
 
+import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../src/db/database.types";
+
+// Load .env.test file if it exists
+config({ path: ".env.test" });
 
 const supabaseUrl = process.env.SUPABASE_URL || "http://127.0.0.1:54321";
 // Use service role key for seeding (bypasses RLS)
