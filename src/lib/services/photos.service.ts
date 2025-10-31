@@ -11,11 +11,7 @@ export class PhotosService {
   /**
    * Get all photos with pagination
    */
-  async getPhotosWithPagination(options: {
-    page: number;
-    limit: number;
-    is_daily_eligible?: boolean;
-  }) {
+  async getPhotosWithPagination(options: { page: number; limit: number; is_daily_eligible?: boolean }) {
     const { page, limit, is_daily_eligible } = options;
     const offset = (page - 1) * limit;
 
@@ -50,11 +46,7 @@ export class PhotosService {
    * Get single photo by ID
    */
   async getPhotoById(photoId: string) {
-    const { data, error } = await this.supabase
-      .from("photos")
-      .select("*")
-      .eq("id", photoId)
-      .single();
+    const { data, error } = await this.supabase.from("photos").select("*").eq("id", photoId).single();
 
     if (error) {
       throw error;

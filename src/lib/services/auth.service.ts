@@ -84,10 +84,7 @@ export class AuthService {
 
     // Update nickname if provided
     if (nickname) {
-      const { error: updateError } = await this.supabase
-        .from("users")
-        .update({ nickname })
-        .eq("id", authData.user.id);
+      const { error: updateError } = await this.supabase.from("users").update({ nickname }).eq("id", authData.user.id);
 
       if (updateError) {
         console.error("Failed to set nickname:", updateError);
@@ -107,11 +104,10 @@ export class AuthService {
   async signIn(data: SignInData): Promise<AuthResult> {
     const { email, password } = data;
 
-    const { data: authData, error: authError } =
-      await this.supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const { data: authData, error: authError } = await this.supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (authError) {
       return {
@@ -212,10 +208,7 @@ export class AuthService {
       };
     }
 
-    const { error } = await this.supabase
-      .from("users")
-      .update({ nickname })
-      .eq("id", userId);
+    const { error } = await this.supabase.from("users").update({ nickname }).eq("id", userId);
 
     if (error) {
       return {
@@ -231,11 +224,7 @@ export class AuthService {
    * Check if user has permission to add photos
    */
   async canAddPhotos(userId: string): Promise<boolean> {
-    const { data: user } = await this.supabase
-      .from("users")
-      .select("can_add_photos")
-      .eq("id", userId)
-      .single();
+    const { data: user } = await this.supabase.from("users").select("can_add_photos").eq("id", userId).single();
 
     return user?.can_add_photos ?? false;
   }
@@ -244,11 +233,7 @@ export class AuthService {
    * Check if user is admin
    */
   async isAdmin(userId: string): Promise<boolean> {
-    const { data: user } = await this.supabase
-      .from("users")
-      .select("role")
-      .eq("id", userId)
-      .single();
+    const { data: user } = await this.supabase.from("users").select("role").eq("id", userId).single();
 
     return user?.role === "admin";
   }

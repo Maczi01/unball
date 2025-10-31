@@ -42,9 +42,10 @@ export default function LoginForm({ redirectUrl = "/" }: LoginFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form">
       {error && (
         <div
+          data-testid="login-error"
           className="rounded-md border border-red-400/50 bg-red-500/10 px-4 py-3 text-sm text-red-200"
           role="alert"
         >
@@ -65,6 +66,7 @@ export default function LoginForm({ redirectUrl = "/" }: LoginFormProps) {
           required
           autoComplete="email"
           disabled={isLoading}
+          data-testid="login-email-input"
           className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus-visible:border-emerald-300 focus-visible:ring-emerald-300/50"
         />
       </div>
@@ -82,6 +84,7 @@ export default function LoginForm({ redirectUrl = "/" }: LoginFormProps) {
           required
           autoComplete="current-password"
           disabled={isLoading}
+          data-testid="login-password-input"
           className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus-visible:border-emerald-300 focus-visible:ring-emerald-300/50"
         />
       </div>
@@ -90,6 +93,7 @@ export default function LoginForm({ redirectUrl = "/" }: LoginFormProps) {
         type="submit"
         className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] active:scale-95"
         disabled={isLoading}
+        data-testid="login-submit-button"
       >
         {isLoading ? "Signing in..." : "Sign In"}
       </Button>

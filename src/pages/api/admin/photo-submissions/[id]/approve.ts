@@ -112,15 +112,12 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     }
 
     // Call the database function to approve
-    const { data: photoId, error: approveError } = await locals.supabase.rpc(
-      "approve_photo_submission",
-      {
-        submission_id: id,
-        admin_id: user.id,
-        set_daily_eligible: is_daily_eligible ?? true,
-        metadata_overrides: metadata_overrides ?? null,
-      }
-    );
+    const { data: photoId, error: approveError } = await locals.supabase.rpc("approve_photo_submission", {
+      submission_id: id,
+      admin_id: user.id,
+      set_daily_eligible: is_daily_eligible ?? true,
+      metadata_overrides: metadata_overrides ?? null,
+    });
 
     if (approveError) {
       console.error("Approve submission error:", approveError);
@@ -135,18 +132,11 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     // Update review notes if provided
     if (review_notes) {
-      await locals.supabase
-        .from("photo_submissions")
-        .update({ review_notes })
-        .eq("id", id);
+      await locals.supabase.from("photo_submissions").update({ review_notes }).eq("id", id);
     }
 
     // Get the approved photo details
-    const { data: photo } = await locals.supabase
-      .from("photos")
-      .select("photo_url")
-      .eq("id", photoId)
-      .single();
+    const { data: photo } = await locals.supabase.from("photos").select("photo_url").eq("id", photoId).single();
 
     const response: ApproveSubmissionResponseDTO = {
       submission_id: id,

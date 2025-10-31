@@ -51,12 +51,7 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }: Pagination
 
   return (
     <div className="flex items-center justify-center gap-1 mt-6">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-      >
+      <Button variant="outline" size="sm" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
         <ChevronLeft className="h-4 w-4" />
         <span className="sr-only">Previous page</span>
       </Button>

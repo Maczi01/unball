@@ -205,11 +205,7 @@ export class PhotoSubmissionsService {
    * Reject a photo submission
    * Only admins can do this
    */
-  async rejectSubmission(
-    submissionId: string,
-    adminId: string,
-    reason: string
-  ): Promise<ModerationResult> {
+  async rejectSubmission(submissionId: string, adminId: string, reason: string): Promise<ModerationResult> {
     // Check if user is admin
     const { data: admin, error: adminError } = await this.supabase
       .from("users")
@@ -247,10 +243,7 @@ export class PhotoSubmissionsService {
    * Get submission statistics for a user
    */
   async getUserStats(userId: string) {
-    const { data, error } = await this.supabase
-      .from("photo_submissions")
-      .select("status")
-      .eq("user_id", userId);
+    const { data, error } = await this.supabase.from("photo_submissions").select("status").eq("user_id", userId);
 
     if (error) {
       throw error;
@@ -335,11 +328,7 @@ export class PhotoSubmissionsService {
    * Get single submission by ID
    */
   async getSubmissionById(submissionId: string) {
-    const { data, error } = await this.supabase
-      .from("photo_submissions")
-      .select("*")
-      .eq("id", submissionId)
-      .single();
+    const { data, error } = await this.supabase.from("photo_submissions").select("*").eq("id", submissionId).single();
 
     if (error) {
       throw error;

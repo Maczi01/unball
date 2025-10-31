@@ -1,30 +1,30 @@
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import { resolve } from "path";
 
 export default defineConfig({
   plugins: [react()],
   test: {
     // Use jsdom for DOM testing (React components)
-    environment: 'jsdom',
+    environment: "jsdom",
 
     // Enable globals (describe, it, expect, etc.)
     globals: true,
 
     // Setup files run before each test file
-    setupFiles: ['./tests/setup/vitest.setup.ts'],
+    setupFiles: ["./tests/setup/vitest.setup.ts"],
 
     // Coverage configuration
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      include: ['src/**/*.{ts,tsx}'],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      include: ["src/**/*.{ts,tsx}"],
       exclude: [
-        'src/**/*.d.ts',
-        'src/**/*.test.{ts,tsx}',
-        'src/**/*.spec.{ts,tsx}',
-        'src/env.d.ts',
-        'src/db/database.types.ts', // Generated types
+        "src/**/*.d.ts",
+        "src/**/*.test.{ts,tsx}",
+        "src/**/*.spec.{ts,tsx}",
+        "src/env.d.ts",
+        "src/db/database.types.ts", // Generated types
       ],
       // Coverage thresholds for critical paths
       thresholds: {
@@ -36,8 +36,8 @@ export default defineConfig({
     },
 
     // Test file patterns
-    include: ['**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['node_modules', 'dist', '.astro', 'e2e'],
+    include: ["**/*.{test,spec}.{ts,tsx}"],
+    exclude: ["node_modules", "dist", ".astro", "e2e"],
 
     // Timeout for tests
     testTimeout: 10000,
@@ -48,7 +48,7 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
+      "@": resolve(__dirname, "./src"),
     },
   },
 });

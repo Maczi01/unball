@@ -76,10 +76,7 @@ export const ModerationActions = ({
         <div className="rounded-lg bg-neutral-100 dark:bg-neutral-800 p-4">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             This submission has already been{" "}
-            <span className="font-semibold">
-              {currentStatus === "approved" ? "approved" : "rejected"}
-            </span>
-            .
+            <span className="font-semibold">{currentStatus === "approved" ? "approved" : "rejected"}</span>.
           </p>
         </div>
       </div>
@@ -118,10 +115,7 @@ export const ModerationActions = ({
               checked={isDailyEligible}
               onCheckedChange={(checked) => setIsDailyEligible(checked as boolean)}
             />
-            <Label
-              htmlFor="daily-eligible"
-              className="text-sm font-normal cursor-pointer"
-            >
+            <Label htmlFor="daily-eligible" className="text-sm font-normal cursor-pointer">
               Make eligible for daily challenges
             </Label>
           </div>

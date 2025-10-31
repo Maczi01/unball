@@ -10,8 +10,14 @@ const querySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(50),
   status: z.enum(["pending", "approved", "rejected"]).optional(),
-  from_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  to_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  from_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  to_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
 });
 
 /**

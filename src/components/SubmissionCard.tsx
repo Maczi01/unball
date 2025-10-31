@@ -18,12 +18,7 @@ const STATUS_STYLES = {
   rejected: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
 } as const;
 
-export const SubmissionCard = ({
-  submission,
-  onClick,
-  onQuickApprove,
-  onQuickReject,
-}: SubmissionCardProps) => {
+export const SubmissionCard = ({ submission, onClick, onQuickApprove, onQuickReject }: SubmissionCardProps) => {
   const isPending = submission.status === "pending";
 
   return (
@@ -55,11 +50,7 @@ export const SubmissionCard = ({
 
           {isPending && onQuickApprove && onQuickReject && (
             <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-              <QuickActions
-                submissionId={submission.id}
-                onApprove={onQuickApprove}
-                onReject={onQuickReject}
-              />
+              <QuickActions submissionId={submission.id} onApprove={onQuickApprove} onReject={onQuickReject} />
             </div>
           )}
         </div>

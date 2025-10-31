@@ -27,14 +27,11 @@ if (userError || !userData || userData.role !== "admin") {
 let photosData: AdminPhotosResponseDTO | null = null;
 
 try {
-  const response = await fetch(
-    `${Astro.url.origin}/api/admin/photos?page=1&limit=50`,
-    {
-      headers: {
-        Cookie: Astro.request.headers.get("Cookie") || "",
-      },
-    }
-  );
+  const response = await fetch(`${Astro.url.origin}/api/admin/photos?page=1&limit=50`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
 
   if (response.ok) {
     photosData = await response.json();
@@ -51,9 +48,7 @@ try {
         <!-- Header -->
         <div class="flex items-center justify-between mb-8">
           <div>
-            <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-              Manage Photos
-            </h1>
+            <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">Manage Photos</h1>
             <p class="text-neutral-600 dark:text-neutral-400 mt-2">
               {photosData ? `${photosData.pagination.total_items} photos total` : "Loading..."}
             </p>
@@ -75,14 +70,7 @@ try {
         </div>
 
         <!-- Photos List with Bulk Actions -->
-        {
-          photosData && (
-            <PhotosListWithBulkActions
-              client:load
-              initialPhotos={photosData.photos}
-            />
-          )
-        }
+        {photosData && <PhotosListWithBulkActions client:load initialPhotos={photosData.photos} />}
       </div>
     </div>
   </div>

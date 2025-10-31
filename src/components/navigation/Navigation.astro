@@ -10,7 +10,9 @@ const { user } = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
 
-<nav class="w-full backdrop-blur-lg bg-gradient-to-r from-green-900/80 via-emerald-900/80 to-teal-900/80 border-b border-emerald-500/20 shadow-lg flex-shrink-0">
+<nav
+  class="w-full backdrop-blur-lg bg-gradient-to-r from-green-900/80 via-emerald-900/80 to-teal-900/80 border-b border-emerald-500/20 shadow-lg flex-shrink-0"
+>
   <div class="container mx-auto px-4 sm:px-6">
     <div class="flex items-center justify-between h-16">
       <!-- Logo & Brand -->
@@ -29,9 +31,7 @@ const currentPath = Astro.url.pathname;
           href="/play/normal"
           class:list={[
             "text-sm font-medium transition-colors hover:text-emerald-200",
-            currentPath.startsWith("/play/normal")
-              ? "text-emerald-200"
-              : "text-emerald-100/80"
+            currentPath.startsWith("/play/normal") ? "text-emerald-200" : "text-emerald-100/80",
           ]}
         >
           🎮 Normal Mode
@@ -40,9 +40,7 @@ const currentPath = Astro.url.pathname;
           href="/play/daily"
           class:list={[
             "text-sm font-medium transition-colors hover:text-amber-200",
-            currentPath.startsWith("/play/daily")
-              ? "text-amber-200"
-              : "text-emerald-100/80"
+            currentPath.startsWith("/play/daily") ? "text-amber-200" : "text-emerald-100/80",
           ]}
         >
           🏅 Daily Challenge
@@ -80,9 +78,7 @@ const currentPath = Astro.url.pathname;
         href="/play/normal"
         class:list={[
           "text-xs font-medium transition-colors hover:text-emerald-200",
-          currentPath.startsWith("/play/normal")
-            ? "text-emerald-200"
-            : "text-emerald-100/70"
+          currentPath.startsWith("/play/normal") ? "text-emerald-200" : "text-emerald-100/70",
         ]}
       >
         🎮 Normal
@@ -91,9 +87,7 @@ const currentPath = Astro.url.pathname;
         href="/play/daily"
         class:list={[
           "text-xs font-medium transition-colors hover:text-amber-200",
-          currentPath.startsWith("/play/daily")
-            ? "text-amber-200"
-            : "text-emerald-100/70"
+          currentPath.startsWith("/play/daily") ? "text-amber-200" : "text-emerald-100/70",
         ]}
       >
         🏅 Daily

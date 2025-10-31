@@ -10,19 +10,9 @@ interface PhotoModerationDashboardProps {
   adminEmail: string;
 }
 
-export const PhotoModerationDashboard = ({
-  initialData,
-  adminEmail,
-}: PhotoModerationDashboardProps) => {
-  const {
-    state,
-    setStatusFilter,
-    setPage,
-    openDetailModal,
-    closeDetailModal,
-    approveSubmission,
-    rejectSubmission,
-  } = usePhotoModeration();
+export const PhotoModerationDashboard = ({ initialData, adminEmail }: PhotoModerationDashboardProps) => {
+  const { state, setStatusFilter, setPage, openDetailModal, closeDetailModal, approveSubmission, rejectSubmission } =
+    usePhotoModeration();
 
   const handleQuickApprove = async (id: string) => {
     await approveSubmission(id, { is_daily_eligible: true });

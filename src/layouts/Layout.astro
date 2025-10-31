@@ -7,10 +7,7 @@ interface Props {
   showNavigation?: boolean;
 }
 
-const {
-  title = "FootyGuess Daily - Test Your Football Knowledge",
-  showNavigation = true
-} = Astro.props;
+const { title = "FootyGuess Daily - Test Your Football Knowledge", showNavigation = true } = Astro.props;
 
 // Get auth state from middleware
 const { user } = Astro.locals;

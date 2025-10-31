@@ -18,14 +18,7 @@ interface PhotoEditFormProps {
   onCancel?: () => void;
 }
 
-const COMMON_LICENSES = [
-  "CC-BY-SA 4.0",
-  "CC-BY 4.0",
-  "CC-BY-NC 4.0",
-  "CC-BY-NC-SA 4.0",
-  "Public Domain",
-  "CC0 1.0",
-];
+const COMMON_LICENSES = ["CC-BY-SA 4.0", "CC-BY 4.0", "CC-BY-NC 4.0", "CC-BY-NC-SA 4.0", "Public Domain", "CC0 1.0"];
 
 export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps) {
   const [formData, setFormData] = useState({
@@ -161,9 +154,7 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
       {/* Header */}
       <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-            Edit Photo
-          </h1>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Edit Photo</h1>
           <Button type="button" variant="ghost" size="sm" onClick={handleCancel}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to List
@@ -172,19 +163,13 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
 
         {/* Photo Preview */}
         <div className="mt-4 rounded-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800">
-          <img
-            src={photo.photo_url}
-            alt={photo.event_name}
-            className="w-full h-auto max-h-96 object-contain"
-          />
+          <img src={photo.photo_url} alt={photo.event_name} className="w-full h-auto max-h-96 object-contain" />
         </div>
       </div>
 
       {/* Event Information */}
       <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-sm p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-          Event Information
-        </h2>
+        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Event Information</h2>
 
         <div>
           <Label htmlFor="event_name">
@@ -197,9 +182,7 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
             className={cn(validationErrors.event_name && "border-red-500")}
             placeholder="e.g., Champions League Final 2005"
           />
-          {validationErrors.event_name && (
-            <p className="text-sm text-red-500 mt-1">{validationErrors.event_name}</p>
-          )}
+          {validationErrors.event_name && <p className="text-sm text-red-500 mt-1">{validationErrors.event_name}</p>}
         </div>
 
         <div>
@@ -225,9 +208,7 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
             onChange={(e) => setFormData({ ...formData, year_utc: e.target.value })}
             className={cn(validationErrors.year_utc && "border-red-500")}
           />
-          {validationErrors.year_utc && (
-            <p className="text-sm text-red-500 mt-1">{validationErrors.year_utc}</p>
-          )}
+          {validationErrors.year_utc && <p className="text-sm text-red-500 mt-1">{validationErrors.year_utc}</p>}
         </div>
 
         <div>
@@ -246,23 +227,15 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
         <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
           Geographic Location <span className="text-red-500">*</span>
         </h2>
-        <LocationPicker
-          initialLat={photo.lat}
-          initialLon={photo.lon}
-          onChange={handleLocationChange}
-        />
+        <LocationPicker initialLat={photo.lat} initialLon={photo.lon} onChange={handleLocationChange} />
         {(validationErrors.lat || validationErrors.lon) && (
-          <p className="text-sm text-red-500 mt-2">
-            {validationErrors.lat || validationErrors.lon}
-          </p>
+          <p className="text-sm text-red-500 mt-2">{validationErrors.lat || validationErrors.lon}</p>
         )}
       </div>
 
       {/* Details */}
       <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-sm p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-          Photo Details
-        </h2>
+        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Photo Details</h2>
 
         <div>
           <Label htmlFor="description">Description</Label>
@@ -302,9 +275,7 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
               <option key={license} value={license} />
             ))}
           </datalist>
-          {validationErrors.license && (
-            <p className="text-sm text-red-500 mt-1">{validationErrors.license}</p>
-          )}
+          {validationErrors.license && <p className="text-sm text-red-500 mt-1">{validationErrors.license}</p>}
         </div>
 
         <div>
@@ -318,9 +289,7 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
             className={cn(validationErrors.credit && "border-red-500")}
             placeholder="Photo by..."
           />
-          {validationErrors.credit && (
-            <p className="text-sm text-red-500 mt-1">{validationErrors.credit}</p>
-          )}
+          {validationErrors.credit && <p className="text-sm text-red-500 mt-1">{validationErrors.credit}</p>}
         </div>
 
         <div>
@@ -343,9 +312,7 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
           <Checkbox
             id="is_daily_eligible"
             checked={formData.is_daily_eligible}
-            onCheckedChange={(checked) =>
-              setFormData({ ...formData, is_daily_eligible: checked as boolean })
-            }
+            onCheckedChange={(checked) => setFormData({ ...formData, is_daily_eligible: checked as boolean })}
           />
           <Label htmlFor="is_daily_eligible" className="font-normal cursor-pointer">
             Eligible for daily challenges

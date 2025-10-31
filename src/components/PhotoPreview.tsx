@@ -28,9 +28,7 @@ export const PhotoPreview = ({ photoUrl, alt }: PhotoPreviewProps) => {
   return (
     <div className="space-y-2">
       <div className="relative w-full aspect-video bg-neutral-100 dark:bg-neutral-800 rounded-lg overflow-hidden">
-        {isLoading && (
-          <Skeleton className="absolute inset-0" />
-        )}
+        {isLoading && <Skeleton className="absolute inset-0" />}
         <img
           src={photoUrl}
           alt={alt}
@@ -43,17 +41,8 @@ export const PhotoPreview = ({ photoUrl, alt }: PhotoPreviewProps) => {
         />
       </div>
       <div className="flex justify-end">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleDownload}
-          disabled={isLoading || hasError}
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <Download className="h-4 w-4 mr-2" />
-          )}
+        <Button variant="outline" size="sm" onClick={handleDownload} disabled={isLoading || hasError}>
+          {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
           Download
         </Button>
       </div>

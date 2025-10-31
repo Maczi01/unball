@@ -62,45 +62,42 @@ export const usePhotoModeration = (): UsePhotoModerationReturn => {
   });
 
   // Fetch submissions list
-  const fetchSubmissions = useCallback(
-    async (status: SubmissionStatus | "all", page: number) => {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+  const fetchSubmissions = useCallback(async (status: SubmissionStatus | "all", page: number) => {
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-      try {
-        const params = new URLSearchParams({
-          page: page.toString(),
-          limit: "50",
-        });
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: "50",
+      });
 
-        if (status !== "all") {
-          params.append("status", status);
-        }
-
-        const response = await fetch(`/api/admin/photo-submissions?${params}`);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch submissions");
-        }
-
-        const data: AdminPhotoSubmissionsResponseDTO = await response.json();
-
-        setState((prev) => ({
-          ...prev,
-          submissions: data.submissions,
-          statusCounts: data.status_counts,
-          pagination: data.pagination,
-          isLoading: false,
-        }));
-      } catch (error) {
-        setState((prev) => ({
-          ...prev,
-          error: error instanceof Error ? error.message : "Failed to fetch submissions",
-          isLoading: false,
-        }));
+      if (status !== "all") {
+        params.append("status", status);
       }
-    },
-    []
-  );
+
+      const response = await fetch(`/api/admin/photo-submissions?${params}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch submissions");
+      }
+
+      const data: AdminPhotoSubmissionsResponseDTO = await response.json();
+
+      setState((prev) => ({
+        ...prev,
+        submissions: data.submissions,
+        statusCounts: data.status_counts,
+        pagination: data.pagination,
+        isLoading: false,
+      }));
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        error: error instanceof Error ? error.message : "Failed to fetch submissions",
+        isLoading: false,
+      }));
+    }
+  }, []);
 
   // Fetch submission detail
   const fetchSubmissionDetail = useCallback(async (id: string) => {

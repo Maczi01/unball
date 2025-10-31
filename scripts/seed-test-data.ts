@@ -59,8 +59,10 @@ const photos = [
   },
   {
     id: "33333333-3333-3333-3333-333333333333",
-    photo_url: "https://www.reuters.com/resizer/v2/ISCEQPPMMBJFVOQUDIAMNVYZYU.jpg?auth=9b9c07fca45d702010a4c4bb49ad7c95b2ac5504330234871600e8c85f6a562d&width=640&quality=80",
-    thumbnail_url: "https://www.reuters.com/resizer/v2/ISCEQPPMMBJFVOQUDIAMNVYZYU.jpg?auth=9b9c07fca45d702010a4c4bb49ad7c95b2ac5504330234871600e8c85f6a562d&width=640&quality=80",
+    photo_url:
+      "https://www.reuters.com/resizer/v2/ISCEQPPMMBJFVOQUDIAMNVYZYU.jpg?auth=9b9c07fca45d702010a4c4bb49ad7c95b2ac5504330234871600e8c85f6a562d&width=640&quality=80",
+    thumbnail_url:
+      "https://www.reuters.com/resizer/v2/ISCEQPPMMBJFVOQUDIAMNVYZYU.jpg?auth=9b9c07fca45d702010a4c4bb49ad7c95b2ac5504330234871600e8c85f6a562d&width=640&quality=80",
     event_name: "Premier League Match 2023",
     competition: "Premier League",
     year_utc: 2023,
@@ -76,8 +78,10 @@ const photos = [
   },
   {
     id: "44444444-4444-4444-4444-444444444444",
-    photo_url: "https://phantom.estaticos-marca.com/7f8fa237b1a0575e2d50b938a5ad01fa/crop/0x4/2046x1152/resize/660/f/webp/assets/multimedia/imagenes/2022/03/20/16478074388951.jpg",
-    thumbnail_url: "https://phantom.estaticos-marca.com/7f8fa237b1a0575e2d50b938a5ad01fa/crop/0x4/2046x1152/resize/660/f/webp/assets/multimedia/imagenes/2022/03/20/16478074388951.jpg",
+    photo_url:
+      "https://phantom.estaticos-marca.com/7f8fa237b1a0575e2d50b938a5ad01fa/crop/0x4/2046x1152/resize/660/f/webp/assets/multimedia/imagenes/2022/03/20/16478074388951.jpg",
+    thumbnail_url:
+      "https://phantom.estaticos-marca.com/7f8fa237b1a0575e2d50b938a5ad01fa/crop/0x4/2046x1152/resize/660/f/webp/assets/multimedia/imagenes/2022/03/20/16478074388951.jpg",
     event_name: "El Clásico 2022",
     competition: "La Liga",
     year_utc: 2022,
@@ -145,8 +149,7 @@ const morePhotos = [
     lon: -99.1505,
     description:
       'Diego Maradona scores the infamous "Hand of God" goal and later the "Goal of the Century" as Argentina beats England 2–1.',
-    source_url:
-      "https://en.wikipedia.org/wiki/Argentina_v_England_(1986_FIFA_World_Cup)",
+    source_url: "https://en.wikipedia.org/wiki/Argentina_v_England_(1986_FIFA_World_Cup)",
     license: "CC BY-SA 4.0",
     credit: "El Gráfico",
     is_daily_eligible: true,
@@ -202,8 +205,8 @@ const morePhotos = [
     competition: "FIFA World Cup",
     year_utc: 2022,
     place: "Lusail, Qatar",
-    lat: 25.4160,
-    lon: 51.4900,
+    lat: 25.416,
+    lon: 51.49,
     description:
       "Argentina defeats France on penalties after a 3–3 thriller. Messi finally lifts the World Cup, Mbappé scores a hat-trick.",
     source_url: "https://en.wikipedia.org/wiki/2022_FIFA_World_Cup_Final",

@@ -40,12 +40,12 @@ interface DashboardStats {
     next_unpublished: string | null;
   };
   pending_count: number;
-  recent_photos: Array<{
+  recent_photos: {
     id: string;
     event_name: string;
     thumbnail_url: string | null;
     created_at: string;
-  }>;
+  }[];
 }
 
 export const AdminDashboard = () => {
@@ -112,8 +112,7 @@ export const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <p className="text-orange-800 dark:text-orange-200 mb-3">
-              You have {stats.pending_count} photo submission{stats.pending_count !== 1 ? "s" : ""} waiting for
-              review.
+              You have {stats.pending_count} photo submission{stats.pending_count !== 1 ? "s" : ""} waiting for review.
             </p>
             <Button asChild variant="outline" className="border-orange-300 dark:border-orange-800">
               <a href="/admin/photo-moderation">
@@ -160,9 +159,7 @@ export const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.photos.total}</div>
-            <p className="text-xs text-neutral-500 mt-1">
-              {stats.photos.daily_eligible} daily eligible
-            </p>
+            <p className="text-xs text-neutral-500 mt-1">{stats.photos.daily_eligible} daily eligible</p>
           </CardContent>
         </Card>
 
@@ -184,9 +181,7 @@ export const AdminDashboard = () => {
             <Clock className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-              {stats.submissions.pending}
-            </div>
+            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.submissions.pending}</div>
             <p className="text-xs text-neutral-500 mt-1">Awaiting review</p>
           </CardContent>
         </Card>
@@ -197,9 +192,7 @@ export const AdminDashboard = () => {
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {stats.submissions.approved}
-            </div>
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.submissions.approved}</div>
             <p className="text-xs text-neutral-500 mt-1">Total approved</p>
           </CardContent>
         </Card>
@@ -210,9 +203,7 @@ export const AdminDashboard = () => {
             <XCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-              {stats.submissions.rejected}
-            </div>
+            <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.submissions.rejected}</div>
             <p className="text-xs text-neutral-500 mt-1">Total rejected</p>
           </CardContent>
         </Card>
@@ -282,11 +273,7 @@ export const AdminDashboard = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               {stats.recent_photos.map((photo) => (
-                <a
-                  key={photo.id}
-                  href={`/admin/photos/${photo.id}/edit`}
-                  className="group block space-y-2"
-                >
+                <a key={photo.id} href={`/admin/photos/${photo.id}/edit`} className="group block space-y-2">
                   <div className="aspect-video bg-neutral-100 dark:bg-neutral-800 rounded-lg overflow-hidden">
                     {photo.thumbnail_url ? (
                       <img
@@ -304,9 +291,7 @@ export const AdminDashboard = () => {
                     <p className="font-medium text-neutral-900 dark:text-neutral-100 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400">
                       {photo.event_name}
                     </p>
-                    <p className="text-xs text-neutral-500">
-                      {new Date(photo.created_at).toLocaleDateString()}
-                    </p>
+                    <p className="text-xs text-neutral-500">{new Date(photo.created_at).toLocaleDateString()}</p>
                   </div>
                 </a>
               ))}

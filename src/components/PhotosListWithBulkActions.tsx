@@ -87,9 +87,7 @@ export const PhotosListWithBulkActions = ({ initialPhotos }: PhotosListWithBulkA
 
       // Update photos in state
       setPhotos((prev) =>
-        prev.map((photo) =>
-          selectedIds.has(photo.id) ? { ...photo, is_daily_eligible: value } : photo
-        )
+        prev.map((photo) => (selectedIds.has(photo.id) ? { ...photo, is_daily_eligible: value } : photo))
       );
       setSelectedIds(new Set());
     },
@@ -144,12 +142,7 @@ export const PhotosListWithBulkActions = ({ initialPhotos }: PhotosListWithBulkA
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full text-neutral-400">
-                        <svg
-                          className="h-12 w-12"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
+                        <svg className="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -178,8 +171,7 @@ export const PhotosListWithBulkActions = ({ initialPhotos }: PhotosListWithBulkA
 
                     {photo.first_used_in_daily_date && (
                       <p className="text-xs text-neutral-500">
-                        Used in daily:{" "}
-                        {new Date(photo.first_used_in_daily_date).toLocaleDateString()}
+                        Used in daily: {new Date(photo.first_used_in_daily_date).toLocaleDateString()}
                       </p>
                     )}
 
@@ -187,9 +179,7 @@ export const PhotosListWithBulkActions = ({ initialPhotos }: PhotosListWithBulkA
                       <span className="text-xs text-neutral-500">
                         {new Date(photo.created_at).toLocaleDateString()}
                       </span>
-                      <span className="text-sm text-blue-600 dark:text-blue-400 group-hover:underline">
-                        Edit →
-                      </span>
+                      <span className="text-sm text-blue-600 dark:text-blue-400 group-hover:underline">Edit →</span>
                     </div>
                   </div>
                 </a>
@@ -201,12 +191,7 @@ export const PhotosListWithBulkActions = ({ initialPhotos }: PhotosListWithBulkA
         // Empty State
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="rounded-full bg-neutral-100 dark:bg-neutral-800 p-6 mb-4">
-            <svg
-              className="h-12 w-12 text-neutral-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="h-12 w-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -215,12 +200,8 @@ export const PhotosListWithBulkActions = ({ initialPhotos }: PhotosListWithBulkA
               />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
-            No photos found
-          </h3>
-          <p className="text-neutral-600 dark:text-neutral-400">
-            There are no photos in the database yet.
-          </p>
+          <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-1">No photos found</h3>
+          <p className="text-neutral-600 dark:text-neutral-400">There are no photos in the database yet.</p>
         </div>
       )}
     </div>

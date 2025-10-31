@@ -1,59 +1,59 @@
-import { describe, it, expect } from 'vitest';
-import { cn } from './utils';
+import { describe, it, expect } from "vitest";
+import { cn } from "./utils";
 
 /**
  * Example unit test for utility functions
  * Following Vitest guidelines: descriptive tests, Arrange-Act-Assert pattern
  */
-describe('cn utility function', () => {
-  it('should merge class names correctly', () => {
+describe("cn utility function", () => {
+  it("should merge class names correctly", () => {
     // Arrange
-    const class1 = 'text-red-500';
-    const class2 = 'font-bold';
+    const class1 = "text-red-500";
+    const class2 = "font-bold";
 
     // Act
     const result = cn(class1, class2);
 
     // Assert
-    expect(result).toBe('text-red-500 font-bold');
+    expect(result).toBe("text-red-500 font-bold");
   });
 
-  it('should handle conditional classes', () => {
+  it("should handle conditional classes", () => {
     // Arrange
     const condition = true;
 
     // Act
-    const result = cn('base-class', condition && 'conditional-class');
+    const result = cn("base-class", condition && "conditional-class");
 
     // Assert
-    expect(result).toBe('base-class conditional-class');
+    expect(result).toBe("base-class conditional-class");
   });
 
-  it('should merge Tailwind classes correctly', () => {
+  it("should merge Tailwind classes correctly", () => {
     // Arrange - conflicting padding classes
-    const class1 = 'p-4';
-    const class2 = 'p-8';
+    const class1 = "p-4";
+    const class2 = "p-8";
 
     // Act
     const result = cn(class1, class2);
 
     // Assert - last one wins
-    expect(result).toBe('p-8');
+    expect(result).toBe("p-8");
   });
 
-  it('should handle undefined and null values', () => {
+  it("should handle undefined and null values", () => {
     // Act
-    const result = cn('base', undefined, null, 'final');
+    const result = cn("base", undefined, null, "final");
 
     // Assert
-    expect(result).toBe('base final');
+    expect(result).toBe("base final");
   });
 
-  it('should handle empty input', () => {
+  it("should handle empty input", () => {
     // Act
     const result = cn();
 
     // Assert
-    expect(result).toBe('');
+    expect(result).toBe("");
   });
 });

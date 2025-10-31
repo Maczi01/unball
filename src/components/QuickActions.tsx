@@ -20,12 +20,7 @@ interface QuickActionsProps {
   isLoading?: boolean;
 }
 
-export const QuickActions = ({
-  submissionId,
-  onApprove,
-  onReject,
-  isLoading,
-}: QuickActionsProps) => {
+export const QuickActions = ({ submissionId, onApprove, onReject, isLoading }: QuickActionsProps) => {
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [isApproving, setIsApproving] = useState(false);
@@ -112,8 +107,7 @@ export const QuickActions = ({
           <DialogHeader>
             <DialogTitle>Reject Submission</DialogTitle>
             <DialogDescription>
-              Please provide a reason for rejecting this submission. The reason will be visible to
-              the submitter.
+              Please provide a reason for rejecting this submission. The reason will be visible to the submitter.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -130,11 +124,7 @@ export const QuickActions = ({
             <Button variant="outline" onClick={() => setShowRejectDialog(false)} disabled={isRejecting}>
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleRejectSubmit}
-              disabled={isRejecting || !rejectReason.trim()}
-            >
+            <Button variant="destructive" onClick={handleRejectSubmit} disabled={isRejecting || !rejectReason.trim()}>
               {isRejecting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

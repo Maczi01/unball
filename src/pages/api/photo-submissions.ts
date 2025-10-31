@@ -22,11 +22,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Check user permission
-    const { data: userProfile } = await supabase
-      .from("users")
-      .select("can_add_photos")
-      .eq("id", user.id)
-      .single();
+    const { data: userProfile } = await supabase.from("users").select("can_add_photos").eq("id", user.id).single();
 
     if (!userProfile?.can_add_photos) {
       return new Response(
@@ -101,22 +97,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const yearNum = parseInt(year_utc, 10);
     if (!year_utc || isNaN(yearNum)) {
       errors.push("year_utc is required and must be a number");
-    } else if (
-      yearNum < ValidationConstants.YEAR.MIN ||
-      yearNum > ValidationConstants.YEAR.MAX
-    ) {
-      errors.push(
-        `year_utc must be between ${ValidationConstants.YEAR.MIN} and ${ValidationConstants.YEAR.MAX}`
-      );
+    } else if (yearNum < ValidationConstants.YEAR.MIN || yearNum > ValidationConstants.YEAR.MAX) {
+      errors.push(`year_utc must be between ${ValidationConstants.YEAR.MIN} and ${ValidationConstants.YEAR.MAX}`);
     }
 
     const latNum = parseFloat(lat);
     if (!lat || isNaN(latNum)) {
       errors.push("lat is required and must be a number");
-    } else if (
-      latNum < ValidationConstants.COORDINATES.LAT_MIN ||
-      latNum > ValidationConstants.COORDINATES.LAT_MAX
-    ) {
+    } else if (latNum < ValidationConstants.COORDINATES.LAT_MIN || latNum > ValidationConstants.COORDINATES.LAT_MAX) {
       errors.push(
         `lat must be between ${ValidationConstants.COORDINATES.LAT_MIN} and ${ValidationConstants.COORDINATES.LAT_MAX}`
       );
@@ -125,10 +113,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const lonNum = parseFloat(lon);
     if (!lon || isNaN(lonNum)) {
       errors.push("lon is required and must be a number");
-    } else if (
-      lonNum < ValidationConstants.COORDINATES.LON_MIN ||
-      lonNum > ValidationConstants.COORDINATES.LON_MAX
-    ) {
+    } else if (lonNum < ValidationConstants.COORDINATES.LON_MIN || lonNum > ValidationConstants.COORDINATES.LON_MAX) {
       errors.push(
         `lon must be between ${ValidationConstants.COORDINATES.LON_MIN} and ${ValidationConstants.COORDINATES.LON_MAX}`
       );
@@ -181,12 +166,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
     const filePath = `submissions/${fileName}`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("photos")
-      .upload(filePath, photoFile, {
-        contentType: photoFile.type,
-        upsert: false,
-      });
+    const { data: uploadData, error: uploadError } = await supabase.storage.from("photos").upload(filePath, photoFile, {
+      contentType: photoFile.type,
+      upsert: false,
+    });
 
     if (uploadError) {
       console.error("Storage upload error:", uploadError);
@@ -200,9 +183,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Get public URL for the uploaded file
-    const { data: urlData } = supabase.storage
-      .from("photos")
-      .getPublicUrl(filePath);
+    const { data: urlData } = supabase.storage.from("photos").getPublicUrl(filePath);
 
     const photo_url = urlData.publicUrl;
 

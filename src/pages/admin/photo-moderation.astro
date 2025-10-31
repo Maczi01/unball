@@ -27,14 +27,11 @@ if (userError || !userData || userData.role !== "admin") {
 let initialData: AdminPhotoSubmissionsResponseDTO | undefined;
 
 try {
-  const response = await fetch(
-    `${Astro.url.origin}/api/admin/photo-submissions?page=1&limit=50`,
-    {
-      headers: {
-        Cookie: Astro.request.headers.get("Cookie") || "",
-      },
-    }
-  );
+  const response = await fetch(`${Astro.url.origin}/api/admin/photo-submissions?page=1&limit=50`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
 
   if (response.ok) {
     initialData = await response.json();
@@ -45,9 +42,5 @@ try {
 ---
 
 <Layout title="Photo Moderation - Admin" showNavigation={true}>
-  <PhotoModerationDashboard
-    client:load
-    initialData={initialData}
-    adminEmail={userData.email || ""}
-  />
+  <PhotoModerationDashboard client:load initialData={initialData} adminEmail={userData.email || ""} />
 </Layout>

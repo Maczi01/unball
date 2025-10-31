@@ -1,5 +1,5 @@
-import { setupServer } from 'msw/node';
-import { handlers } from './handlers';
+import { setupServer } from "msw/node";
+import { handlers } from "./handlers";
 
 /**
  * Mock Service Worker server setup for Node.js tests
@@ -9,7 +9,7 @@ export const server = setupServer(...handlers);
 
 // Enable API mocking before tests
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'warn' });
+  server.listen({ onUnhandledRequest: "warn" });
 });
 
 // Reset handlers after each test

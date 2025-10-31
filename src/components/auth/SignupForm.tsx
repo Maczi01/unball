@@ -88,9 +88,10 @@ export default function SignupForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" data-testid="signup-form">
       {error && (
         <div
+          data-testid="signup-error"
           className="rounded-md border border-red-400/50 bg-red-500/10 px-4 py-3 text-sm text-red-200"
           role="alert"
         >
@@ -112,6 +113,7 @@ export default function SignupForm() {
           required
           autoComplete="email"
           disabled={isLoading}
+          data-testid="signup-email-input"
           aria-invalid={!!fieldErrors.email}
           aria-describedby={fieldErrors.email ? "email-error" : undefined}
           className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus-visible:border-emerald-300 focus-visible:ring-emerald-300/50"
@@ -136,6 +138,7 @@ export default function SignupForm() {
           placeholder="FootyFan123"
           maxLength={ValidationConstants.NICKNAME.MAX_LENGTH}
           disabled={isLoading}
+          data-testid="signup-nickname-input"
           aria-invalid={!!fieldErrors.nickname}
           aria-describedby={fieldErrors.nickname ? "nickname-error" : "nickname-help"}
           className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus-visible:border-emerald-300 focus-visible:ring-emerald-300/50"
@@ -165,6 +168,7 @@ export default function SignupForm() {
           required
           autoComplete="new-password"
           disabled={isLoading}
+          data-testid="signup-password-input"
           aria-invalid={!!fieldErrors.password}
           aria-describedby={fieldErrors.password ? "password-error" : "password-help"}
           className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus-visible:border-emerald-300 focus-visible:ring-emerald-300/50"
@@ -194,6 +198,7 @@ export default function SignupForm() {
           required
           autoComplete="new-password"
           disabled={isLoading}
+          data-testid="signup-confirm-password-input"
           aria-invalid={!!fieldErrors.confirmPassword}
           aria-describedby={fieldErrors.confirmPassword ? "confirm-password-error" : undefined}
           className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus-visible:border-emerald-300 focus-visible:ring-emerald-300/50"
@@ -209,6 +214,7 @@ export default function SignupForm() {
         type="submit"
         className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] active:scale-95"
         disabled={isLoading}
+        data-testid="signup-submit-button"
       >
         {isLoading ? "Creating account..." : "Create Account"}
       </Button>

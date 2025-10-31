@@ -3,21 +3,15 @@ import { Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-type PhotoFileUploadProps = {
+interface PhotoFileUploadProps {
   value: File | null;
   onChange: (file: File | null) => void;
   preview?: string | null;
   error?: string;
   disabled?: boolean;
-};
+}
 
-export function PhotoFileUpload({
-  value,
-  onChange,
-  preview,
-  error,
-  disabled = false,
-}: PhotoFileUploadProps) {
+export function PhotoFileUpload({ value, onChange, preview, error, disabled = false }: PhotoFileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrop = useCallback(
@@ -87,11 +81,7 @@ export function PhotoFileUpload({
         <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center">
           {value.name} ({(value.size / (1024 * 1024)).toFixed(2)} MB)
         </p>
-        {error && (
-          <p className="text-sm text-red-500 dark:text-red-400 text-center">
-            {error}
-          </p>
-        )}
+        {error && <p className="text-sm text-red-500 dark:text-red-400 text-center">{error}</p>}
       </div>
     );
   }
@@ -133,10 +123,7 @@ export function PhotoFileUpload({
         <p className="mb-2 text-sm text-neutral-700 dark:text-neutral-300">
           <span className="font-semibold">Click to upload</span> or drag and drop
         </p>
-        <p
-          id="upload-description"
-          className="text-xs text-neutral-500 dark:text-neutral-400"
-        >
+        <p id="upload-description" className="text-xs text-neutral-500 dark:text-neutral-400">
           JPG, PNG or WebP (max. 10MB)
         </p>
       </div>

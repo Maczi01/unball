@@ -46,9 +46,7 @@ export default function UserMenu({ user }: UserMenuProps) {
   const avatarLetter = user.email?.[0]?.toUpperCase() || "U";
 
   // Truncate email for display
-  const displayEmail = user.email && user.email.length > 20
-    ? user.email.substring(0, 20) + "..."
-    : user.email;
+  const displayEmail = user.email && user.email.length > 20 ? user.email.substring(0, 20) + "..." : user.email;
 
   return (
     <div className="relative" ref={menuRef}>
@@ -62,9 +60,7 @@ export default function UserMenu({ user }: UserMenuProps) {
         <div className="size-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold text-sm shadow-lg">
           {avatarLetter}
         </div>
-        <span className="hidden sm:inline text-sm font-medium text-emerald-100">
-          {displayEmail}
-        </span>
+        <span className="hidden sm:inline text-sm font-medium text-emerald-100">{displayEmail}</span>
         <svg
           className={`size-4 text-emerald-200 transition-transform ${isOpen ? "rotate-180" : ""}`}
           fill="none"
@@ -80,20 +76,13 @@ export default function UserMenu({ user }: UserMenuProps) {
         <div className="absolute right-0 mt-2 w-64 rounded-lg border border-emerald-500/30 bg-gradient-to-b from-green-900/95 to-emerald-900/95 backdrop-blur-xl shadow-2xl z-50">
           {/* User Info Header */}
           <div className="border-b border-emerald-500/20 px-4 py-3">
-            <p className="text-sm font-medium text-emerald-100 truncate">
-              {user.email}
-            </p>
-            <p className="text-xs text-emerald-200/60 mt-1">
-              Player Account
-            </p>
+            <p className="text-sm font-medium text-emerald-100 truncate">{user.email}</p>
+            <p className="text-xs text-emerald-200/60 mt-1">Player Account</p>
           </div>
 
           {/* Menu Items */}
           <div className="py-2">
-            <a
-              href="/profile"
-              className="block px-4 py-2 text-sm text-emerald-100 hover:bg-white/10 transition-colors"
-            >
+            <a href="/profile" className="block px-4 py-2 text-sm text-emerald-100 hover:bg-white/10 transition-colors">
               👤 Profile Settings
             </a>
 

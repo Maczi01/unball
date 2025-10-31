@@ -1,8 +1,9 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator } from "@playwright/test";
 
 /**
  * Base Page Object Model class
  * Provides common functionality for all page objects
+ * Following Playwright E2E guidelines: resilient selectors, browser contexts, AAA pattern
  */
 export class BasePage {
   protected page: Page;
@@ -14,7 +15,7 @@ export class BasePage {
   /**
    * Navigate to a specific URL
    */
-  async goto(path: string = '/') {
+  async goto(path = "/") {
     await this.page.goto(path);
   }
 
@@ -22,7 +23,7 @@ export class BasePage {
    * Wait for page to be loaded
    */
   async waitForPageLoad() {
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState("networkidle");
   }
 
   /**
@@ -40,6 +41,13 @@ export class BasePage {
   }
 
   /**
+   * Get element by test ID (following data-testid convention)
+   */
+  getByTestId(testId: string): Locator {
+    return this.page.getByTestId(testId);
+  }
+
+  /**
    * Take a screenshot
    */
   async takeScreenshot(name: string) {
@@ -47,9 +55,23 @@ export class BasePage {
   }
 
   /**
-   * Wait for a specific timeout
+   * Wait for a specific timeout (use sparingly)
    */
   async wait(ms: number) {
     await this.page.waitForTimeout(ms);
+  }
+
+  /**
+   * Get current URL
+   */
+  getCurrentUrl(): string {
+    return this.page.url();
+  }
+
+  /**
+   * Wait for navigation
+   */
+  async waitForNavigation() {
+    await this.page.waitForLoadState("networkidle");
   }
 }

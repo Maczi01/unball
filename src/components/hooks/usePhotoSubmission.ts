@@ -1,10 +1,5 @@
 import { useState, useCallback } from "react";
-import type {
-  PhotoSubmissionFormData,
-  ValidationErrors,
-  SubmissionState,
-  PhotoSubmissionResponseDTO,
-} from "@/types";
+import type { PhotoSubmissionFormData, ValidationErrors, SubmissionState, PhotoSubmissionResponseDTO } from "@/types";
 import { ValidationConstants } from "@/types";
 
 // Initial form data with empty values
@@ -28,7 +23,7 @@ const initialFormData: PhotoSubmissionFormData = {
 /**
  * Hook interface defining all state and actions
  */
-export type UsePhotoSubmissionReturn = {
+export interface UsePhotoSubmissionReturn {
   // State
   formData: PhotoSubmissionFormData;
   validationErrors: ValidationErrors;
@@ -37,16 +32,13 @@ export type UsePhotoSubmissionReturn = {
   isFormValid: boolean; // Computed: all required fields valid
 
   // Actions
-  updateField: <K extends keyof PhotoSubmissionFormData>(
-    field: K,
-    value: PhotoSubmissionFormData[K]
-  ) => void;
+  updateField: <K extends keyof PhotoSubmissionFormData>(field: K, value: PhotoSubmissionFormData[K]) => void;
   updatePhoto: (file: File | null) => void;
   validateField: (field: keyof PhotoSubmissionFormData) => boolean;
   validateAllFields: () => boolean;
   submitPhoto: () => Promise<void>;
   resetForm: () => void;
-};
+}
 
 /**
  * Validation functions for each field
@@ -158,17 +150,13 @@ function validateSourceUrl(value: string): string | null {
 /**
  * Main custom hook for photo submission
  */
-export function usePhotoSubmission(
-  userEmail?: string
-): UsePhotoSubmissionReturn {
+export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn {
   // Initialize state with user email if available
   const [formData, setFormData] = useState<PhotoSubmissionFormData>({
     ...initialFormData,
     submitter_email: userEmail || "",
   });
-  const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
-    {}
-  );
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [submissionState, setSubmissionState] = useState<SubmissionState>({
     status: "idle",
   });
@@ -178,10 +166,7 @@ export function usePhotoSubmission(
    * Update a single field in form data
    */
   const updateField = useCallback(
-    <K extends keyof PhotoSubmissionFormData>(
-      field: K,
-      value: PhotoSubmissionFormData[K]
-    ) => {
+    <K extends keyof PhotoSubmissionFormData>(field: K, value: PhotoSubmissionFormData[K]) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
 
       // Clear error for this field when user starts typing
@@ -199,35 +184,38 @@ export function usePhotoSubmission(
   /**
    * Update photo file and generate preview
    */
-  const updatePhoto = useCallback((file: File | null) => {
-    // Clean up previous preview URL
-    if (photoPreview) {
-      URL.revokeObjectURL(photoPreview);
-    }
-
-    if (file) {
-      const error = validatePhotoFile(file);
-      if (error) {
-        setValidationErrors((prev) => ({ ...prev, photo_file: error }));
-        setPhotoPreview(null);
-        setFormData((prev) => ({ ...prev, photo_file: null }));
-        return;
+  const updatePhoto = useCallback(
+    (file: File | null) => {
+      // Clean up previous preview URL
+      if (photoPreview) {
+        URL.revokeObjectURL(photoPreview);
       }
 
-      // Generate preview
-      const previewUrl = URL.createObjectURL(file);
-      setPhotoPreview(previewUrl);
-      setFormData((prev) => ({ ...prev, photo_file: file }));
-      setValidationErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.photo_file;
-        return newErrors;
-      });
-    } else {
-      setPhotoPreview(null);
-      setFormData((prev) => ({ ...prev, photo_file: null }));
-    }
-  }, [photoPreview]);
+      if (file) {
+        const error = validatePhotoFile(file);
+        if (error) {
+          setValidationErrors((prev) => ({ ...prev, photo_file: error }));
+          setPhotoPreview(null);
+          setFormData((prev) => ({ ...prev, photo_file: null }));
+          return;
+        }
+
+        // Generate preview
+        const previewUrl = URL.createObjectURL(file);
+        setPhotoPreview(previewUrl);
+        setFormData((prev) => ({ ...prev, photo_file: file }));
+        setValidationErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.photo_file;
+          return newErrors;
+        });
+      } else {
+        setPhotoPreview(null);
+        setFormData((prev) => ({ ...prev, photo_file: null }));
+      }
+    },
+    [photoPreview]
+  );
 
   /**
    * Validate a single field
@@ -303,12 +291,7 @@ export function usePhotoSubmission(
       "license",
       "credit",
     ];
-    const optionalFields: (keyof PhotoSubmissionFormData)[] = [
-      "competition",
-      "place",
-      "submitter_email",
-      "source_url",
-    ];
+    const optionalFields: (keyof PhotoSubmissionFormData)[] = ["competition", "place", "submitter_email", "source_url"];
 
     let isValid = true;
     const errors: ValidationErrors = {};
@@ -348,13 +331,10 @@ export function usePhotoSubmission(
       validateCredit(formData.credit) === null;
 
     const optionalFieldsValid =
-      (formData.competition === "" ||
-        validateCompetition(formData.competition) === null) &&
+      (formData.competition === "" || validateCompetition(formData.competition) === null) &&
       (formData.place === "" || validatePlace(formData.place) === null) &&
-      (formData.submitter_email === "" ||
-        validateEmail(formData.submitter_email) === null) &&
-      (formData.source_url === "" ||
-        validateSourceUrl(formData.source_url) === null);
+      (formData.submitter_email === "" || validateEmail(formData.submitter_email) === null) &&
+      (formData.source_url === "" || validateSourceUrl(formData.source_url) === null);
 
     return requiredFieldsValid && optionalFieldsValid;
   })();

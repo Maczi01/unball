@@ -4,22 +4,9 @@ import { toast, Toaster } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { AdminUserListItemDTO, UserRole } from "@/types";
 
 interface UsersListProps {
@@ -54,9 +41,7 @@ export const UsersList = ({ initialUsers }: UsersListProps) => {
       }
 
       // Update local state
-      setUsers((prev) =>
-        prev.map((user) => (user.id === userId ? { ...user, can_add_photos: !currentValue } : user))
-      );
+      setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, can_add_photos: !currentValue } : user)));
 
       toast.success(`Photo permission ${!currentValue ? "granted" : "revoked"}`);
     } catch (error) {
@@ -139,17 +124,13 @@ export const UsersList = ({ initialUsers }: UsersListProps) => {
                           <div className="font-medium text-neutral-900 dark:text-neutral-100">
                             {user.nickname || "No nickname"}
                           </div>
-                          {user.consent_given_at && (
-                            <div className="text-xs text-neutral-500">Consent given</div>
-                          )}
+                          {user.consent_given_at && <div className="text-xs text-neutral-500">Consent given</div>}
                         </div>
                       </div>
                     </TableCell>
 
                     <TableCell>
-                      <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                        {user.email || "No email"}
-                      </div>
+                      <div className="text-sm text-neutral-600 dark:text-neutral-400">{user.email || "No email"}</div>
                     </TableCell>
 
                     <TableCell>
@@ -183,9 +164,7 @@ export const UsersList = ({ initialUsers }: UsersListProps) => {
                     </TableCell>
 
                     <TableCell>
-                      <div className="text-sm text-neutral-500">
-                        {new Date(user.created_at).toLocaleDateString()}
-                      </div>
+                      <div className="text-sm text-neutral-500">{new Date(user.created_at).toLocaleDateString()}</div>
                     </TableCell>
                   </TableRow>
                 );

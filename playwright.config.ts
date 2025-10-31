@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
 
 /**
  * Playwright E2E Testing Configuration
@@ -6,7 +6,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   // Test directory
-  testDir: './e2e',
+  testDir: "./e2e",
 
   // Maximum time one test can run
   timeout: 30 * 1000,
@@ -24,39 +24,35 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
 
   // Reporter to use
-  reporter: [
-    ['html'],
-    ['list'],
-    ['json', { outputFile: 'playwright-report/results.json' }],
-  ],
+  reporter: [["html"], ["list"], ["json", { outputFile: "playwright-report/results.json" }]],
 
   // Shared settings for all the projects below
   use: {
     // Base URL to use in actions like `await page.goto('/')`
-    baseURL: 'http://localhost:3000',
+    baseURL: "http://localhost:3000",
 
     // Collect trace when retrying the failed test
-    trace: 'on-first-retry',
+    trace: "on-first-retry",
 
     // Screenshot on failure
-    screenshot: 'only-on-failure',
+    screenshot: "only-on-failure",
 
     // Video on failure
-    video: 'retain-on-failure',
+    video: "retain-on-failure",
 
     // Emulate timezone
-    timezoneId: 'Europe/Warsaw',
+    timezoneId: "Europe/Warsaw",
 
     // Emulate locale
-    locale: 'en-US',
+    locale: "en-US",
   },
 
   // Configure projects for Chromium only (as per guidelines)
   projects: [
     {
-      name: 'chromium',
+      name: "chromium",
       use: {
-        ...devices['Desktop Chrome'],
+        ...devices["Desktop Chrome"],
         // Browser context options for isolation
         contextOptions: {
           // Clear cookies and cache between tests
@@ -68,8 +64,8 @@ export default defineConfig({
 
   // Run your local dev server before starting the tests
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
+    command: "npm run dev",
+    url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

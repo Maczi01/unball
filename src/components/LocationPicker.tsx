@@ -6,21 +6,15 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { ValidationConstants } from "@/types";
 
-type LocationPickerProps = {
+interface LocationPickerProps {
   lat: string;
   lon: string;
   onChange: (location: { lat: string; lon: string }) => void;
   error?: string;
   disabled?: boolean;
-};
+}
 
-export function LocationPicker({
-  lat,
-  lon,
-  onChange,
-  error,
-  disabled = false,
-}: LocationPickerProps) {
+export function LocationPicker({ lat, lon, onChange, error, disabled = false }: LocationPickerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
@@ -89,35 +83,38 @@ export function LocationPicker({
     }
   }, [lat, lon]);
 
-  const updatePin = useCallback((lng: number, lat: number) => {
-    if (!mapRef.current) return;
+  const updatePin = useCallback(
+    (lng: number, lat: number) => {
+      if (!mapRef.current) return;
 
-    // Remove existing marker
-    if (markerRef.current) {
-      markerRef.current.remove();
-    }
+      // Remove existing marker
+      if (markerRef.current) {
+        markerRef.current.remove();
+      }
 
-    // Create new marker
-    const marker = new mapboxgl.Marker({
-      draggable: !disabled,
-      color: "#ef4444", // red-500
-    })
-      .setLngLat([lng, lat])
-      .addTo(mapRef.current);
+      // Create new marker
+      const marker = new mapboxgl.Marker({
+        draggable: !disabled,
+        color: "#ef4444", // red-500
+      })
+        .setLngLat([lng, lat])
+        .addTo(mapRef.current);
 
-    // Handle marker drag
-    if (!disabled) {
-      marker.on("dragend", () => {
-        const lngLat = marker.getLngLat();
-        onChange({
-          lat: lngLat.lat.toFixed(6),
-          lon: lngLat.lng.toFixed(6),
+      // Handle marker drag
+      if (!disabled) {
+        marker.on("dragend", () => {
+          const lngLat = marker.getLngLat();
+          onChange({
+            lat: lngLat.lat.toFixed(6),
+            lon: lngLat.lng.toFixed(6),
+          });
         });
-      });
-    }
+      }
 
-    markerRef.current = marker;
-  }, [disabled, onChange]);
+      markerRef.current = marker;
+    },
+    [disabled, onChange]
+  );
 
   const handleLatChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,9 +141,7 @@ export function LocationPicker({
             className="w-full h-[400px] flex items-center justify-center border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900/50"
             role="alert"
           >
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center px-4">
-              {mapError}
-            </p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center px-4">{mapError}</p>
           </div>
         ) : (
           <>
@@ -186,8 +181,7 @@ export function LocationPicker({
             aria-describedby={error ? "location-error" : undefined}
           />
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Range: {ValidationConstants.COORDINATES.LAT_MIN} to{" "}
-            {ValidationConstants.COORDINATES.LAT_MAX}
+            Range: {ValidationConstants.COORDINATES.LAT_MIN} to {ValidationConstants.COORDINATES.LAT_MAX}
           </p>
         </div>
 
@@ -210,8 +204,7 @@ export function LocationPicker({
             aria-describedby={error ? "location-error" : undefined}
           />
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Range: {ValidationConstants.COORDINATES.LON_MIN} to{" "}
-            {ValidationConstants.COORDINATES.LON_MAX}
+            Range: {ValidationConstants.COORDINATES.LON_MIN} to {ValidationConstants.COORDINATES.LON_MAX}
           </p>
         </div>
       </div>

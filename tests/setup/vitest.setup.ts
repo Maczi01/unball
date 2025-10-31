@@ -1,6 +1,6 @@
-import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/react';
-import { afterEach, vi } from 'vitest';
+import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
+import { afterEach, vi } from "vitest";
 
 // Cleanup after each test
 afterEach(() => {
@@ -8,18 +8,18 @@ afterEach(() => {
 });
 
 // Mock environment variables for tests
-vi.stubGlobal('import.meta.env', {
-  SUPABASE_URL: 'https://test.supabase.co',
-  SUPABASE_ANON_KEY: 'test-anon-key',
-  MAPBOX_API_KEY: 'test-mapbox-key',
-  OPENROUTER_API_KEY: 'test-openrouter-key',
+vi.stubGlobal("import.meta.env", {
+  SUPABASE_URL: "https://test.supabase.co",
+  SUPABASE_ANON_KEY: "test-anon-key",
+  MAPBOX_API_KEY: "test-mapbox-key",
+  OPENROUTER_API_KEY: "test-openrouter-key",
   DEV: true,
   PROD: false,
   SSR: true,
 });
 
 // Mock Astro global
-vi.stubGlobal('Astro', {
+vi.stubGlobal("Astro", {
   cookies: {
     get: vi.fn(),
     set: vi.fn(),
@@ -29,12 +29,12 @@ vi.stubGlobal('Astro', {
   locals: {
     supabase: null,
   },
-  request: new Request('http://localhost:3000'),
-  url: new URL('http://localhost:3000'),
+  request: new Request("http://localhost:3000"),
+  url: new URL("http://localhost:3000"),
 });
 
 // Mock window.matchMedia for responsive components
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
     matches: false,

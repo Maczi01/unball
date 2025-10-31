@@ -16,12 +16,7 @@ export const PhotoThumbnail = ({ thumbnailUrl, alt, className }: PhotoThumbnailP
 
   if (!thumbnailUrl || hasError) {
     return (
-      <div
-        className={cn(
-          "flex items-center justify-center bg-neutral-100 dark:bg-neutral-800",
-          className
-        )}
-      >
+      <div className={cn("flex items-center justify-center bg-neutral-100 dark:bg-neutral-800", className)}>
         <div className="flex flex-col items-center gap-2 text-neutral-400">
           <Image className="h-8 w-8" />
           <span className="text-xs">No preview</span>

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-type TagsInputProps = {
+interface TagsInputProps {
   value: string[];
   onChange: (tags: string[]) => void;
   placeholder?: string;
@@ -14,7 +14,7 @@ type TagsInputProps = {
   maxTags?: number;
   disabled?: boolean;
   label?: string;
-};
+}
 
 export function TagsInput({
   value,
@@ -40,10 +40,7 @@ export function TagsInput({
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
     };
@@ -97,13 +94,10 @@ export function TagsInput({
     [inputValue, value, addTag, removeTag]
   );
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setInputValue(e.target.value);
-      setShowSuggestions(true);
-    },
-    []
-  );
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    setShowSuggestions(true);
+  }, []);
 
   const handleSuggestionClick = useCallback(
     (suggestion: string) => {
@@ -131,12 +125,7 @@ export function TagsInput({
         {value.length > 0 && (
           <div className="flex flex-wrap gap-2" role="list" aria-label="Selected tags">
             {value.map((tag, index) => (
-              <Badge
-                key={index}
-                variant="secondary"
-                className="pl-2 pr-1 py-1 flex items-center gap-1"
-                role="listitem"
-              >
+              <Badge key={index} variant="secondary" className="pl-2 pr-1 py-1 flex items-center gap-1" role="listitem">
                 <span>{tag}</span>
                 <Button
                   type="button"
@@ -165,48 +154,38 @@ export function TagsInput({
             onKeyDown={handleKeyDown}
             onFocus={handleInputFocus}
             disabled={disabled || value.length >= maxTags}
-            placeholder={
-              value.length >= maxTags
-                ? `Maximum ${maxTags} tags reached`
-                : placeholder
-            }
+            placeholder={value.length >= maxTags ? `Maximum ${maxTags} tags reached` : placeholder}
             aria-label="Tag input"
             aria-describedby="tags-description"
           />
 
           {/* Suggestions dropdown */}
-          {showSuggestions &&
-            !disabled &&
-            value.length < maxTags &&
-            filteredSuggestions.length > 0 && (
-              <div
-                className="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-md shadow-lg max-h-48 overflow-y-auto"
-                role="listbox"
-                aria-label="Tag suggestions"
-              >
-                {filteredSuggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className={cn(
-                      "w-full text-left px-3 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors",
-                      "focus:bg-neutral-100 dark:focus:bg-neutral-900 focus:outline-none"
-                    )}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    role="option"
-                    aria-selected="false"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            )}
+          {showSuggestions && !disabled && value.length < maxTags && filteredSuggestions.length > 0 && (
+            <div
+              className="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-md shadow-lg max-h-48 overflow-y-auto"
+              role="listbox"
+              aria-label="Tag suggestions"
+            >
+              {filteredSuggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className={cn(
+                    "w-full text-left px-3 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors",
+                    "focus:bg-neutral-100 dark:focus:bg-neutral-900 focus:outline-none"
+                  )}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  role="option"
+                  aria-selected="false"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        <p
-          id="tags-description"
-          className="text-xs text-neutral-500 dark:text-neutral-400"
-        >
+        <p id="tags-description" className="text-xs text-neutral-500 dark:text-neutral-400">
           Press Enter, comma, or semicolon to add a tag. Backspace to remove the last tag.
         </p>
       </div>

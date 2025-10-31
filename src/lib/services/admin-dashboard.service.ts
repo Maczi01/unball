@@ -39,9 +39,7 @@ export class AdminDashboardService {
   }
 
   private async getUserStats() {
-    const { data, error } = await this.supabase
-      .from("users")
-      .select("role, can_add_photos, consent_given_at");
+    const { data, error } = await this.supabase.from("users").select("role, can_add_photos, consent_given_at");
 
     if (error) {
       console.error("Error fetching user stats:", error);

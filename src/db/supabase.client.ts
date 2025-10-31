@@ -1,7 +1,4 @@
-import {
-  createClient,
-  type SupabaseClient as BaseSupabaseClient,
-} from "@supabase/supabase-js";
+import { createClient, type SupabaseClient as BaseSupabaseClient } from "@supabase/supabase-js";
 import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
 import type { AstroCookies } from "astro";
 
@@ -49,10 +46,7 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
  * - Properly handles cookie serialization/deserialization
  * - Enables secure authentication flows with proper session management
  */
-export function createSupabaseServerInstance(context: {
-  headers: Headers;
-  cookies: AstroCookies;
-}) {
+export function createSupabaseServerInstance(context: { headers: Headers; cookies: AstroCookies }) {
   return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
     cookieOptions,
     cookies: {
@@ -60,9 +54,7 @@ export function createSupabaseServerInstance(context: {
         return parseCookieHeader(context.headers.get("Cookie") ?? "");
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) =>
-          context.cookies.set(name, value, options)
-        );
+        cookiesToSet.forEach(({ name, value, options }) => context.cookies.set(name, value, options));
       },
     },
   });

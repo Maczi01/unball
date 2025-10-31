@@ -1,11 +1,6 @@
 import { Loader2, X } from "lucide-react";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PhotoPreview } from "@/components/PhotoPreview";
 import { MetadataDisplay } from "@/components/MetadataDisplay";
@@ -60,12 +55,7 @@ export const SubmissionDetailModal = ({
             <DialogTitle className="text-xl font-bold">
               {submission ? submission.event_name : "Submission Details"}
             </DialogTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="rounded-full"
-            >
+            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full">
               <X className="h-4 w-4" />
               <span className="sr-only">Close</span>
             </Button>

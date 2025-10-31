@@ -53,9 +53,7 @@ export const BulkActionsToolbar = ({
     setIsUpdating(true);
     try {
       await onToggleDailyEligible(value);
-      toast.success(
-        `Successfully ${value ? "enabled" : "disabled"} daily eligibility for ${selectedCount} photos`
-      );
+      toast.success(`Successfully ${value ? "enabled" : "disabled"} daily eligibility for ${selectedCount} photos`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to update photos");
     } finally {
@@ -94,31 +92,13 @@ export const BulkActionsToolbar = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleToggleDailyEligible(true)}
-              disabled={isUpdating}
-            >
-              {isUpdating ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Check className="h-4 w-4 mr-2" />
-              )}
+            <Button variant="outline" size="sm" onClick={() => handleToggleDailyEligible(true)} disabled={isUpdating}>
+              {isUpdating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
               Enable Daily
             </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleToggleDailyEligible(false)}
-              disabled={isUpdating}
-            >
-              {isUpdating ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <X className="h-4 w-4 mr-2" />
-              )}
+            <Button variant="outline" size="sm" onClick={() => handleToggleDailyEligible(false)} disabled={isUpdating}>
+              {isUpdating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <X className="h-4 w-4 mr-2" />}
               Disable Daily
             </Button>
 
@@ -144,8 +124,8 @@ export const BulkActionsToolbar = ({
           <DialogHeader>
             <DialogTitle>Delete Photos</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete {selectedCount} {selectedCount === 1 ? "photo" : "photos"}?
-              This action cannot be undone.
+              Are you sure you want to delete {selectedCount} {selectedCount === 1 ? "photo" : "photos"}? This action
+              cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

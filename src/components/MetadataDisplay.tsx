@@ -31,9 +31,7 @@ export const MetadataDisplay = ({ submission }: MetadataDisplayProps) => {
 
           return (
             <div key={field.label} className="space-y-1">
-              <dt className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                {field.label}
-              </dt>
+              <dt className="text-sm font-medium text-neutral-600 dark:text-neutral-400">{field.label}</dt>
               <dd className="text-sm text-neutral-900 dark:text-neutral-100">
                 {field.isLink ? (
                   <a
@@ -55,9 +53,7 @@ export const MetadataDisplay = ({ submission }: MetadataDisplayProps) => {
 
       {submission.tags && submission.tags.length > 0 && (
         <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
-          <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
-            Tags
-          </div>
+          <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">Tags</div>
           <div className="flex flex-wrap gap-2">
             {submission.tags.map((tag, index) => (
               <Badge key={index} variant="secondary">

@@ -11,26 +11,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type PhotoSubmissionFormProps = {
+interface PhotoSubmissionFormProps {
   userEmail?: string;
   onSuccess?: (submissionId: string) => void;
   onCancel?: () => void;
-};
+}
 
-const COMMON_LICENSES = [
-  "CC-BY-SA 4.0",
-  "CC-BY 4.0",
-  "CC-BY-NC 4.0",
-  "CC-BY-NC-SA 4.0",
-  "Public Domain",
-  "CC0 1.0",
-];
+const COMMON_LICENSES = ["CC-BY-SA 4.0", "CC-BY 4.0", "CC-BY-NC 4.0", "CC-BY-NC-SA 4.0", "Public Domain", "CC0 1.0"];
 
-export function PhotoSubmissionForm({
-  userEmail,
-  onSuccess,
-  onCancel,
-}: PhotoSubmissionFormProps) {
+export function PhotoSubmissionForm({ userEmail, onSuccess, onCancel }: PhotoSubmissionFormProps) {
   const {
     formData,
     validationErrors,
@@ -81,15 +70,10 @@ export function PhotoSubmissionForm({
   }, []);
 
   const handleCancelClick = useCallback(() => {
-    const hasChanges =
-      formData.photo_file !== null ||
-      formData.event_name !== "" ||
-      formData.year_utc !== "";
+    const hasChanges = formData.photo_file !== null || formData.event_name !== "" || formData.year_utc !== "";
 
     if (hasChanges) {
-      const confirmed = window.confirm(
-        "You have unsaved changes. Are you sure you want to leave?"
-      );
+      const confirmed = window.confirm("You have unsaved changes. Are you sure you want to leave?");
       if (!confirmed) return;
     }
 
@@ -119,8 +103,8 @@ export function PhotoSubmissionForm({
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Submit a Photo</h1>
         <p className="text-neutral-500 dark:text-neutral-400">
-          Share your football photos with the community. All submissions will be
-          reviewed before being added to the game.
+          Share your football photos with the community. All submissions will be reviewed before being added to the
+          game.
         </p>
       </div>
 
@@ -132,12 +116,8 @@ export function PhotoSubmissionForm({
         >
           <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="font-semibold text-red-900 dark:text-red-100">
-              Submission Error
-            </h3>
-            <p className="text-sm text-red-700 dark:text-red-300">
-              {submissionState.error}
-            </p>
+            <h3 className="font-semibold text-red-900 dark:text-red-100">Submission Error</h3>
+            <p className="text-sm text-red-700 dark:text-red-300">{submissionState.error}</p>
           </div>
         </div>
       )}
@@ -184,21 +164,12 @@ export function PhotoSubmissionForm({
             disabled={isSubmitting}
             placeholder="e.g., 1998 FIFA World Cup Final"
             maxLength={255}
-            className={cn(
-              validationErrors.event_name &&
-                "border-red-500 focus-visible:ring-red-500"
-            )}
+            className={cn(validationErrors.event_name && "border-red-500 focus-visible:ring-red-500")}
             aria-invalid={!!validationErrors.event_name}
-            aria-describedby={
-              validationErrors.event_name ? "event_name-error" : undefined
-            }
+            aria-describedby={validationErrors.event_name ? "event_name-error" : undefined}
           />
           {validationErrors.event_name && (
-            <p
-              id="event_name-error"
-              className="text-sm text-red-500 dark:text-red-400"
-              role="alert"
-            >
+            <p id="event_name-error" className="text-sm text-red-500 dark:text-red-400" role="alert">
               {validationErrors.event_name}
             </p>
           )}
@@ -219,27 +190,16 @@ export function PhotoSubmissionForm({
             onBlur={() => validateField("year_utc")}
             disabled={isSubmitting}
             placeholder="e.g., 1998"
-            className={cn(
-              validationErrors.year_utc &&
-                "border-red-500 focus-visible:ring-red-500"
-            )}
+            className={cn(validationErrors.year_utc && "border-red-500 focus-visible:ring-red-500")}
             aria-invalid={!!validationErrors.year_utc}
-            aria-describedby={
-              validationErrors.year_utc ? "year_utc-error" : undefined
-            }
+            aria-describedby={validationErrors.year_utc ? "year_utc-error" : undefined}
           />
           {validationErrors.year_utc && (
-            <p
-              id="year_utc-error"
-              className="text-sm text-red-500 dark:text-red-400"
-              role="alert"
-            >
+            <p id="year_utc-error" className="text-sm text-red-500 dark:text-red-400" role="alert">
               {validationErrors.year_utc}
             </p>
           )}
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Year of the event (1880-2025)
-          </p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">Year of the event (1880-2025)</p>
         </div>
 
         {/* Location */}
@@ -269,14 +229,9 @@ export function PhotoSubmissionForm({
             placeholder="e.g., CC-BY-SA 4.0"
             maxLength={100}
             list="license-suggestions"
-            className={cn(
-              validationErrors.license &&
-                "border-red-500 focus-visible:ring-red-500"
-            )}
+            className={cn(validationErrors.license && "border-red-500 focus-visible:ring-red-500")}
             aria-invalid={!!validationErrors.license}
-            aria-describedby={
-              validationErrors.license ? "license-error" : "license-description"
-            }
+            aria-describedby={validationErrors.license ? "license-error" : "license-description"}
           />
           <datalist id="license-suggestions">
             {COMMON_LICENSES.map((license) => (
@@ -284,18 +239,11 @@ export function PhotoSubmissionForm({
             ))}
           </datalist>
           {validationErrors.license && (
-            <p
-              id="license-error"
-              className="text-sm text-red-500 dark:text-red-400"
-              role="alert"
-            >
+            <p id="license-error" className="text-sm text-red-500 dark:text-red-400" role="alert">
               {validationErrors.license}
             </p>
           )}
-          <p
-            id="license-description"
-            className="text-xs text-neutral-500 dark:text-neutral-400"
-          >
+          <p id="license-description" className="text-xs text-neutral-500 dark:text-neutral-400">
             Photo license (e.g., Creative Commons). Start typing to see suggestions.
           </p>
         </div>
@@ -314,19 +262,12 @@ export function PhotoSubmissionForm({
             disabled={isSubmitting}
             placeholder="e.g., John Smith"
             maxLength={255}
-            className={cn(
-              validationErrors.credit &&
-                "border-red-500 focus-visible:ring-red-500"
-            )}
+            className={cn(validationErrors.credit && "border-red-500 focus-visible:ring-red-500")}
             aria-invalid={!!validationErrors.credit}
             aria-describedby={validationErrors.credit ? "credit-error" : undefined}
           />
           {validationErrors.credit && (
-            <p
-              id="credit-error"
-              className="text-sm text-red-500 dark:text-red-400"
-              role="alert"
-            >
+            <p id="credit-error" className="text-sm text-red-500 dark:text-red-400" role="alert">
               {validationErrors.credit}
             </p>
           )}
@@ -354,10 +295,7 @@ export function PhotoSubmissionForm({
             disabled={isSubmitting}
             placeholder="e.g., FIFA World Cup"
             maxLength={255}
-            className={cn(
-              validationErrors.competition &&
-                "border-red-500 focus-visible:ring-red-500"
-            )}
+            className={cn(validationErrors.competition && "border-red-500 focus-visible:ring-red-500")}
             aria-invalid={!!validationErrors.competition}
           />
           {validationErrors.competition && (
@@ -379,10 +317,7 @@ export function PhotoSubmissionForm({
             disabled={isSubmitting}
             placeholder="e.g., Stade de France, Paris"
             maxLength={255}
-            className={cn(
-              validationErrors.place &&
-                "border-red-500 focus-visible:ring-red-500"
-            )}
+            className={cn(validationErrors.place && "border-red-500 focus-visible:ring-red-500")}
             aria-invalid={!!validationErrors.place}
           />
           {validationErrors.place && (
@@ -420,10 +355,7 @@ export function PhotoSubmissionForm({
             onBlur={() => validateField("source_url")}
             disabled={isSubmitting}
             placeholder="https://example.com/photo-source"
-            className={cn(
-              validationErrors.source_url &&
-                "border-red-500 focus-visible:ring-red-500"
-            )}
+            className={cn(validationErrors.source_url && "border-red-500 focus-visible:ring-red-500")}
             aria-invalid={!!validationErrors.source_url}
           />
           {validationErrors.source_url && (
@@ -434,11 +366,7 @@ export function PhotoSubmissionForm({
         </div>
 
         {/* Tags */}
-        <TagsInput
-          value={formData.tags}
-          onChange={(tags) => updateField("tags", tags)}
-          disabled={isSubmitting}
-        />
+        <TagsInput value={formData.tags} onChange={(tags) => updateField("tags", tags)} disabled={isSubmitting} />
 
         {/* Notes */}
         <div className="space-y-2">
@@ -465,10 +393,7 @@ export function PhotoSubmissionForm({
             onBlur={() => validateField("submitter_email")}
             disabled={isSubmitting}
             placeholder="your.email@example.com"
-            className={cn(
-              validationErrors.submitter_email &&
-                "border-red-500 focus-visible:ring-red-500"
-            )}
+            className={cn(validationErrors.submitter_email && "border-red-500 focus-visible:ring-red-500")}
             aria-invalid={!!validationErrors.submitter_email}
           />
           {validationErrors.submitter_email && (
@@ -493,11 +418,7 @@ export function PhotoSubmissionForm({
         >
           Cancel
         </Button>
-        <Button
-          type="submit"
-          disabled={!isFormValid || isSubmitting}
-          className="w-full sm:w-auto sm:ml-auto"
-        >
+        <Button type="submit" disabled={!isFormValid || isSubmitting} className="w-full sm:w-auto sm:ml-auto">
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

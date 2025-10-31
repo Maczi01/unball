@@ -28,14 +28,11 @@ let usersData: AdminUsersResponseDTO | null = null;
 let errorMessage: string | null = null;
 
 try {
-  const response = await fetch(
-    `${Astro.url.origin}/api/admin/users?page=1&limit=100`,
-    {
-      headers: {
-        Cookie: Astro.request.headers.get("Cookie") || "",
-      },
-    }
-  );
+  const response = await fetch(`${Astro.url.origin}/api/admin/users?page=1&limit=100`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
 
   if (response.ok) {
     usersData = await response.json();
@@ -56,9 +53,7 @@ try {
         <div class="mb-8">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-                User Management
-              </h1>
+              <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">User Management</h1>
               <p class="text-neutral-600 dark:text-neutral-400 mt-2">
                 Manage user roles and photo submission permissions
               </p>

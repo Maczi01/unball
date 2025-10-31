@@ -34,12 +34,7 @@ const LoadingSkeleton = () => (
 const EmptyState = ({ statusFilter }: { statusFilter: string }) => (
   <div className="flex flex-col items-center justify-center py-12 text-center">
     <div className="rounded-full bg-neutral-100 dark:bg-neutral-800 p-6 mb-4">
-      <svg
-        className="h-12 w-12 text-neutral-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
+      <svg className="h-12 w-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -48,13 +43,9 @@ const EmptyState = ({ statusFilter }: { statusFilter: string }) => (
         />
       </svg>
     </div>
-    <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
-      No submissions found
-    </h3>
+    <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-1">No submissions found</h3>
     <p className="text-neutral-600 dark:text-neutral-400">
-      {statusFilter === "all"
-        ? "There are no photo submissions yet."
-        : `No ${statusFilter} submissions found.`}
+      {statusFilter === "all" ? "There are no photo submissions yet." : `No ${statusFilter} submissions found.`}
     </p>
   </div>
 );
@@ -91,11 +82,7 @@ export const SubmissionsList = ({
       </div>
 
       {pagination && pagination.total_pages > 1 && (
-        <Pagination
-          currentPage={pagination.page}
-          totalPages={pagination.total_pages}
-          onPageChange={onPageChange}
-        />
+        <Pagination currentPage={pagination.page} totalPages={pagination.total_pages} onPageChange={onPageChange} />
       )}
     </div>
   );
