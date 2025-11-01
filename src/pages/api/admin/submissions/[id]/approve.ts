@@ -58,6 +58,7 @@ export const POST: APIRoute = async ({ params, locals }) => {
       }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Approve submission error:", error);
     return new Response(
       JSON.stringify({

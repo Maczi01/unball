@@ -56,6 +56,7 @@ export async function getTodaysDailySet(supabase: SupabaseClient): Promise<Daily
     if (error) {
       if (error.code === "PGRST116") {
         // No rows returned - normal case when no set published
+        // eslint-disable-next-line no-console
         console.warn(`[Daily Sets] No published set found for ${today}`);
         return null;
       }
@@ -80,6 +81,7 @@ export async function getTodaysDailySet(supabase: SupabaseClient): Promise<Daily
 
     // Validate photo count
     if (photos.length !== 5) {
+      // eslint-disable-next-line no-console
       console.error(`[Daily Sets] Invalid photo count for set ${data.id}: ${photos.length} (expected 5)`);
       throw new Error("Daily set incomplete");
     }
@@ -90,9 +92,11 @@ export async function getTodaysDailySet(supabase: SupabaseClient): Promise<Daily
       photos,
     };
 
+    // eslint-disable-next-line no-console
     console.info(`[Daily Sets] Retrieved set for ${today}, id: ${data.id}`);
     return response;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Daily Sets] Error fetching today's set:", error);
     throw error;
   }
@@ -201,11 +205,13 @@ export async function createDailySet(
       throw junctionError;
     }
 
+    // eslint-disable-next-line no-console
     console.info(`[Daily Sets] Created set for ${date_utc}, id: ${dailySet.id}`);
 
     // Fetch and return complete daily set
     return getDailySetById(supabase, dailySet.id);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Daily Sets] Error creating daily set:", error);
     throw error;
   }
@@ -277,6 +283,7 @@ export async function getDailySetById(supabase: SupabaseClient, daily_set_id: st
       photos,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Daily Sets] Error fetching daily set by ID:", error);
     throw error;
   }
@@ -327,7 +334,9 @@ export async function listDailySets(
     }
 
     // Apply pagination and ordering
-    const { data, error, count } = await query.order("date_utc", { ascending: false }).range(offset, offset + limit - 1);
+    const { data, error, count } = await query
+      .order("date_utc", { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (error) throw error;
 
@@ -361,6 +370,7 @@ export async function listDailySets(
       schedule_status,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Daily Sets] Error listing daily sets:", error);
     throw error;
   }
@@ -409,6 +419,7 @@ async function calculateScheduleStatus(supabase: SupabaseClient): Promise<Schedu
       warning,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Daily Sets] Error calculating schedule status:", error);
     return {
       days_scheduled_ahead: 0,
@@ -435,11 +446,16 @@ export async function publishDailySet(supabase: SupabaseClient, daily_set_id: st
 
     // Validate photo count
     if (dailySet.photos.length !== ValidationConstants.DAILY_SET.PHOTO_COUNT) {
-      throw new Error(`Cannot publish incomplete set. Expected ${ValidationConstants.DAILY_SET.PHOTO_COUNT} photos, found ${dailySet.photos.length}`);
+      throw new Error(
+        `Cannot publish incomplete set. Expected ${ValidationConstants.DAILY_SET.PHOTO_COUNT} photos, found ${dailySet.photos.length}`
+      );
     }
 
     // Update set to published
-    const { error: updateError } = await supabase.from("daily_sets").update({ is_published: true }).eq("id", daily_set_id);
+    const { error: updateError } = await supabase
+      .from("daily_sets")
+      .update({ is_published: true })
+      .eq("id", daily_set_id);
 
     if (updateError) throw updateError;
 
@@ -452,11 +468,13 @@ export async function publishDailySet(supabase: SupabaseClient, daily_set_id: st
         .is("first_used_in_daily_date", null);
     }
 
+    // eslint-disable-next-line no-console
     console.info(`[Daily Sets] Published set for ${dailySet.date_utc}, id: ${daily_set_id}`);
 
     // Fetch and return updated set
     return getDailySetById(supabase, daily_set_id);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Daily Sets] Error publishing daily set:", error);
     throw error;
   }
@@ -484,8 +502,10 @@ export async function deleteDailySet(supabase: SupabaseClient, daily_set_id: str
 
     if (error) throw error;
 
+    // eslint-disable-next-line no-console
     console.info(`[Daily Sets] Deleted set id: ${daily_set_id}`);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Daily Sets] Error deleting daily set:", error);
     throw error;
   }
@@ -545,6 +565,7 @@ export async function getAvailablePhotosForDaily(
 
     return { photos, pagination };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Daily Sets] Error fetching available photos:", error);
     throw error;
   }
@@ -586,6 +607,7 @@ export async function autoPublishTodaysDailySet(supabase: SupabaseClient): Promi
       if (fetchError.code === "PGRST116") {
         // No set found for today
         const errorMessage = `No daily set scheduled for ${today}`;
+        // eslint-disable-next-line no-console
         console.error(`[Auto-Publish] ${errorMessage}`);
 
         // TODO: Send alert to admin (email, Slack, etc.)
@@ -602,6 +624,7 @@ export async function autoPublishTodaysDailySet(supabase: SupabaseClient): Promi
 
     // Check if already published
     if (dailySet.is_published) {
+      // eslint-disable-next-line no-console
       console.info(`[Auto-Publish] Daily set for ${today} is already published`);
       return {
         success: true,
@@ -614,9 +637,11 @@ export async function autoPublishTodaysDailySet(supabase: SupabaseClient): Promi
     }
 
     // Publish the set
+    // eslint-disable-next-line no-console
     console.info(`[Auto-Publish] Publishing daily set for ${today}, id: ${dailySet.id}`);
     await publishDailySet(supabase, dailySet.id);
 
+    // eslint-disable-next-line no-console
     console.info(`[Auto-Publish] Successfully published daily set for ${today}`);
 
     return {
@@ -628,6 +653,7 @@ export async function autoPublishTodaysDailySet(supabase: SupabaseClient): Promi
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Auto-Publish] Error:", error);
 
     // Return error result (don't throw, so cron can record the failure)

@@ -76,6 +76,7 @@ export const POST: APIRoute = async ({ locals, params }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[POST /api/admin/daily-sets/:id/publish] Error:", error);
 
     if (error instanceof Error) {

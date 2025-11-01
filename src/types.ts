@@ -146,7 +146,7 @@ export interface SubmissionDetailsDTO {
   total_score: number;
   total_time_ms: number;
   submission_timestamp: string;
-  leaderboard_rank: number;
+  leaderboard_rank: number | null | undefined;
 }
 
 /**

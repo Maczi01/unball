@@ -44,8 +44,8 @@ export function AlreadySubmittedNotice({ onDismiss }: AlreadySubmittedNoticeProp
         <div className="flex-1">
           <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Already Submitted Today</h3>
           <p className="text-sm text-blue-800 dark:text-blue-200">
-            You've already submitted today's Daily Challenge. This is a practice round and won't affect your leaderboard
-            position.
+            You&#39;ve already submitted today&#39;s Daily Challenge. This is a practice round and won&#39;t affect your
+            leaderboard position.
           </p>
         </div>
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, Check, X, Loader2, Tag } from "lucide-react";
+import { Trash2, Check, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";

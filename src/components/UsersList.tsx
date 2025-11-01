@@ -1,9 +1,6 @@
-import { useState, useEffect } from "react";
-import { Shield, UserCircle, Check, X, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Loader2, Shield, UserCircle } from "lucide-react";
 import { toast, Toaster } from "sonner";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

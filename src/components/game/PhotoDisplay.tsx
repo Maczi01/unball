@@ -1,8 +1,8 @@
 import { useState } from "react";
-import type { DailySetPhotoDTO } from "@/types";
+import type { DailySetPhotoDTO, NormalRoundPhotoDTO } from "@/types";
 
 interface PhotoDisplayProps {
-  photo: DailySetPhotoDTO;
+  photo: DailySetPhotoDTO | NormalRoundPhotoDTO;
   currentIndex: number; // 0-4
   totalPhotos: number; // Always 5
   onLoad?: () => void;
@@ -21,6 +21,7 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
   const handleImageError = () => {
     setIsLoading(false);
     setHasError(true);
+    // eslint-disable-next-line no-console
     console.error("Failed to load photo:", photo.photo_url);
   };
 
@@ -85,6 +86,7 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
         )}
 
         {/* Actual image */}
+        {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
         <img
           data-photo-id={photo.photo_id}
           src={photo.photo_url}

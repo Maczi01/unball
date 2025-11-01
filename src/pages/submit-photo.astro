@@ -22,6 +22,7 @@ const { data: userProfile, error: profileError } = await supabase
 
 // Handle profile fetch error
 if (profileError || !userProfile) {
+  // eslint-disable-next-line no-console
   console.error("Failed to fetch user profile:", profileError);
   return Astro.redirect("/");
 }

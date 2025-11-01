@@ -8,7 +8,7 @@ interface NicknameInputProps {
 }
 
 export function NicknameInput({ value, onChange, error }: NicknameInputProps) {
-  const { MIN_LENGTH, MAX_LENGTH, REGEX } = ValidationConstants.NICKNAME;
+  const { MIN_LENGTH, MAX_LENGTH } = ValidationConstants.NICKNAME;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;

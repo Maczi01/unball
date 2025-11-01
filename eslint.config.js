@@ -58,6 +58,57 @@ const reactConfig = tseslint.config({
 
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
+  {
+    ignores: [
+      // Dependencies
+      '**/node_modules/**',
+
+      // Build outputs
+      '**/dist/**',
+      '**/.astro/**',
+
+      // Cache directories
+      '**/.cache/**',
+      '**/.parcel-cache/**',
+
+      // Environment files
+      '**/.env',
+      '**/.env.*',
+
+      // Configuration files
+      '**/*.config.js',
+      '**/*.config.mjs',
+      '**/*.config.cjs',
+      '**/*.config.ts',
+
+      // Lock files
+      '**/package-lock.json',
+      '**/pnpm-lock.yaml',
+      '**/yarn.lock',
+
+      // Logs
+      '**/*.log',
+
+      // OS files
+      '**/.DS_Store',
+      '**/Thumbs.db',
+
+      // IDE
+      '**/.vscode/**',
+      '**/.idea/**',
+
+      // Test coverage
+      '**/coverage/**',
+
+      // Playwright
+      '**/test-results/**',
+      '**/playwright-report/**',
+      '**/playwright/.cache/**',
+
+      // Misc
+      'tests/setup/vitest.setup.ts',
+    ]
+  },
   baseConfig,
   jsxA11yConfig,
   reactConfig,

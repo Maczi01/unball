@@ -41,6 +41,7 @@ export const GET: APIRoute = async ({ locals }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Get profile error:", error);
     return new Response(
       JSON.stringify({
@@ -112,6 +113,7 @@ export const PATCH: APIRoute = async ({ request, locals }) => {
       }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Update profile error:", error);
     return new Response(
       JSON.stringify({

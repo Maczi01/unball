@@ -19,6 +19,7 @@ export function YearPicker({ selectedYear, onYearChange, disabled = false }: Yea
     <div className="space-y-2">
       {/* Header */}
       <div className="flex items-center justify-between">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label className="text-base font-semibold text-gray-900 dark:text-gray-100">What year was this?</label>
         <span className="text-xs text-gray-500 dark:text-gray-400">
           {MIN} - {MAX}

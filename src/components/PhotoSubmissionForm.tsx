@@ -19,7 +19,7 @@ interface PhotoSubmissionFormProps {
 
 const COMMON_LICENSES = ["CC-BY-SA 4.0", "CC-BY 4.0", "CC-BY-NC 4.0", "CC-BY-NC-SA 4.0", "Public Domain", "CC0 1.0"];
 
-export function PhotoSubmissionForm({ userEmail, onSuccess, onCancel }: PhotoSubmissionFormProps) {
+export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionFormProps) {
   const {
     formData,
     validationErrors,
@@ -340,7 +340,7 @@ export function PhotoSubmissionForm({ userEmail, onSuccess, onCancel }: PhotoSub
             className="resize-none"
           />
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Provide context about what's happening in the photo
+            Provide context about what&#39;s happening in the photo
           </p>
         </div>
 

@@ -20,6 +20,39 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
   const markerRef = useRef<mapboxgl.Marker | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
 
+  const updatePin = useCallback(
+    (lng: number, lat: number) => {
+      if (!mapRef.current) return;
+
+      // Remove existing marker
+      if (markerRef.current) {
+        markerRef.current.remove();
+      }
+
+      // Create new marker
+      const marker = new mapboxgl.Marker({
+        draggable: !disabled,
+        color: "#ef4444", // red-500
+      })
+        .setLngLat([lng, lat])
+        .addTo(mapRef.current);
+
+      // Handle marker drag
+      if (!disabled) {
+        marker.on("dragend", () => {
+          const lngLat = marker.getLngLat();
+          onChange({
+            lat: lngLat.lat.toFixed(6),
+            lon: lngLat.lng.toFixed(6),
+          });
+        });
+      }
+
+      markerRef.current = marker;
+    },
+    [disabled, onChange]
+  );
+
   // Initialize map
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -63,9 +96,10 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
       };
     } catch (err) {
       setMapError("Failed to load map. Please enter coordinates manually.");
+      // eslint-disable-next-line no-console
       console.error("Map initialization error:", err);
     }
-  }, [disabled, onChange]);
+  }, [disabled, onChange, updatePin]);
 
   // Update pin position when lat/lon props change
   useEffect(() => {
@@ -81,40 +115,7 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
         zoom: 8,
       });
     }
-  }, [lat, lon]);
-
-  const updatePin = useCallback(
-    (lng: number, lat: number) => {
-      if (!mapRef.current) return;
-
-      // Remove existing marker
-      if (markerRef.current) {
-        markerRef.current.remove();
-      }
-
-      // Create new marker
-      const marker = new mapboxgl.Marker({
-        draggable: !disabled,
-        color: "#ef4444", // red-500
-      })
-        .setLngLat([lng, lat])
-        .addTo(mapRef.current);
-
-      // Handle marker drag
-      if (!disabled) {
-        marker.on("dragend", () => {
-          const lngLat = marker.getLngLat();
-          onChange({
-            lat: lngLat.lat.toFixed(6),
-            lon: lngLat.lng.toFixed(6),
-          });
-        });
-      }
-
-      markerRef.current = marker;
-    },
-    [disabled, onChange]
-  );
+  }, [lat, lon, updatePin]);
 
   const handleLatChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

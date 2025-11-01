@@ -64,6 +64,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[GET /api/admin/daily-sets/available-photos] Error:", error);
 
     return new Response(

@@ -76,6 +76,7 @@ export const GET: APIRoute = async ({ locals, params }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[GET /api/admin/daily-sets/:id] Error:", error);
 
     if (error instanceof Error && error.message === "Daily set not found") {
@@ -182,6 +183,7 @@ export const DELETE: APIRoute = async ({ locals, params }) => {
       }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[DELETE /api/admin/daily-sets/:id] Error:", error);
 
     if (error instanceof Error) {

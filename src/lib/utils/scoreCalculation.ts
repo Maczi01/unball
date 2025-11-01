@@ -88,6 +88,7 @@ export function calculateScore(
       correct_year: correct.year,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Score calculation error:", error);
     // Return default values on error
     return {

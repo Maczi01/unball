@@ -57,6 +57,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const cronSecret = import.meta.env.CRON_SECRET;
 
     if (!cronSecret) {
+      // eslint-disable-next-line no-console
       console.error("[Cron] CRON_SECRET not configured in environment variables");
       return new Response(
         JSON.stringify({
@@ -74,6 +75,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const providedSecret = authHeader?.replace("Bearer ", "");
 
     if (!providedSecret || providedSecret !== cronSecret) {
+      // eslint-disable-next-line no-console
       console.warn("[Cron] Unauthorized cron request attempt");
       return new Response(
         JSON.stringify({
@@ -97,6 +99,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Cron] Error publishing daily set:", error);
 
     return new Response(
@@ -153,6 +156,7 @@ export const GET: APIRoute = async ({ locals }) => {
       }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Cron Health Check] Error:", error);
 
     return new Response(

@@ -37,6 +37,7 @@ try {
     photosData = await response.json();
   }
 } catch (error) {
+  // eslint-disable-next-line no-console
   console.error("Failed to fetch photos:", error);
 }
 ---

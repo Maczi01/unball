@@ -22,7 +22,6 @@ export function RoundSummary({
   mode,
   results,
   totalScore,
-  totalTimeMs,
   isFirstSubmission,
   leaderboardRank,
   onViewLeaderboard,
@@ -42,12 +41,12 @@ export function RoundSummary({
   const percentage = (totalScore / maxScore) * 100;
 
   // Format time as MM:SS
-  const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  };
+  // const formatTime = (ms: number) => {
+  //   const totalSeconds = Math.floor(ms / 1000);
+  //   const minutes = Math.floor(totalSeconds / 60);
+  //   const seconds = totalSeconds % 60;
+  //   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  // };
 
   // Validate nickname
   const validateNickname = (value: string): NicknameValidation => {
@@ -110,6 +109,7 @@ export function RoundSummary({
       await onSubmitWithNickname(nickname, consentGiven);
       setHasSubmitted(true);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Submission error:", error);
       if (error instanceof Error) {
         setNicknameError(error.message);
@@ -159,7 +159,7 @@ export function RoundSummary({
             {showLeaderboardRank && (
               <div className="bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg p-6 text-center border-2 border-yellow-400 dark:border-yellow-600">
                 <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  🎖️ You placed #{leaderboardRank} on today's leaderboard!
+                  🎖️ You placed #{leaderboardRank} on today&#39;s leaderboard!
                 </p>
               </div>
             )}

@@ -40,6 +40,7 @@ export const GET: APIRoute = async ({ locals }) => {
       }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Get user submissions error:", error);
     return new Response(
       JSON.stringify({

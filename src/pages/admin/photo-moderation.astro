@@ -37,6 +37,7 @@ try {
     initialData = await response.json();
   }
 } catch (error) {
+  // eslint-disable-next-line no-console
   console.error("Failed to fetch initial data:", error);
 }
 ---

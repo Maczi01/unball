@@ -166,12 +166,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
     const filePath = `submissions/${fileName}`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage.from("photos").upload(filePath, photoFile, {
+    const { error: uploadError } = await supabase.storage.from("photos").upload(filePath, photoFile, {
       contentType: photoFile.type,
       upsert: false,
     });
 
     if (uploadError) {
+      // eslint-disable-next-line no-console
       console.error("Storage upload error:", uploadError);
       return new Response(
         JSON.stringify({
@@ -212,6 +213,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       .single();
 
     if (insertError) {
+      // eslint-disable-next-line no-console
       console.error("Database insert error:", insertError);
 
       // Clean up uploaded file
@@ -237,6 +239,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       { status: 201, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Unexpected error:", error);
     return new Response(
       JSON.stringify({

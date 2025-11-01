@@ -63,6 +63,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
+    // eslint-disable-next-line no-console
     console.error("Get submission detail error:", error);
 
     // Check if it's a not found error

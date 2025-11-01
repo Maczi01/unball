@@ -109,6 +109,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     });
 
     if (rejectError) {
+      // eslint-disable-next-line no-console
       console.error("Reject submission error:", rejectError);
       return new Response(
         JSON.stringify({
@@ -131,6 +132,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Reject submission error:", error);
     return new Response(
       JSON.stringify({

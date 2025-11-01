@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@/db/supabase.client";
-import type { UpdateUserPermissionsCommand, UserRole } from "@/types";
+import type { UpdateUserPermissionsCommand } from "@/types";
 
 /**
  * Users Service

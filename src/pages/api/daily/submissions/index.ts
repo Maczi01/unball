@@ -107,6 +107,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[POST /api/daily/submissions] Error:", error);
 
     // Handle specific errors

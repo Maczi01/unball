@@ -19,6 +19,7 @@ export const GET: APIRoute = async ({ locals }) => {
       .limit(100); // Get a larger pool to randomize from
 
     if (dbError) {
+      // eslint-disable-next-line no-console
       console.error("[GET /api/normal/photos] Database error:", dbError);
       return new Response(
         JSON.stringify({
@@ -35,6 +36,7 @@ export const GET: APIRoute = async ({ locals }) => {
     }
 
     if (!photos || photos.length === 0) {
+      // eslint-disable-next-line no-console
       console.error("[GET /api/normal/photos] No photos found in database");
       return new Response(
         JSON.stringify({
@@ -57,7 +59,9 @@ export const GET: APIRoute = async ({ locals }) => {
     const response: NormalRoundResponseDTO = {
       round_id: `round_${Date.now()}`,
       photos: selectedPhotos.map((photo) => ({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         photo_id: photo.id!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         photo_url: photo.photo_url!,
         thumbnail_url: photo.thumbnail_url,
         competition: photo.competition,
@@ -73,6 +77,7 @@ export const GET: APIRoute = async ({ locals }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[GET /api/normal/photos] Error:", error);
 
     return new Response(

@@ -49,6 +49,7 @@ export function MapComponent({
       });
 
       map.current.on("error", (e) => {
+        // eslint-disable-next-line no-console
         console.error("Mapbox error:", e);
         setMapError("Failed to load map. Please check your connection.");
       });
@@ -69,6 +70,7 @@ export function MapComponent({
         }
       });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to initialize map:", error);
       setMapError("Failed to initialize map. Please refresh the page.");
     }
@@ -80,8 +82,7 @@ export function MapComponent({
         map.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onPinPlace, showFeedback]);
 
   // Update user pin marker
   useEffect(() => {

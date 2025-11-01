@@ -50,6 +50,7 @@ try {
             isAlreadySubmitted = checkData.has_submitted;
           }
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error("Failed to check submission status:", error);
           // Continue anyway, assume not submitted
         }
@@ -66,6 +67,7 @@ try {
     }
   }
 } catch (error) {
+  // eslint-disable-next-line no-console
   console.error("Error fetching game data:", error);
   errorMessage = "An unexpected error occurred. Please try again.";
 }

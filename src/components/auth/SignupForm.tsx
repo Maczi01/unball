@@ -80,7 +80,7 @@ export default function SignupForm() {
 
       // Success - redirect to home
       window.location.href = "/";
-    } catch (err) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);

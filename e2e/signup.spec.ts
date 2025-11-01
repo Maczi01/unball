@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { SignupPage } from "./page-objects/SignupPage";
+import { SignupPage } from "./page-objects";
 
 /**
  * Signup Page E2E Tests
@@ -294,6 +294,7 @@ test.describe("Signup Page - Authenticated User", () => {
 
     // If not redirected, that's expected if auth is not fully implemented
     // This test serves as a placeholder for when auth is complete
+    // eslint-disable-next-line no-console
     console.log("Current URL:", url);
   });
 });

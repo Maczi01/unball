@@ -1,7 +1,6 @@
 import type { SupabaseClient } from "@/db/supabase.client";
 import type {
   DailySubmissionCommand,
-  GuessDTO,
   PhotoScoreResultDTO,
   SubmissionCheckResponseDTO,
   SubmissionDetailsDTO,
@@ -79,6 +78,7 @@ export async function checkDailySubmission(
       submission,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Submissions Service] Error checking submission:", error);
     throw error;
   }
@@ -108,7 +108,7 @@ export async function submitDailyChallenge(
   photos: PhotoScoreResultDTO[];
 }> {
   try {
-    const { daily_set_id, date_utc, nickname, consent_given, guesses, total_time_ms } = command;
+    const { daily_set_id, date_utc, nickname, guesses, total_time_ms } = command;
 
     // 1. Check for duplicate submission (only for authenticated users)
     if (userId) {
@@ -239,6 +239,7 @@ export async function submitDailyChallenge(
       };
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Submissions Service] Error submitting daily challenge:", error);
     throw error;
   }
@@ -280,6 +281,7 @@ async function calculateLeaderboardRank(
     // Rank is count of better submissions + 1
     return (count ?? 0) + 1;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Submissions Service] Error calculating rank:", error);
     throw error;
   }
@@ -322,6 +324,7 @@ async function calculatePotentialRank(
     // Potential rank is count of better submissions + 1
     return (count ?? 0) + 1;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[Submissions Service] Error calculating potential rank:", error);
     throw error;
   }

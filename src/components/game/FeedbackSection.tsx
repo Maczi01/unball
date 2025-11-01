@@ -90,9 +90,11 @@ export function FeedbackSection({
                   showFeedback={true}
                   kmError={result.km_error}
                   onPinPlace={() => {
+                    // eslint-disable-next-line no-console
                     console.log("Pin moved");
                   }}
                   onPinMove={() => {
+                    // eslint-disable-next-line no-console
                     console.log("Pin moved");
                   }}
                   className="h-full rounded-lg shadow-lg"

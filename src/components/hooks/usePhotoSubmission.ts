@@ -173,6 +173,7 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       if (validationErrors[field]) {
         setValidationErrors((prev) => {
           const newErrors = { ...prev };
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete newErrors[field];
           return newErrors;
         });
@@ -269,6 +270,7 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       } else {
         setValidationErrors((prev) => {
           const newErrors = { ...prev };
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete newErrors[field];
           return newErrors;
         });
@@ -294,7 +296,7 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
     const optionalFields: (keyof PhotoSubmissionFormData)[] = ["competition", "place", "submitter_email", "source_url"];
 
     let isValid = true;
-    const errors: ValidationErrors = {};
+    // const errors: ValidationErrors = {};
 
     // Validate required fields
     for (const field of requiredFields) {
@@ -352,6 +354,7 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
 
     // 2. Prepare FormData
     const apiFormData = new FormData();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     apiFormData.append("photo_file", formData.photo_file!);
     apiFormData.append("event_name", formData.event_name);
     apiFormData.append("year_utc", formData.year_utc);

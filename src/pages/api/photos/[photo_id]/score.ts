@@ -61,6 +61,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       .single();
 
     if (dbError || !photo) {
+      // eslint-disable-next-line no-console
       console.error("[POST /api/photos/:photo_id/score] Photo not found:", photo_id, dbError);
       return new Response(
         JSON.stringify({
@@ -109,6 +110,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[POST /api/photos/:photo_id/score] Error:", error);
 
     return new Response(

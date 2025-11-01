@@ -34,7 +34,7 @@ export default function LoginForm({ redirectUrl = "/" }: LoginFormProps) {
 
       // Successful login - redirect
       window.location.href = redirectUrl;
-    } catch (err) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);

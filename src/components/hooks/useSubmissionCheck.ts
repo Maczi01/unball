@@ -34,6 +34,7 @@ export function useSubmissionCheck(mode: GameMode, deviceToken: string | null) {
       const data: SubmissionCheckResponseDTO = await response.json();
       setHasSubmitted(data.has_submitted);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Submission check error:", err);
       setError(err instanceof Error ? err : new Error("Unknown error"));
       // Assume not submitted if check fails (allow gameplay)
@@ -45,8 +46,7 @@ export function useSubmissionCheck(mode: GameMode, deviceToken: string | null) {
 
   useEffect(() => {
     checkSubmission();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, deviceToken]);
+  }, [mode, deviceToken, checkSubmission]);
 
   return {
     hasSubmitted,

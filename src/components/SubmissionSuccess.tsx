@@ -64,8 +64,8 @@ export function SubmissionSuccess({
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
               <strong className="text-neutral-900 dark:text-neutral-100">What happens next?</strong>
               <br />
-              Your photo will be reviewed by our team. You'll be able to check the status in your submission history.
-              Approved photos will be added to the game!
+              Your photo will be reviewed by our team. You&#39;ll be able to check the status in your submission
+              history. Approved photos will be added to the game!
             </p>
           </div>
         </div>

@@ -45,6 +45,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[GET /api/daily/submissions/check] Error:", error);
 
     return new Response(

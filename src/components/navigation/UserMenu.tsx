@@ -35,7 +35,7 @@ export default function UserMenu({ user }: UserMenuProps) {
       } else {
         alert("Failed to sign out");
       }
-    } catch (error) {
+    } catch {
       alert("Network error");
     } finally {
       setIsLoggingOut(false);

@@ -20,6 +20,7 @@ export function usePhotoGuess() {
     ) {
       setPin({ lat, lon });
     } else {
+      // eslint-disable-next-line no-console
       console.error("Invalid coordinates:", { lat, lon });
     }
   };
@@ -29,6 +30,7 @@ export function usePhotoGuess() {
     if (newYear >= ValidationConstants.YEAR.MIN && newYear <= ValidationConstants.YEAR.MAX) {
       setYear(newYear);
     } else {
+      // eslint-disable-next-line no-console
       console.error("Invalid year:", newYear);
     }
   };

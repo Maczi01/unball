@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { Calendar, Plus, CheckCircle, Clock, AlertCircle, Eye, Trash2, ExternalLink } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AlertCircle, Calendar, CheckCircle, Clock, Eye, Plus, Trash2 } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CreateDailySetModal } from "@/components/CreateDailySetModal";
-import type { AdminDailySetsResponseDTO, AdminDailySetListItemDTO } from "@/types";
+import type { AdminDailySetListItemDTO, AdminDailySetsResponseDTO } from "@/types";
 
 export const DailySetsManager = () => {
   const [data, setData] = useState<AdminDailySetsResponseDTO | null>(null);
@@ -34,7 +34,7 @@ export const DailySetsManager = () => {
 
   useEffect(() => {
     fetchDailySets();
-  }, [page]);
+  }, [fetchDailySets, page]);
 
   const handleDelete = async (id: string, date: string) => {
     if (!confirm(`Are you sure you want to delete the daily set for ${date}?`)) {
@@ -137,7 +137,9 @@ export const DailySetsManager = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Days Scheduled Ahead</p>
-              <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">{schedule_status.days_scheduled_ahead}</p>
+              <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+                {schedule_status.days_scheduled_ahead}
+              </p>
             </div>
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Next Unpublished</p>
@@ -178,12 +180,7 @@ export const DailySetsManager = () => {
           ) : (
             <div className="space-y-3">
               {daily_sets.map((set) => (
-                <DailySetRow
-                  key={set.daily_set_id}
-                  set={set}
-                  onDelete={handleDelete}
-                  onPublish={handlePublish}
-                />
+                <DailySetRow key={set.daily_set_id} set={set} onDelete={handleDelete} onPublish={handlePublish} />
               ))}
             </div>
           )}
@@ -232,7 +229,7 @@ interface DailySetRowProps {
 }
 
 const DailySetRow = ({ set, onDelete, onPublish }: DailySetRowProps) => {
-  const isPast = new Date(set.date_utc) < new Date(new Date().toISOString().split("T")[0]);
+  // const isPast = new Date(set.date_utc) < new Date(new Date().toISOString().split("T")[0]);
   const isToday = set.date_utc === new Date().toISOString().split("T")[0];
   const isIncomplete = set.photo_count !== 5;
 
@@ -255,7 +252,10 @@ const DailySetRow = ({ set, onDelete, onPublish }: DailySetRowProps) => {
               Published
             </Badge>
           ) : (
-            <Badge variant="outline" className="border-orange-200 dark:border-orange-900 text-orange-700 dark:text-orange-300">
+            <Badge
+              variant="outline"
+              className="border-orange-200 dark:border-orange-900 text-orange-700 dark:text-orange-300"
+            >
               <Clock className="h-3 w-3 mr-1" />
               Draft
             </Badge>
@@ -290,11 +290,7 @@ const DailySetRow = ({ set, onDelete, onPublish }: DailySetRowProps) => {
         )}
 
         {!set.is_published && (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => onDelete(set.daily_set_id, set.date_utc)}
-          >
+          <Button variant="destructive" size="sm" onClick={() => onDelete(set.daily_set_id, set.date_utc)}>
             <Trash2 className="h-4 w-4" />
           </Button>
         )}

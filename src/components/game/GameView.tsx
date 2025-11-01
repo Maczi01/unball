@@ -191,6 +191,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       setShowFeedback(true);
       clearGuess();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Submission error:", error);
       dispatch({
         type: "SET_ERROR",
@@ -248,7 +249,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       }
 
       const result: DailySubmissionResponseDTO = await response.json();
-      setLeaderboardRank(result.leaderboard_rank);
+      setLeaderboardRank(result.leaderboard_rank ?? undefined);
     },
     [mode, gameState.dailySetId, gameState.dateUtc, gameState.photos, deviceToken, elapsedMs]
   );
@@ -317,7 +318,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
     return (
       <RoundSummary
         mode={mode}
-        results={gameState.photos.filter((p) => p.result !== null).map((p) => p.result!)}
+        results={gameState.photos.filter((p) => p.result !== null).map((p) => p.result as PhotoScoreResultDTO)}
         totalScore={gameState.totalScore}
         totalTimeMs={elapsedMs}
         isFirstSubmission={mode === "daily" && !hasSubmitted && !isAlreadySubmitted}

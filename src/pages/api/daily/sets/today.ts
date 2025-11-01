@@ -40,6 +40,7 @@ export const GET: APIRoute = async ({ locals }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[GET /api/daily/sets/today] Error:", error);
 
     return new Response(

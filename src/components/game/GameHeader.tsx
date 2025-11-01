@@ -72,6 +72,7 @@ export function GameHeader({ mode, currentPhoto, totalPhotos, elapsedMs, onExit 
 
       {/* Exit confirmation dialog */}
       {showExitDialog && (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           role="dialog"
@@ -79,6 +80,7 @@ export function GameHeader({ mode, currentPhoto, totalPhotos, elapsedMs, onExit 
           aria-labelledby="exit-dialog-title"
           onClick={handleCancelExit}
         >
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
           <div
             className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6"
             onClick={(e) => e.stopPropagation()}

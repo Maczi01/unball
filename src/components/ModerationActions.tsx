@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import type { ApproveSubmissionCommand, RejectSubmissionCommand, SubmissionStatus } from "@/types";
 
 interface ModerationActionsProps {
-  submissionId: string;
+  // submissionId: string;
   currentStatus: SubmissionStatus;
   onApprove: (command: ApproveSubmissionCommand) => Promise<void>;
   onReject: (command: RejectSubmissionCommand) => Promise<void>;
@@ -16,14 +16,7 @@ interface ModerationActionsProps {
   error?: string;
 }
 
-export const ModerationActions = ({
-  submissionId,
-  currentStatus,
-  onApprove,
-  onReject,
-  isLoading,
-  error,
-}: ModerationActionsProps) => {
+export const ModerationActions = ({ currentStatus, onApprove, onReject, isLoading, error }: ModerationActionsProps) => {
   const [reviewNotes, setReviewNotes] = useState("");
   const [isDailyEligible, setIsDailyEligible] = useState(true);
   const [rejectReason, setRejectReason] = useState("");

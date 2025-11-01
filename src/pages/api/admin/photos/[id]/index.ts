@@ -80,6 +80,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
+    // eslint-disable-next-line no-console
     console.error("Get photo error:", error);
 
     // Check if it's a not found error
@@ -174,6 +175,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Update photo error:", error);
     return new Response(
       JSON.stringify({

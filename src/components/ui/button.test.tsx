@@ -42,7 +42,7 @@ describe("Button Component", () => {
 
   it("should apply variant classes correctly", () => {
     // Arrange & Act
-    const { container } = render(<Button variant="destructive">Delete</Button>);
+    render(<Button variant="destructive">Delete</Button>);
 
     // Assert
     const button = screen.getByRole("button", { name: /delete/i });

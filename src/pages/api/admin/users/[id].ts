@@ -100,6 +100,7 @@ export const PATCH: APIRoute = async ({ request, locals, params }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Failed to update user:", error);
     return new Response(
       JSON.stringify({

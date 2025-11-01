@@ -42,6 +42,7 @@ export class AdminDashboardService {
     const { data, error } = await this.supabase.from("users").select("role, can_add_photos, consent_given_at");
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching user stats:", error);
       return { total: 0, admins: 0, with_photo_permission: 0, with_consent: 0 };
     }
@@ -58,6 +59,7 @@ export class AdminDashboardService {
     const { data, error } = await this.supabase.from("photos").select("is_daily_eligible");
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching photo stats:", error);
       return { total: 0, daily_eligible: 0 };
     }
@@ -72,6 +74,7 @@ export class AdminDashboardService {
     const { data, error } = await this.supabase.from("photo_submissions").select("status");
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching submission stats:", error);
       return { total: 0, pending: 0, approved: 0, rejected: 0 };
     }
@@ -95,6 +98,7 @@ export class AdminDashboardService {
       .limit(30);
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching daily set stats:", error);
       return { scheduled_ahead: 0, next_unpublished: null };
     }
@@ -115,6 +119,7 @@ export class AdminDashboardService {
       .eq("status", "pending");
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching pending submissions count:", error);
       return 0;
     }
@@ -130,6 +135,7 @@ export class AdminDashboardService {
       .limit(5);
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching recent photos:", error);
       return [];
     }
@@ -150,6 +156,7 @@ export class AdminDashboardService {
       .limit(10);
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching recent activity:", error);
       return [];
     }

@@ -22,22 +22,6 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      // Set default date to tomorrow
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      setDate(tomorrow.toISOString().split("T")[0]);
-
-      // Reset state
-      setSelectedPhotos([]);
-      setError(null);
-
-      // Fetch photos
-      fetchPhotos();
-    }
-  }, [isOpen, page]);
-
   const fetchPhotos = async () => {
     try {
       setIsLoading(true);
@@ -54,6 +38,22 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      // Set default date to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      setDate(tomorrow.toISOString().split("T")[0]);
+
+      // Reset state
+      setSelectedPhotos([]);
+      setError(null);
+
+      // Fetch photos
+      fetchPhotos();
+    }
+  }, [fetchPhotos, isOpen, page]);
 
   const togglePhoto = (photoId: string) => {
     setSelectedPhotos((prev) => {
@@ -133,9 +133,8 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
         <div className="p-6 overflow-y-auto flex-1">
           {/* Date Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-2">
-              Date (UTC)
-            </label>
+            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+            <label className="block text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-2">Date (UTC)</label>
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-neutral-500" />
               <input
@@ -209,11 +208,7 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
                       } ${!isSelected && selectedPhotos.length >= 5 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                     >
                       {photo.thumbnail_url ? (
-                        <img
-                          src={photo.thumbnail_url}
-                          alt={photo.event_name}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={photo.thumbnail_url} alt={photo.event_name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
                           <ImageIcon className="h-8 w-8 text-neutral-400" />

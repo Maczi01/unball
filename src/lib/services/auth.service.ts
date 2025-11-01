@@ -87,6 +87,7 @@ export class AuthService {
       const { error: updateError } = await this.supabase.from("users").update({ nickname }).eq("id", authData.user.id);
 
       if (updateError) {
+        // eslint-disable-next-line no-console
         console.error("Failed to set nickname:", updateError);
         // Don't fail the signup, just log the error
       }

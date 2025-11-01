@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ArrowLeft, Calendar, CheckCircle, Clock, Image as ImageIcon, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { ArrowLeft, CheckCircle, Clock, Image as ImageIcon, Trash2 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,13 +16,7 @@ export const DailySetDetail = ({ dailySetId }: DailySetDetailProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (dailySetId) {
-      fetchDailySet();
-    }
-  }, [dailySetId]);
-
-  const fetchDailySet = async () => {
+  const fetchDailySet = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch(`/api/admin/daily-sets/${dailySetId}`);
@@ -40,7 +34,13 @@ export const DailySetDetail = ({ dailySetId }: DailySetDetailProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [dailySetId]);
+
+  useEffect(() => {
+    if (dailySetId) {
+      fetchDailySet();
+    }
+  }, [dailySetId, fetchDailySet]);
 
   const handlePublish = async () => {
     if (!dailySet) return;
@@ -159,7 +159,10 @@ export const DailySetDetail = ({ dailySetId }: DailySetDetailProps) => {
                 Published
               </Badge>
             ) : (
-              <Badge variant="outline" className="border-orange-200 dark:border-orange-900 text-orange-700 dark:text-orange-300">
+              <Badge
+                variant="outline"
+                className="border-orange-200 dark:border-orange-900 text-orange-700 dark:text-orange-300"
+              >
                 <Clock className="h-3 w-3 mr-1" />
                 Draft
               </Badge>
@@ -187,9 +190,7 @@ export const DailySetDetail = ({ dailySetId }: DailySetDetailProps) => {
             </div>
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Photo Count</p>
-              <p className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-                {dailySet.photos.length} / 5
-              </p>
+              <p className="text-lg font-medium text-neutral-900 dark:text-neutral-100">{dailySet.photos.length} / 5</p>
             </div>
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Created At</p>
@@ -223,11 +224,7 @@ export const DailySetDetail = ({ dailySetId }: DailySetDetailProps) => {
               >
                 <div className="flex-shrink-0 w-32 h-24">
                   {photo.photo_url ? (
-                    <img
-                      src={photo.photo_url}
-                      alt={photo.event_name}
-                      className="w-full h-full object-cover rounded"
-                    />
+                    <img src={photo.photo_url} alt={photo.event_name} className="w-full h-full object-cover rounded" />
                   ) : (
                     <div className="w-full h-full bg-neutral-100 dark:bg-neutral-800 rounded flex items-center justify-center">
                       <ImageIcon className="h-8 w-8 text-neutral-400" />

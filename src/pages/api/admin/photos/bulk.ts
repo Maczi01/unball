@@ -113,6 +113,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Bulk operation error:", error);
     return new Response(
       JSON.stringify({

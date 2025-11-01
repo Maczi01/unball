@@ -16,7 +16,7 @@ const querySchema = z.object({
  * List all users with pagination
  * Requires admin role
  */
-export const GET: APIRoute = async ({ request, locals, url }) => {
+export const GET: APIRoute = async ({ locals, url }) => {
   try {
     const { user } = locals;
 
@@ -87,6 +87,7 @@ export const GET: APIRoute = async ({ request, locals, url }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Failed to fetch users:", error);
     return new Response(
       JSON.stringify({

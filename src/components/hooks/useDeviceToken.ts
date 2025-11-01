@@ -18,6 +18,7 @@ export function useDeviceToken() {
       localStorage.removeItem(testKey);
       setIsStorageAvailable(true);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn("localStorage is not available:", error);
       setIsStorageAvailable(false);
       return;
@@ -34,6 +35,7 @@ export function useDeviceToken() {
         setDeviceToken(newToken);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to access localStorage:", error);
       setIsStorageAvailable(false);
     }
@@ -46,12 +48,14 @@ export function useDeviceToken() {
       localStorage.setItem(DEVICE_TOKEN_KEY, token);
       return token;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to generate device token:", error);
       // Fallback to manual UUID generation
       const fallbackToken = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
       try {
         localStorage.setItem(DEVICE_TOKEN_KEY, fallbackToken);
       } catch (storageError) {
+        // eslint-disable-next-line no-console
         console.error("Failed to store device token:", storageError);
       }
       return fallbackToken;

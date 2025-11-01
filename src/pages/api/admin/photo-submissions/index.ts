@@ -102,6 +102,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Get photo submissions error:", error);
     return new Response(
       JSON.stringify({

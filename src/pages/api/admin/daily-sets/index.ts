@@ -70,6 +70,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[GET /api/admin/daily-sets] Error:", error);
 
     return new Response(
@@ -183,6 +184,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[POST /api/admin/daily-sets] Error:", error);
 
     // Handle specific errors

@@ -49,6 +49,7 @@ export const GET: APIRoute = async ({ locals }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Get pending submissions error:", error);
     return new Response(
       JSON.stringify({

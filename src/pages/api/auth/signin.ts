@@ -53,6 +53,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Sign in error:", error);
     return new Response(
       JSON.stringify({

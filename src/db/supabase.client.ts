@@ -65,6 +65,7 @@ export function createSupabaseServerInstance(context: { headers: Headers; cookie
  * This function uses deprecated individual cookie methods
  */
 export function createSupabaseServerClient(cookies: AstroCookies) {
+  // eslint-disable-next-line no-console
   console.warn("createSupabaseServerClient is deprecated. Use createSupabaseServerInstance instead.");
   return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
     cookies: {

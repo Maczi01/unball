@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "./page-objects/LoginPage";
+import { LoginPage } from "./page-objects";
 
 /**
  * Login Page E2E Tests
@@ -183,6 +183,9 @@ test.describe("Login Page - Authenticated User", () => {
 
     // If not redirected, that's expected if auth is not fully implemented
     // This test serves as a placeholder for when auth is complete
+    // ignore linting console.log
+    // allow-console-log
+    // eslint-disable-next-line no-console
     console.log("Current URL:", url);
   });
 });

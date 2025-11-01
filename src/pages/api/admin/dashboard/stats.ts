@@ -47,6 +47,7 @@ export const GET: APIRoute = async ({ locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Failed to fetch dashboard stats:", error);
     return new Response(
       JSON.stringify({

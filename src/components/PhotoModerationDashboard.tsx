@@ -3,14 +3,8 @@ import { ModerationHeader } from "@/components/ModerationHeader";
 import { SubmissionsList } from "@/components/SubmissionsList";
 import { SubmissionDetailModal } from "@/components/SubmissionDetailModal";
 import { usePhotoModeration } from "@/components/hooks/usePhotoModeration";
-import type { AdminPhotoSubmissionsResponseDTO } from "@/types";
 
-interface PhotoModerationDashboardProps {
-  initialData?: AdminPhotoSubmissionsResponseDTO;
-  adminEmail: string;
-}
-
-export const PhotoModerationDashboard = ({ initialData, adminEmail }: PhotoModerationDashboardProps) => {
+export const PhotoModerationDashboard = () => {
   const { state, setStatusFilter, setPage, openDetailModal, closeDetailModal, approveSubmission, rejectSubmission } =
     usePhotoModeration();
 

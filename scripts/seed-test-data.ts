@@ -7,7 +7,7 @@
 
 import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../src/db/database.types";
+import type { Database } from "@/db/database.types.ts";
 
 // Load .env.test file if it exists
 config({ path: ".env.test" });
@@ -221,21 +221,26 @@ const morePhotos = [
 const allPhotos = [...photos, ...morePhotos];
 
 async function seedData() {
+  // eslint-disable-next-line no-console
   console.log("🌱 Starting seed...\n");
 
   // 1. Insert all photos into database
+  // eslint-disable-next-line no-console
   console.log(`📸 Inserting ${allPhotos.length} test photos...`);
   const { data: photosData, error: photosError } = await supabase.from("photos").insert(allPhotos).select();
 
   if (photosError) {
+    // eslint-disable-next-line no-console
     console.error("❌ Error inserting photos:", photosError);
     process.exit(1);
   }
 
+  // eslint-disable-next-line no-console
   console.log(`✅ Inserted ${photosData.length} photos\n`);
 
   // 2. Create daily set for today
   const today = new Date().toISOString().split("T")[0];
+  // eslint-disable-next-line no-console
   console.log(`📅 Creating daily set for ${today}...`);
 
   const { data: dailySetData, error: dailySetError } = await supabase
@@ -249,13 +254,16 @@ async function seedData() {
     .single();
 
   if (dailySetError) {
+    // eslint-disable-next-line no-console
     console.error("❌ Error creating daily set:", dailySetError);
     process.exit(1);
   }
 
+  // eslint-disable-next-line no-console
   console.log(`✅ Created daily set: ${dailySetData.id}\n`);
 
   // 3. Link ONLY FIRST 5 photos to daily set (positions 1-5)
+  // eslint-disable-next-line no-console
   console.log("🔗 Linking first 5 photos to daily set...");
 
   const dailySetPhotos = photos.slice(0, 5).map((photo, index) => ({
@@ -267,13 +275,16 @@ async function seedData() {
   const { data: linkData, error: linkError } = await supabase.from("daily_set_photos").insert(dailySetPhotos).select();
 
   if (linkError) {
+    // eslint-disable-next-line no-console
     console.error("❌ Error linking photos:", linkError);
     process.exit(1);
   }
 
+  // eslint-disable-next-line no-console
   console.log(`✅ Linked ${linkData.length} photos to daily set\n`);
 
   // 4. Verify the data
+  // eslint-disable-next-line no-console
   console.log("🔍 Verifying data...");
 
   const { data: verifyData, error: verifyError } = await supabase
@@ -297,24 +308,37 @@ async function seedData() {
     .single();
 
   if (verifyError) {
+    // eslint-disable-next-line no-console
     console.error("❌ Error verifying:", verifyError);
     process.exit(1);
   }
 
+  // eslint-disable-next-line no-console
   console.log("✅ Verification successful!");
+  // eslint-disable-next-line no-console
   console.log(`   Daily Set ID: ${verifyData.id}`);
+  // eslint-disable-next-line no-console
   console.log(`   Date: ${verifyData.date_utc}`);
+  // eslint-disable-next-line no-console
   console.log(`   Published: ${verifyData.is_published}`);
+  // eslint-disable-next-line no-console
   console.log(`   Photos: ${verifyData.daily_set_photos.length}\n`);
 
+  // eslint-disable-next-line no-console
   console.log("📋 Photos in set:");
+  //  allow explicit any for dsp
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   verifyData.daily_set_photos.forEach((dsp: any) => {
+    // eslint-disable-next-line no-console
     console.log(`   ${dsp.position}. ${dsp.photos.event_name} (${dsp.photos.competition})`);
   });
 
+  // eslint-disable-next-line no-console
   console.log("\n✨ Seed completed successfully!");
+  // eslint-disable-next-line no-console
   console.log("\n🧪 Test the endpoint:");
+  // eslint-disable-next-line no-console
   console.log("   curl http://localhost:3001/api/daily/sets/today\n");
 }
-
+// eslint-disable-next-line no-console
 seedData().catch(console.error);
