@@ -1,0 +1,55 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { DailySetsManager } from "@/components/DailySetsManager";
+
+export const prerender = false;
+
+// Check authentication
+const { user } = Astro.locals;
+
+if (!user) {
+  return Astro.redirect("/login?redirect=/admin/daily-sets");
+}
+
+// Check admin role
+const { data: userData, error: userError } = await Astro.locals.supabase
+  .from("users")
+  .select("role, email")
+  .eq("id", user.id)
+  .single();
+
+if (userError || !userData || userData.role !== "admin") {
+  return Astro.redirect("/?error=unauthorized");
+}
+---
+
+<Layout title="Daily Sets Management" showNavigation={true}>
+  <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+      <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <a
+                  href="/admin"
+                  class="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+                >
+                  ← Back to Dashboard
+                </a>
+              </div>
+              <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">Daily Sets Management</h1>
+              <p class="text-neutral-600 dark:text-neutral-400 mt-2">
+                Schedule and manage daily photo sets for the game
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Sets Manager Component -->
+        <DailySetsManager client:load />
+      </div>
+    </div>
+  </div>
+</Layout>

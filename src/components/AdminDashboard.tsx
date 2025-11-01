@@ -229,6 +229,14 @@ export const AdminDashboard = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
+              <a href="/admin/daily-sets">
+                <Calendar className="h-5 w-5 mb-2" />
+                <span className="font-semibold">Daily Sets</span>
+                <span className="text-xs text-neutral-500">Schedule daily challenges</span>
+              </a>
+            </Button>
+
+            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
               <a href="/admin/photo-moderation">
                 <FileCheck className="h-5 w-5 mb-2" />
                 <span className="font-semibold">Photo Moderation</span>
@@ -249,14 +257,6 @@ export const AdminDashboard = () => {
                 <Users className="h-5 w-5 mb-2" />
                 <span className="font-semibold">User Management</span>
                 <span className="text-xs text-neutral-500">Manage permissions</span>
-              </a>
-            </Button>
-
-            <Button asChild variant="outline" className="h-auto py-4 flex-col items-start">
-              <a href="/submit-photo">
-                <TrendingUp className="h-5 w-5 mb-2" />
-                <span className="font-semibold">Add Photo</span>
-                <span className="text-xs text-neutral-500">Submit new photo</span>
               </a>
             </Button>
           </div>
