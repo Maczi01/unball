@@ -1,0 +1,17 @@
+# Cloudflare Pages configuration
+# See: https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+
+name = "unball"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "./dist"
+
+# For local development with Wrangler
+# Run: npx wrangler pages dev ./dist
+
+[env.production]
+# Environment variables for production (set in Cloudflare dashboard or via GitHub secrets)
+# SUPABASE_URL
+# SUPABASE_KEY
+# OPENROUTER_API_KEY
+# PUBLIC_MAPBOX_ACCESS_TOKEN
+# CRON_SECRET
