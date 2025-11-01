@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { X, Calendar, Check, Image as ImageIcon, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AdminPhotoListItemDTO, PaginationDTO } from "@/types";
@@ -197,7 +196,6 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
                 {photos.map((photo) => {
                   const isSelected = selectedPhotos.includes(photo.id);
                   const selectionIndex = selectedPhotos.indexOf(photo.id);
-                  const isUsed = !!photo.first_used_in_daily_date;
 
                   return (
                     <button
@@ -226,15 +224,6 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
                       {isSelected && (
                         <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
                           {selectionIndex + 1}
-                        </div>
-                      )}
-
-                      {/* Used Badge */}
-                      {isUsed && (
-                        <div className="absolute top-2 left-2">
-                          <Badge variant="outline" className="bg-white/90 dark:bg-black/90 text-xs">
-                            Used
-                          </Badge>
                         </div>
                       )}
 

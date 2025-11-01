@@ -150,7 +150,7 @@ export async function createDailySet(
     // Verify all photos exist and are daily eligible
     const { data: photos, error: photosError } = await supabase
       .from("photos")
-      .select("id, is_daily_eligible, event_name")
+      .select("id, is_daily_eligible, event_name, first_used_in_daily_date")
       .in("id", photo_ids);
 
     if (photosError) throw photosError;
@@ -162,6 +162,14 @@ export async function createDailySet(
     const ineligiblePhotos = photos.filter((p) => !p.is_daily_eligible);
     if (ineligiblePhotos.length > 0) {
       throw new Error(`Photos are not daily eligible: ${ineligiblePhotos.map((p) => p.event_name).join(", ")}`);
+    }
+
+    // STRICT UNIQUENESS: Check if any photos have been used before
+    const usedPhotos = photos.filter((p) => p.first_used_in_daily_date !== null);
+    if (usedPhotos.length > 0) {
+      throw new Error(
+        `Photos have already been used in daily sets: ${usedPhotos.map((p) => `${p.event_name} (used on ${p.first_used_in_daily_date})`).join(", ")}`
+      );
     }
 
     // Create daily set
@@ -485,10 +493,11 @@ export async function deleteDailySet(supabase: SupabaseClient, daily_set_id: str
 
 /**
  * Gets available photos for daily set selection
+ * Only returns photos that have NEVER been used in a daily set before (strict uniqueness)
  * @param supabase - Supabase client from context.locals
  * @param page - Page number (1-indexed)
  * @param limit - Items per page
- * @returns Paginated list of photos eligible for daily sets
+ * @returns Paginated list of photos eligible for daily sets (never used before)
  */
 export async function getAvailablePhotosForDaily(
   supabase: SupabaseClient,
@@ -516,6 +525,7 @@ export async function getAvailablePhotosForDaily(
         { count: "exact" }
       )
       .eq("is_daily_eligible", true)
+      .is("first_used_in_daily_date", null) // STRICT UNIQUENESS: Only never-used photos
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
