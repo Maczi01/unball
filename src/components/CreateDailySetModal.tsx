@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Calendar, Check, Image as ImageIcon, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPhotos = async () => {
+  const fetchPhotos = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch(`/api/admin/daily-sets/available-photos?page=${page}&limit=20`);
@@ -37,7 +37,7 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page]);
 
   useEffect(() => {
     if (isOpen) {

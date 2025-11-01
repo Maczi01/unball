@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AlertCircle, Calendar, CheckCircle, Clock, Eye, Plus, Trash2 } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,7 @@ export const DailySetsManager = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [page, setPage] = useState(1);
 
-  const fetchDailySets = async () => {
+  const fetchDailySets = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch(`/api/admin/daily-sets?page=${page}&limit=20`);
@@ -30,7 +30,7 @@ export const DailySetsManager = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchDailySets();

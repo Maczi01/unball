@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { GameMode, SubmissionCheckResponseDTO } from "@/types";
 
 /**
@@ -10,7 +10,7 @@ export function useSubmissionCheck(mode: GameMode, deviceToken: string | null) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const checkSubmission = async () => {
+  const checkSubmission = useCallback(async () => {
     // Only check in Daily mode with a valid device token
     if (mode !== "daily" || !deviceToken) {
       setHasSubmitted(false);
@@ -42,7 +42,7 @@ export function useSubmissionCheck(mode: GameMode, deviceToken: string | null) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [deviceToken, mode]);
 
   useEffect(() => {
     checkSubmission();
