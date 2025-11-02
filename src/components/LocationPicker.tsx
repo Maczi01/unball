@@ -20,40 +20,47 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
   const markerRef = useRef<mapboxgl.Marker | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
 
-  const updatePin = useCallback(
-    (lng: number, lat: number) => {
-      if (!mapRef.current) return;
+  // Store latest onChange and disabled in refs to avoid map re-initialization
+  const onChangeRef = useRef(onChange);
+  const disabledRef = useRef(disabled);
 
-      // Remove existing marker
-      if (markerRef.current) {
-        markerRef.current.remove();
-      }
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
-      // Create new marker
-      const marker = new mapboxgl.Marker({
-        draggable: !disabled,
-        color: "#ef4444", // red-500
-      })
-        .setLngLat([lng, lat])
-        .addTo(mapRef.current);
+  useEffect(() => {
+    disabledRef.current = disabled;
+  }, [disabled]);
 
-      // Handle marker drag
-      if (!disabled) {
-        marker.on("dragend", () => {
-          const lngLat = marker.getLngLat();
-          onChange({
-            lat: lngLat.lat.toFixed(6),
-            lon: lngLat.lng.toFixed(6),
-          });
-        });
-      }
+  const updatePin = useCallback((lng: number, lat: number, isDraggable: boolean) => {
+    if (!mapRef.current) return;
 
-      markerRef.current = marker;
-    },
-    [disabled, onChange]
-  );
+    // Remove existing marker
+    if (markerRef.current) {
+      markerRef.current.remove();
+    }
 
-  // Initialize map
+    // Create new marker
+    const marker = new mapboxgl.Marker({
+      draggable: isDraggable,
+      color: "#ef4444", // red-500
+    })
+      .setLngLat([lng, lat])
+      .addTo(mapRef.current);
+
+    // Handle marker drag
+    marker.on("dragend", () => {
+      const lngLat = marker.getLngLat();
+      onChangeRef.current({
+        lat: lngLat.lat.toFixed(6),
+        lon: lngLat.lng.toFixed(6),
+      });
+    });
+
+    markerRef.current = marker;
+  }, []);
+
+  // Initialize map (only once on mount)
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
@@ -81,11 +88,10 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
 
       // Handle map clicks
       map.on("click", (e) => {
-        if (disabled) return;
-
+        if (disabledRef.current) return;
         const { lng, lat } = e.lngLat;
-        updatePin(lng, lat);
-        onChange({
+        updatePin(lng, lat, !disabledRef.current);
+        onChangeRef.current({
           lat: lat.toFixed(6),
           lon: lng.toFixed(6),
         });
@@ -99,7 +105,8 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
       // eslint-disable-next-line no-console
       console.error("Map initialization error:", err);
     }
-  }, [disabled, onChange, updatePin]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Update pin position when lat/lon props change
   useEffect(() => {
@@ -109,7 +116,7 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
     const lonNum = parseFloat(lon);
 
     if (!isNaN(latNum) && !isNaN(lonNum)) {
-      updatePin(lonNum, latNum);
+      updatePin(lonNum, latNum, !disabledRef.current);
       mapRef.current.flyTo({
         center: [lonNum, latNum],
         zoom: 8,
@@ -117,20 +124,26 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
     }
   }, [lat, lon, updatePin]);
 
+  // Handle disabled state changes without recreating map
+  useEffect(() => {
+    if (!markerRef.current) return;
+    markerRef.current.setDraggable(!disabled);
+  }, [disabled]);
+
   const handleLatChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
-      onChange({ lat: value, lon });
+      onChangeRef.current({ lat: value, lon });
     },
-    [lon, onChange]
+    [lon]
   );
 
   const handleLonChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
-      onChange({ lat, lon: value });
+      onChangeRef.current({ lat, lon: value });
     },
-    [lat, onChange]
+    [lat]
   );
 
   return (
