@@ -1,0 +1,32 @@
+---
+import { createSupabaseServerInstance } from "@/db/supabase.client";
+
+export const prerender = false;
+
+// Get the code from the URL
+const code = Astro.url.searchParams.get("code");
+const next = Astro.url.searchParams.get("next") || "/";
+
+if (code) {
+  const supabase = createSupabaseServerInstance({
+    cookies: Astro.cookies,
+    headers: Astro.request.headers,
+  });
+
+  // Exchange the code for a session
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error exchanging code for session:", error);
+    // Redirect to login with error message
+    return Astro.redirect(`/login?error=${encodeURIComponent("Email confirmation failed. Please try again.")}`);
+  }
+
+  // Successfully confirmed - redirect to next page or home
+  return Astro.redirect(next);
+} else {
+  // No code provided - redirect to login
+  return Astro.redirect("/login");
+}
+---

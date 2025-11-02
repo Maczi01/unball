@@ -12,6 +12,7 @@ if (user) {
 
 // Get redirect URL from query params (for post-login redirect)
 const redirectUrl = Astro.url.searchParams.get("redirect") || "/";
+const errorMessage = Astro.url.searchParams.get("error");
 ---
 
 <Layout title="Log In - FootyGuess Daily">
@@ -34,6 +35,18 @@ const redirectUrl = Astro.url.searchParams.get("redirect") || "/";
           <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
           <p class="text-emerald-100/80">Sign in to save your scores to the leaderboard</p>
         </div>
+
+        <!-- Error Message -->
+        {
+          errorMessage && (
+            <div
+              class="mb-6 rounded-md border border-red-400/50 bg-red-500/10 px-4 py-3 text-sm text-red-200"
+              role="alert"
+            >
+              {errorMessage}
+            </div>
+          )
+        }
 
         <!-- Login Form -->
         <LoginForm client:load redirectUrl={redirectUrl} />
