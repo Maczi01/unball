@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import type { PinLocation } from "@/types";
 import { ValidationConstants } from "@/types";
 
@@ -10,7 +10,7 @@ export function usePhotoGuess() {
   const [pin, setPin] = useState<PinLocation | null>(null);
   const [year, setYear] = useState<number | null>(null);
 
-  const setPinLocation = (lat: number, lon: number) => {
+  const setPinLocation = useCallback((lat: number, lon: number) => {
     // Validate coordinates
     if (
       lat >= ValidationConstants.COORDINATES.LAT_MIN &&
@@ -23,9 +23,9 @@ export function usePhotoGuess() {
       // eslint-disable-next-line no-console
       console.error("Invalid coordinates:", { lat, lon });
     }
-  };
+  }, []);
 
-  const setYearValue = (newYear: number) => {
+  const setYearValue = useCallback((newYear: number) => {
     // Validate year range
     if (newYear >= ValidationConstants.YEAR.MIN && newYear <= ValidationConstants.YEAR.MAX) {
       setYear(newYear);
@@ -33,12 +33,12 @@ export function usePhotoGuess() {
       // eslint-disable-next-line no-console
       console.error("Invalid year:", newYear);
     }
-  };
+  }, []);
 
-  const clearGuess = () => {
+  const clearGuess = useCallback(() => {
     setPin(null);
     setYear(null);
-  };
+  }, []);
 
   const isComplete = useMemo(() => {
     return pin !== null && year !== null;

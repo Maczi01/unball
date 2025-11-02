@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import type { PinLocation } from "@/types";
@@ -15,7 +15,7 @@ interface MapComponentProps {
   className?: string;
 }
 
-export function MapComponent({
+const MapComponentInner = ({
   userPin,
   correctPin,
   showFeedback,
@@ -23,7 +23,7 @@ export function MapComponent({
   onPinPlace,
   onPinMove,
   className = "",
-}: MapComponentProps) {
+}: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
@@ -225,7 +225,7 @@ export function MapComponent({
     <div className={`relative ${className}`}>
       <div
         ref={mapContainer}
-        className="w-full h-full rounded-lg overflow-hidden"
+        className="w-full h-full rounded-lg overflow-hidden z-40"
         role="application"
         aria-label="Interactive world map for guessing photo locations"
       />
@@ -271,4 +271,6 @@ export function MapComponent({
       </div>
     </div>
   );
-}
+};
+
+export const MapComponent = memo(MapComponentInner);
