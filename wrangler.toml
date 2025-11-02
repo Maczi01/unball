@@ -3,6 +3,7 @@
 
 name = "unball"
 compatibility_date = "2025-11-02"
+compatibility_flags = ["nodejs_compat"]
 
 # For local development with Wrangler
 # Run: npx wrangler pages dev ./dist

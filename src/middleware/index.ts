@@ -14,23 +14,31 @@ import { createSupabaseServerInstance } from "../db/supabase.client.ts";
  * This middleware only establishes the auth context.
  */
 export const onRequest = defineMiddleware(async (context, next) => {
-  // Create server-side Supabase client with proper cookie handling
-  const supabase = createSupabaseServerInstance({
-    cookies: context.cookies,
-    headers: context.request.headers,
-  });
+  try {
+    // Create server-side Supabase client with proper cookie handling
+    const supabase = createSupabaseServerInstance({
+      cookies: context.cookies,
+      headers: context.request.headers,
+    });
 
-  // IMPORTANT: Use getUser() instead of getSession()
-  // getUser() validates the JWT and is more reliable for auth checks
-  // See: https://supabase.com/docs/guides/auth/server-side/creating-a-client
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    // IMPORTANT: Use getUser() instead of getSession()
+    // getUser() validates the JWT and is more reliable for auth checks
+    // See: https://supabase.com/docs/guides/auth/server-side/creating-a-client
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  // Attach to context for use in pages and API routes
-  context.locals.supabase = supabase;
-  context.locals.user = user;
-  context.locals.session = user ? { user } : null;
+    // Attach to context for use in pages and API routes
+    context.locals.supabase = supabase;
+    context.locals.user = user;
+    context.locals.session = user ? { user } : null;
+  } catch (error) {
+    // Log error but don't block the request
+    console.error("Middleware error:", error);
+    // Set defaults if Supabase fails
+    context.locals.user = null;
+    context.locals.session = null;
+  }
 
   return next();
 });
