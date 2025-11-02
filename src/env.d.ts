@@ -23,10 +23,16 @@ declare global {
 }
 
 interface ImportMetaEnv {
+  // Server-side only (not bundled into client)
   readonly SUPABASE_URL: string;
   readonly SUPABASE_KEY: string;
   readonly OPENROUTER_API_KEY: string;
-  // more env variables...
+  readonly CRON_SECRET: string;
+
+  // Client-side (PUBLIC_ vars are bundled and safe to expose)
+  readonly PUBLIC_SUPABASE_URL: string;
+  readonly PUBLIC_SUPABASE_ANON_KEY: string;
+  readonly PUBLIC_MAPBOX_ACCESS_TOKEN: string;
 }
 
 interface ImportMeta {
