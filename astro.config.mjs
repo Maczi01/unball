@@ -13,8 +13,12 @@ export default defineConfig({
   // server: { port: 3000 },
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        'react-dom/server': 'react-dom/server.edge',
+      },
+    },
   },
-  adapter: cloudflare({
-    imageService: "passthrough",
-  }),
+  adapter: cloudflare({ imageService: "passthrough" }),
+
 });
