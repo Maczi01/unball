@@ -11,6 +11,7 @@
 - [Getting Started](#getting-started)
 - [Available Scripts](#available-scripts)
 - [Testing](#testing)
+- [Pages Overview](#pages-overview)
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
 - [License](#license)
@@ -209,6 +210,117 @@ npm run test:e2e:ui       # Run E2E tests with UI
    - Initial load time (<2s)
    - Map interaction responsiveness (<200ms)
    - Mobile device compatibility
+
+## Pages Overview
+
+### Public Pages
+
+| Page | Route | Description |
+|------|-------|-------------|
+| **Home** | `/` | Landing page with game mode selection and welcome content |
+| **Login** | `/login` | User authentication page with email/password login |
+| **Signup** | `/signup` | User registration page for creating new accounts |
+
+### Game Pages
+
+| Page | Route | Description |
+|------|-------|-------------|
+| **Play Game** | `/play/[mode]` | Main game interface supporting two modes: `normal` (unlimited practice) and `daily` (daily challenge). Shows 5 photos with interactive map and year picker |
+| **Submit Photo** | `/submit-photo` | Photo submission form for users with photo permission. Requires authentication and special permissions |
+
+### Admin Pages
+
+All admin pages require authentication and admin role verification.
+
+| Page | Route | Description |
+|------|-------|-------------|
+| **Admin Dashboard** | `/admin` | Main admin control panel with statistics and quick links |
+| **Daily Sets Manager** | `/admin/daily-sets` | Schedule and manage daily photo sets for the daily challenge |
+| **Daily Set Editor** | `/admin/daily-sets/[id]` | Edit a specific daily set, configure photos and publish date |
+| **User Management** | `/admin/users` | Manage user roles, permissions, and photo submission access |
+| **Photo Library** | `/admin/photos` | View and manage all approved photos with bulk actions |
+| **Photo Editor** | `/admin/photos/[id]/edit` | Edit photo metadata, location, year, and event details |
+| **Photo Moderation** | `/admin/photo-moderation` | Review, approve, or reject user-submitted photos |
+
+### API Endpoints
+
+All API routes use SSR (`export const prerender = false`) and follow RESTful conventions.
+
+#### Authentication API
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/auth/signin` | POST | User login with email/password |
+| `/api/auth/signup` | POST | New user registration |
+| `/api/auth/signout` | POST | User logout and session cleanup |
+| `/api/auth/me` | GET | Get current authenticated user info |
+
+#### Game API - Daily Mode
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/daily/sets/today` | GET | Fetch today's daily photo set |
+| `/api/daily/submissions/index` | POST | Submit completed daily challenge |
+| `/api/daily/submissions/check` | GET | Check if user already submitted today |
+
+#### Game API - Normal Mode
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/normal/photos` | GET | Get random 5 photos for normal mode |
+| `/api/photos/[photo_id]/score` | POST | Calculate score for a single photo guess |
+
+#### Photo Submission API
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/photos/submit` | POST | Submit a new photo for moderation |
+| `/api/photos/submissions/my` | GET | Get current user's photo submissions |
+
+#### Admin API - Daily Sets
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/admin/daily-sets/index` | GET, POST | List all daily sets / Create new daily set |
+| `/api/admin/daily-sets/[id]` | GET, PUT, DELETE | Get, update, or delete specific daily set |
+| `/api/admin/daily-sets/[id]/publish` | POST | Publish a daily set for a specific date |
+| `/api/admin/daily-sets/available-photos` | GET | Get list of approved photos available for daily sets |
+
+#### Admin API - Photo Management
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/admin/photos/index` | GET, POST | List all photos / Add new photo |
+| `/api/admin/photos/[id]/index` | GET, PUT, DELETE | Get, update, or delete specific photo |
+| `/api/admin/photos/bulk` | POST | Bulk actions on multiple photos |
+
+#### Admin API - Photo Submissions (Moderation)
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/admin/photo-submissions/index` | GET | List all pending photo submissions |
+| `/api/admin/photo-submissions/[id]/index` | GET | Get details of a specific submission |
+| `/api/admin/photo-submissions/[id]/approve` | POST | Approve a photo submission |
+| `/api/admin/photo-submissions/[id]/reject` | POST | Reject a photo submission |
+
+#### Admin API - User Management
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/admin/users/index` | GET | List all users with stats |
+| `/api/admin/users/[id]` | PATCH | Update user role or permissions |
+
+#### Admin API - Dashboard
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/admin/dashboard/stats` | GET | Get dashboard statistics and metrics |
+
+#### Cron Jobs
+
+| Endpoint | Description |
+|----------|-------------|
+| `/api/cron/publish-daily-set` | Automated job to publish scheduled daily sets (runs daily) |
 
 ## Project Scope
 
