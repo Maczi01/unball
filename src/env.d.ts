@@ -9,6 +9,15 @@ declare global {
       supabase: SupabaseClient;
       session: Session | null;
       user: User | null;
+      runtime: {
+        env: {
+          SUPABASE_URL: string;
+          SUPABASE_KEY: string;
+          OPENROUTER_API_KEY?: string;
+          PUBLIC_MAPBOX_ACCESS_TOKEN?: string;
+          CRON_SECRET?: string;
+        };
+      };
     }
   }
 }

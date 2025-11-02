@@ -15,10 +15,16 @@ import { createSupabaseServerInstance } from "../db/supabase.client.ts";
  */
 export const onRequest = defineMiddleware(async (context, next) => {
   try {
+    // Get runtime environment variables (Cloudflare Workers) or use import.meta.env (dev)
+    const supabaseUrl = context.locals.runtime?.env?.SUPABASE_URL;
+    const supabaseKey = context.locals.runtime?.env?.SUPABASE_KEY;
+
     // Create server-side Supabase client with proper cookie handling
     const supabase = createSupabaseServerInstance({
       cookies: context.cookies,
       headers: context.request.headers,
+      supabaseUrl,
+      supabaseKey,
     });
 
     // IMPORTANT: Use getUser() instead of getSession()

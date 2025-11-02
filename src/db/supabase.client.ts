@@ -4,14 +4,36 @@ import type { AstroCookies } from "astro";
 
 import type { Database } from "../db/database.types.ts";
 
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
+/**
+ * Get Supabase credentials from environment
+ * For Cloudflare Workers, these come from runtime.env
+ * For development, these come from import.meta.env
+ */
+function getSupabaseCredentials() {
+  return {
+    url: import.meta.env.SUPABASE_URL,
+    key: import.meta.env.SUPABASE_KEY,
+  };
+}
 
 /**
  * Browser-side Supabase client (anonymous)
  * Used for public data access without authentication
+ * Lazy-loaded to handle runtime environment
  */
-export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
+let browserClient: BaseSupabaseClient<Database> | null = null;
+export function getBrowserClient(): BaseSupabaseClient<Database> {
+  if (!browserClient) {
+    const { url, key } = getSupabaseCredentials();
+    browserClient = createClient<Database>(url, key);
+  }
+  return browserClient;
+}
+
+/**
+ * @deprecated Use getBrowserClient() instead
+ */
+export const supabaseClient = getBrowserClient();
 
 /**
  * Cookie options for Supabase server client
@@ -46,8 +68,18 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
  * - Properly handles cookie serialization/deserialization
  * - Enables secure authentication flows with proper session management
  */
-export function createSupabaseServerInstance(context: { headers: Headers; cookies: AstroCookies }) {
-  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+export function createSupabaseServerInstance(context: {
+  headers: Headers;
+  cookies: AstroCookies;
+  supabaseUrl?: string;
+  supabaseKey?: string;
+}) {
+  // Use runtime credentials if provided, otherwise fall back to import.meta.env
+  const credentials = getSupabaseCredentials();
+  const url = context.supabaseUrl || credentials.url;
+  const key = context.supabaseKey || credentials.key;
+
+  return createServerClient<Database>(url, key, {
     cookieOptions,
     cookies: {
       getAll() {
@@ -64,10 +96,17 @@ export function createSupabaseServerInstance(context: { headers: Headers; cookie
  * @deprecated Use createSupabaseServerInstance instead
  * This function uses deprecated individual cookie methods
  */
-export function createSupabaseServerClient(cookies: AstroCookies) {
+export function createSupabaseServerClient(
+  cookies: AstroCookies,
+  options?: { supabaseUrl?: string; supabaseKey?: string },
+) {
   // eslint-disable-next-line no-console
   console.warn("createSupabaseServerClient is deprecated. Use createSupabaseServerInstance instead.");
-  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+  const credentials = getSupabaseCredentials();
+  const url = options?.supabaseUrl || credentials.url;
+  const key = options?.supabaseKey || credentials.key;
+
+  return createServerClient<Database>(url, key, {
     cookies: {
       get(key: string) {
         return cookies.get(key)?.value;
