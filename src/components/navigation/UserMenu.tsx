@@ -73,7 +73,7 @@ export default function UserMenu({ user }: UserMenuProps) {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 rounded-lg border border-emerald-500/30 bg-gradient-to-b from-green-900/95 to-emerald-900/95 backdrop-blur-xl shadow-2xl z-50">
+        <div className="absolute right-0 mt-2 w-64 rounded-lg border border-emerald-500/30 bg-gradient-to-b from-green-900/95 to-emerald-900/95 backdrop-blur-xl shadow-2xl z-[9999]">
           {/* User Info Header */}
           <div className="border-b border-emerald-500/20 px-4 py-3">
             <p className="text-sm font-medium text-emerald-100 truncate">{user.email}</p>
