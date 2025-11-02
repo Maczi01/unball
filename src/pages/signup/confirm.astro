@@ -1,0 +1,116 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import ResendConfirmation from "@/components/auth/ResendConfirmation";
+
+// Check if user is already authenticated
+const { user } = Astro.locals;
+
+// If already logged in, redirect to home
+if (user) {
+  return Astro.redirect("/");
+}
+---
+
+<Layout title="Confirm Email - FootyGuess Daily">
+  <div
+    class="relative w-full mx-auto min-h-screen bg-gradient-to-br from-green-900 via-emerald-900 to-teal-900 p-4 sm:p-8 flex items-center justify-center"
+  >
+    <div class="w-full max-w-md">
+      <!-- Confirmation Card -->
+      <div
+        class="backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 rounded-2xl shadow-2xl p-8 sm:p-10 text-white border border-white/10"
+      >
+        <!-- Success Icon -->
+        <div class="flex justify-center mb-6">
+          <div
+            class="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center border-2 border-emerald-400/50"
+          >
+            <svg
+              class="w-10 h-10 text-emerald-300"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Header -->
+        <div class="text-center mb-6">
+          <h1 class="text-3xl font-bold text-white mb-3">Check Your Email</h1>
+          <p class="text-emerald-100/80 text-lg">
+            We've sent you a confirmation link
+          </p>
+        </div>
+
+        <!-- Instructions -->
+        <div class="space-y-4 mb-8">
+          <div
+            class="bg-emerald-500/10 border border-emerald-400/30 rounded-lg p-4"
+          >
+            <h2 class="font-semibold text-emerald-200 mb-2">Next Steps:</h2>
+            <ol class="space-y-2 text-sm text-emerald-100/80">
+              <li class="flex items-start">
+                <span class="font-bold text-emerald-300 mr-2">1.</span>
+                <span>Check your email inbox (and spam folder)</span>
+              </li>
+              <li class="flex items-start">
+                <span class="font-bold text-emerald-300 mr-2">2.</span>
+                <span>Click the confirmation link in the email</span>
+              </li>
+              <li class="flex items-start">
+                <span class="font-bold text-emerald-300 mr-2">3.</span>
+                <span>Log in and start playing!</span>
+              </li>
+            </ol>
+          </div>
+
+          <div class="text-center">
+            <p class="text-sm text-emerald-100/60 mb-2">
+              Didn't receive the email? Check your spam folder or wait a few
+              minutes.
+            </p>
+            <ResendConfirmation client:load />
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-3">
+          <a
+            href="/login"
+            class="block w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center"
+          >
+            Go to Login
+          </a>
+
+          <a
+            href="/"
+            class="block w-full h-12 text-center text-emerald-100/70 hover:text-emerald-100 transition-colors flex items-center justify-center"
+          >
+            Back to Home
+          </a>
+        </div>
+
+        <!-- Help Text -->
+        <div
+          class="mt-6 pt-6 border-t border-white/10 text-center text-xs text-emerald-100/60"
+        >
+          <p>
+            Having trouble? Contact us at
+            <a
+              href="mailto:support@footyguessdaily.com"
+              class="text-emerald-300 hover:text-emerald-200 underline"
+            >
+              support@footyguessdaily.com
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

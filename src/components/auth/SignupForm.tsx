@@ -78,8 +78,8 @@ export default function SignupForm() {
         return;
       }
 
-      // Success - redirect to home
-      window.location.href = "/";
+      // Success - redirect to email confirmation page
+      window.location.href = "/signup/confirm";
     } catch {
       setError("Network error. Please try again.");
     } finally {
