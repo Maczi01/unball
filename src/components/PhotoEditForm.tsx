@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LocationPicker } from "@/components/LocationPicker";
 import { TagsInput } from "@/components/TagsInput";
+import { PhotoSourcesInput } from "@/components/PhotoSourcesInput";
+import { PhotoMoreInfoInput } from "@/components/PhotoMoreInfoInput";
 import type { AdminPhotoDTO, UpdatePhotoCommand } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +31,13 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
     lat: photo.lat.toString(),
     lon: photo.lon.toString(),
     description: photo.description || "",
-    source_url: photo.source_url || "",
+    sources: [] as Array<{ url: string; title: string; source_type: string }>,
+    more_info: [] as Array<{
+      info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
+      url: string;
+      title: string;
+      description: string;
+    }>,
     license: photo.license,
     credit: photo.credit,
     tags: photo.tags || [],
@@ -94,7 +102,6 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
           lat: parseFloat(formData.lat),
           lon: parseFloat(formData.lon),
           description: formData.description.trim() || undefined,
-          source_url: formData.source_url.trim() || undefined,
           license: formData.license.trim(),
           credit: formData.credit.trim(),
           tags: formData.tags.length > 0 ? formData.tags : undefined,
@@ -248,16 +255,12 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
           />
         </div>
 
-        <div>
-          <Label htmlFor="source_url">Source URL</Label>
-          <Input
-            id="source_url"
-            type="url"
-            value={formData.source_url}
-            onChange={(e) => setFormData({ ...formData, source_url: e.target.value })}
-            placeholder="https://..."
-          />
-        </div>
+        <PhotoSourcesInput value={formData.sources} onChange={(sources) => setFormData({ ...formData, sources })} />
+
+        <PhotoMoreInfoInput
+          value={formData.more_info}
+          onChange={(more_info) => setFormData({ ...formData, more_info })}
+        />
 
         <div>
           <Label htmlFor="license">

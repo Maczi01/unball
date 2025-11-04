@@ -12,7 +12,8 @@ const initialFormData: PhotoSubmissionFormData = {
   lat: "",
   lon: "",
   description: "",
-  source_url: "",
+  sources: [],
+  more_info: [],
   license: "",
   credit: "",
   tags: [],
@@ -137,14 +138,45 @@ function validateEmail(value: string): string | null {
   return null;
 }
 
-function validateSourceUrl(value: string): string | null {
-  if (value.length === 0) return null; // Optional
+function validateUrl(value: string): boolean {
+  if (value.length === 0) return false;
   try {
     new URL(value);
-    return null;
+    return true;
   } catch {
-    return "Please enter a valid URL";
+    return false;
   }
+}
+
+function validateSources(sources: Array<{ url: string; title: string; source_type: string }>): string | null {
+  // Sources are optional, so empty array is valid
+  if (sources.length === 0) return null;
+
+  for (let i = 0; i < sources.length; i++) {
+    if (!validateUrl(sources[i].url)) {
+      return `Source ${i + 1}: Please enter a valid URL`;
+    }
+  }
+  return null;
+}
+
+function validateMoreInfo(
+  moreInfo: Array<{
+    info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
+    url: string;
+    title: string;
+    description: string;
+  }>
+): string | null {
+  // More info is optional, so empty array is valid
+  if (moreInfo.length === 0) return null;
+
+  for (let i = 0; i < moreInfo.length; i++) {
+    if (!validateUrl(moreInfo[i].url)) {
+      return `Info item ${i + 1}: Please enter a valid URL`;
+    }
+  }
+  return null;
 }
 
 /**
@@ -256,8 +288,11 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
         case "submitter_email":
           error = validateEmail(formData.submitter_email);
           break;
-        case "source_url":
-          error = validateSourceUrl(formData.source_url);
+        case "sources":
+          error = validateSources(formData.sources);
+          break;
+        case "more_info":
+          error = validateMoreInfo(formData.more_info);
           break;
         // Other fields (description, notes, tags) have no validation
         default:
@@ -293,7 +328,7 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       "license",
       "credit",
     ];
-    const optionalFields: (keyof PhotoSubmissionFormData)[] = ["competition", "place", "submitter_email", "source_url"];
+    const optionalFields: (keyof PhotoSubmissionFormData)[] = ["competition", "place", "submitter_email", "sources", "more_info"];
 
     let isValid = true;
     // const errors: ValidationErrors = {};
@@ -336,7 +371,8 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       (formData.competition === "" || validateCompetition(formData.competition) === null) &&
       (formData.place === "" || validatePlace(formData.place) === null) &&
       (formData.submitter_email === "" || validateEmail(formData.submitter_email) === null) &&
-      (formData.source_url === "" || validateSourceUrl(formData.source_url) === null);
+      validateSources(formData.sources) === null &&
+      validateMoreInfo(formData.more_info) === null;
 
     return requiredFieldsValid && optionalFieldsValid;
   })();
@@ -367,10 +403,11 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
     if (formData.competition) apiFormData.append("competition", formData.competition);
     if (formData.place) apiFormData.append("place", formData.place);
     if (formData.description) apiFormData.append("description", formData.description);
-    if (formData.source_url) apiFormData.append("source_url", formData.source_url);
     if (formData.notes) apiFormData.append("notes", formData.notes);
     if (formData.submitter_email) apiFormData.append("submitter_email", formData.submitter_email);
     if (formData.tags.length > 0) apiFormData.append("tags", JSON.stringify(formData.tags));
+    if (formData.sources.length > 0) apiFormData.append("sources", JSON.stringify(formData.sources));
+    if (formData.more_info.length > 0) apiFormData.append("more_info", JSON.stringify(formData.more_info));
 
     // 3. Submit to API
     setSubmissionState({ status: "submitting" });
@@ -454,7 +491,8 @@ function mapApiErrorsToFields(details: string[]): ValidationErrors {
     if (lower.includes("competition")) errors.competition = detail;
     if (lower.includes("place")) errors.place = detail;
     if (lower.includes("email")) errors.submitter_email = detail;
-    if (lower.includes("url")) errors.source_url = detail;
+    if (lower.includes("source")) errors.sources = detail;
+    if (lower.includes("info")) errors.more_info = detail;
   });
 
   return errors;

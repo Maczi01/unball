@@ -3,6 +3,8 @@ import { usePhotoSubmission } from "@/components/hooks/usePhotoSubmission";
 import { PhotoFileUpload } from "@/components/PhotoFileUpload";
 import { LocationPicker } from "@/components/LocationPicker";
 import { TagsInput } from "@/components/TagsInput";
+import { PhotoSourcesInput } from "@/components/PhotoSourcesInput";
+import { PhotoMoreInfoInput } from "@/components/PhotoMoreInfoInput";
 import { SubmissionSuccess } from "@/components/SubmissionSuccess";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -344,26 +346,29 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
           </p>
         </div>
 
-        {/* Source URL */}
-        <div className="space-y-2">
-          <Label htmlFor="source_url">Source URL</Label>
-          <Input
-            id="source_url"
-            type="url"
-            value={formData.source_url}
-            onChange={(e) => updateField("source_url", e.target.value)}
-            onBlur={() => validateField("source_url")}
-            disabled={isSubmitting}
-            placeholder="https://example.com/photo-source"
-            className={cn(validationErrors.source_url && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!validationErrors.source_url}
-          />
-          {validationErrors.source_url && (
-            <p className="text-sm text-red-500 dark:text-red-400" role="alert">
-              {validationErrors.source_url}
-            </p>
-          )}
-        </div>
+        {/* Sources */}
+        <PhotoSourcesInput
+          value={formData.sources}
+          onChange={(sources) => updateField("sources", sources)}
+          disabled={isSubmitting}
+        />
+        {validationErrors.sources && (
+          <p className="text-sm text-red-500 dark:text-red-400" role="alert">
+            {validationErrors.sources}
+          </p>
+        )}
+
+        {/* More Info */}
+        <PhotoMoreInfoInput
+          value={formData.more_info}
+          onChange={(moreInfo) => updateField("more_info", moreInfo)}
+          disabled={isSubmitting}
+        />
+        {validationErrors.more_info && (
+          <p className="text-sm text-red-500 dark:text-red-400" role="alert">
+            {validationErrors.more_info}
+          </p>
+        )}
 
         {/* Tags */}
         <TagsInput value={formData.tags} onChange={(tags) => updateField("tags", tags)} disabled={isSubmitting} />

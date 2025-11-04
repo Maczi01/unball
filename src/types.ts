@@ -79,6 +79,31 @@ export interface CalculateScoreCommand {
 }
 
 /**
+ * Photo source information
+ * Maps to photo_sources table
+ */
+export interface PhotoSourceDTO {
+  id?: string;
+  url: string;
+  title?: string | null;
+  source_type?: string | null;
+  position: number;
+}
+
+/**
+ * Photo additional information (videos, articles, etc.)
+ * Maps to photo_more_info table
+ */
+export interface PhotoMoreInfoDTO {
+  id?: string;
+  info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
+  url: string;
+  title?: string | null;
+  description?: string | null;
+  position: number;
+}
+
+/**
  * Score result for a single photo with revealed answer
  * Combines calculated scores with photo details
  */
@@ -95,7 +120,8 @@ export interface PhotoScoreResultDTO {
   event_name: string;
   description: string | null;
   place: string | null;
-  source_url: string | null;
+  sources: PhotoSourceDTO[];
+  more_info: PhotoMoreInfoDTO[];
   license: string;
   credit: string;
 }
@@ -277,11 +303,9 @@ export type AnalyticsEventResponseDTO = Pick<DbTable<"analytics_events">, "creat
  * Photo credit information for credits page
  * Subset of photos table with attribution fields
  */
-export type PhotoCreditDTO = Pick<
-  DbTable<"photos">,
-  "event_name" | "source_url" | "license" | "credit" | "year_utc"
-> & {
+export type PhotoCreditDTO = Pick<DbTable<"photos">, "event_name" | "license" | "credit" | "year_utc"> & {
   photo_id: string; // Derived from photos.id
+  sources: PhotoSourceDTO[];
 };
 
 /**
@@ -648,7 +672,13 @@ export interface PhotoSubmissionFormData {
   lat: string; // String in input, converts to number for API
   lon: string; // String in input, converts to number for API
   description: string;
-  source_url: string;
+  sources: Array<{ url: string; title: string; source_type: string }>;
+  more_info: Array<{
+    info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
+    url: string;
+    title: string;
+    description: string;
+  }>;
   license: string;
   credit: string;
   tags: string[];
