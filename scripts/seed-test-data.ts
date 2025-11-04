@@ -32,7 +32,6 @@ const photos = [
     lat: 40.453054,
     lon: -3.688344,
     description: "Liverpool vs Tottenham Hotspur at Wanda Metropolitano Stadium",
-    source_url: "https://example.com/source1",
     license: "CC BY-SA 4.0",
     credit: "Test Photo",
     is_daily_eligible: true,
@@ -51,7 +50,6 @@ const photos = [
     lat: -22.912214,
     lon: -43.230182,
     description: "Germany vs Argentina at Maracanã Stadium",
-    source_url: "https://example.com/source2",
     license: "CC BY-SA 4.0",
     credit: "Test Photo",
     is_daily_eligible: true,
@@ -70,7 +68,6 @@ const photos = [
     lat: 53.463056,
     lon: -2.291389,
     description: "Manchester Derby at Etihad Stadium",
-    source_url: "https://example.com/source3",
     license: "CC BY-SA 4.0",
     credit: "Test Photo",
     is_daily_eligible: true,
@@ -89,7 +86,6 @@ const photos = [
     lat: 41.380897,
     lon: 2.122872,
     description: "FC Barcelona vs Real Madrid at Camp Nou",
-    source_url: "https://example.com/source4",
     license: "CC BY-SA 4.0",
     credit: "Test Photo",
     is_daily_eligible: true,
@@ -106,7 +102,6 @@ const photos = [
     lat: 51.556021,
     lon: -0.279519,
     description: "Italy vs England at Wembley Stadium",
-    source_url: "https://example.com/source5",
     license: "CC BY-SA 4.0",
     credit: "Test Photo",
     is_daily_eligible: true,
@@ -129,14 +124,13 @@ const morePhotos = [
     lon: -0.279519,
     description:
       'England beats West Germany 4–2 at Wembley. Geoff Hurst scores a hat-trick and the iconic "did it cross the line?" goal.',
-    source_url: "https://en.wikipedia.org/wiki/1966_FIFA_World_Cup_Final",
     license: "CC BY-SA 4.0",
     credit: "Getty Images",
     is_daily_eligible: true,
     tags: ["worldcup", "final", "england"],
   },
 
-  // 2️⃣ 1986 World Cup QF — Maradona’s “Hand of God” & “Goal of the Century”
+  // 2️⃣ 1986 World Cup QF — Maradona's "Hand of God" & "Goal of the Century"
   {
     id: "22222226-2222-2222-2222-222222222222",
     photo_url: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Maradona_hand_of_god_goal_1986.jpg",
@@ -149,7 +143,6 @@ const morePhotos = [
     lon: -99.1505,
     description:
       'Diego Maradona scores the infamous "Hand of God" goal and later the "Goal of the Century" as Argentina beats England 2–1.',
-    source_url: "https://en.wikipedia.org/wiki/Argentina_v_England_(1986_FIFA_World_Cup)",
     license: "CC BY-SA 4.0",
     credit: "El Gráfico",
     is_daily_eligible: true,
@@ -169,14 +162,13 @@ const morePhotos = [
     lon: 2.1228,
     description:
       "Manchester United scores twice in stoppage time to defeat Bayern Munich 2–1 in a dramatic comeback at Camp Nou.",
-    source_url: "https://en.wikipedia.org/wiki/1999_UEFA_Champions_League_Final",
     license: "CC BY-SA 4.0",
     credit: "UEFA",
     is_daily_eligible: true,
     tags: ["championsleague", "comeback", "manutd"],
   },
 
-  // 4️⃣ 2005 UEFA Champions League Final — Liverpool’s Miracle of Istanbul
+  // 4️⃣ 2005 UEFA Champions League Final — Liverpool's Miracle of Istanbul
   {
     id: "44444446-4444-4444-4444-444444444444",
     photo_url: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Liverpool_AC_Milan_2005_final_penalties.jpg",
@@ -189,7 +181,6 @@ const morePhotos = [
     lon: 29.0361,
     description:
       "Liverpool comes back from 3–0 down to draw 3–3 and beat AC Milan on penalties in the most famous comeback in football history.",
-    source_url: "https://en.wikipedia.org/wiki/2005_UEFA_Champions_League_Final",
     license: "CC BY-SA 4.0",
     credit: "UEFA",
     is_daily_eligible: true,
@@ -209,7 +200,6 @@ const morePhotos = [
     lon: 51.49,
     description:
       "Argentina defeats France on penalties after a 3–3 thriller. Messi finally lifts the World Cup, Mbappé scores a hat-trick.",
-    source_url: "https://en.wikipedia.org/wiki/2022_FIFA_World_Cup_Final",
     license: "CC BY-SA 4.0",
     credit: "FIFA/Getty Images",
     is_daily_eligible: true,
@@ -219,6 +209,20 @@ const morePhotos = [
 
 // Combine all photos for insertion into database
 const allPhotos = [...photos, ...morePhotos];
+
+// Define photo sources (mapping photo_id to source URLs)
+const photoSources = [
+  { photo_id: "11111111-1111-1111-1111-111111111111", url: "https://example.com/source1", title: "Test Source 1", source_type: "website", position: 1 },
+  { photo_id: "22222222-2222-2222-2222-222222222222", url: "https://example.com/source2", title: "Test Source 2", source_type: "website", position: 1 },
+  { photo_id: "33333333-3333-3333-3333-333333333333", url: "https://example.com/source3", title: "Test Source 3", source_type: "website", position: 1 },
+  { photo_id: "44444444-4444-4444-4444-444444444444", url: "https://example.com/source4", title: "Test Source 4", source_type: "website", position: 1 },
+  { photo_id: "55555555-5555-5555-5555-555555555555", url: "https://example.com/source5", title: "Test Source 5", source_type: "website", position: 1 },
+  { photo_id: "11111116-1111-1111-1111-111111111111", url: "https://en.wikipedia.org/wiki/1966_FIFA_World_Cup_Final", title: "Wikipedia", source_type: "website", position: 1 },
+  { photo_id: "22222226-2222-2222-2222-222222222222", url: "https://en.wikipedia.org/wiki/Argentina_v_England_(1986_FIFA_World_Cup)", title: "Wikipedia", source_type: "website", position: 1 },
+  { photo_id: "33333336-3333-3333-3333-333333333333", url: "https://en.wikipedia.org/wiki/1999_UEFA_Champions_League_Final", title: "Wikipedia", source_type: "website", position: 1 },
+  { photo_id: "44444446-4444-4444-4444-444444444444", url: "https://en.wikipedia.org/wiki/2005_UEFA_Champions_League_Final", title: "Wikipedia", source_type: "website", position: 1 },
+  { photo_id: "55555565-aaaa-bbbb-cccc-666666666666", url: "https://en.wikipedia.org/wiki/2022_FIFA_World_Cup_Final", title: "Wikipedia", source_type: "website", position: 1 },
+];
 
 async function seedData() {
   // eslint-disable-next-line no-console
@@ -238,7 +242,21 @@ async function seedData() {
   // eslint-disable-next-line no-console
   console.log(`✅ Inserted ${photosData.length} photos\n`);
 
-  // 2. Create daily set for today
+  // 2. Insert photo sources
+  // eslint-disable-next-line no-console
+  console.log(`🔗 Inserting ${photoSources.length} photo sources...`);
+  const { data: sourcesData, error: sourcesError } = await supabase.from("photo_sources").insert(photoSources).select();
+
+  if (sourcesError) {
+    // eslint-disable-next-line no-console
+    console.error("❌ Error inserting photo sources:", sourcesError);
+    process.exit(1);
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(`✅ Inserted ${sourcesData.length} photo sources\n`);
+
+  // 3. Create daily set for today
   const today = new Date().toISOString().split("T")[0];
   // eslint-disable-next-line no-console
   console.log(`📅 Creating daily set for ${today}...`);
@@ -262,7 +280,7 @@ async function seedData() {
   // eslint-disable-next-line no-console
   console.log(`✅ Created daily set: ${dailySetData.id}\n`);
 
-  // 3. Link ONLY FIRST 5 photos to daily set (positions 1-5)
+  // 4. Link ONLY FIRST 5 photos to daily set (positions 1-5)
   // eslint-disable-next-line no-console
   console.log("🔗 Linking first 5 photos to daily set...");
 
@@ -283,7 +301,7 @@ async function seedData() {
   // eslint-disable-next-line no-console
   console.log(`✅ Linked ${linkData.length} photos to daily set\n`);
 
-  // 4. Verify the data
+  // 5. Verify the data
   // eslint-disable-next-line no-console
   console.log("🔍 Verifying data...");
 

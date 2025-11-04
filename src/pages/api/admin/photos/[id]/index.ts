@@ -14,7 +14,6 @@ const updatePhotoSchema = z.object({
   lat: z.number().min(-90).max(90).optional(),
   lon: z.number().min(-180).max(180).optional(),
   description: z.string().optional(),
-  source_url: z.string().url().optional().or(z.literal("")),
   license: z.string().max(255).optional(),
   credit: z.string().max(255).optional(),
   tags: z.array(z.string()).optional(),

@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // Fetch photo data from database
     const { data: photo, error: dbError } = await locals.supabase
       .from("photos")
-      .select("lat, lon, year_utc, event_name, description, place, source_url, license, credit")
+      .select("lat, lon, year_utc, event_name, description, place, license, credit")
       .eq("id", photo_id)
       .single();
 
@@ -75,6 +75,30 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
           },
         }
       );
+    }
+
+    // Fetch photo sources
+    const { data: sources, error: sourcesError } = await locals.supabase
+      .from("photo_sources")
+      .select("id, url, title, source_type, position")
+      .eq("photo_id", photo_id)
+      .order("position", { ascending: true });
+
+    if (sourcesError) {
+      // eslint-disable-next-line no-console
+      console.error("[POST /api/photos/:photo_id/score] Error fetching sources:", sourcesError);
+    }
+
+    // Fetch photo more info
+    const { data: moreInfo, error: moreInfoError } = await locals.supabase
+      .from("photo_more_info")
+      .select("id, info_type, url, title, description, position")
+      .eq("photo_id", photo_id)
+      .order("position", { ascending: true });
+
+    if (moreInfoError) {
+      // eslint-disable-next-line no-console
+      console.error("[POST /api/photos/:photo_id/score] Error fetching more info:", moreInfoError);
     }
 
     // Calculate score
@@ -98,7 +122,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       event_name: photo.event_name,
       description: photo.description,
       place: photo.place,
-      source_url: photo.source_url,
+      sources: sources || [],
+      more_info: moreInfo || [],
       license: photo.license,
       credit: photo.credit,
     };

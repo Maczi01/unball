@@ -122,7 +122,7 @@ export async function submitDailyChallenge(
     const photoIds = guesses.map((g) => g.photo_id);
     const { data: photos, error: photosError } = await supabase
       .from("photos")
-      .select("id, lat, lon, year_utc, event_name, description, place, source_url, license, credit")
+      .select("id, lat, lon, year_utc, event_name, description, place, license, credit")
       .in("id", photoIds);
 
     if (photosError) {
@@ -132,6 +132,47 @@ export async function submitDailyChallenge(
     if (!photos || photos.length !== guesses.length) {
       throw new Error("INVALID_PHOTO_IDS");
     }
+
+    // Fetch photo sources for all photos
+    const { data: allSources, error: sourcesError } = await supabase
+      .from("photo_sources")
+      .select("id, photo_id, url, title, source_type, position")
+      .in("photo_id", photoIds)
+      .order("position", { ascending: true });
+
+    if (sourcesError) {
+      // eslint-disable-next-line no-console
+      console.error("[Submissions Service] Error fetching sources:", sourcesError);
+    }
+
+    // Fetch photo more info for all photos
+    const { data: allMoreInfo, error: moreInfoError } = await supabase
+      .from("photo_more_info")
+      .select("id, photo_id, info_type, url, title, description, position")
+      .in("photo_id", photoIds)
+      .order("position", { ascending: true });
+
+    if (moreInfoError) {
+      // eslint-disable-next-line no-console
+      console.error("[Submissions Service] Error fetching more info:", moreInfoError);
+    }
+
+    // Group sources and more info by photo_id
+    const sourcesByPhotoId = new Map<string, typeof allSources>();
+    allSources?.forEach((source) => {
+      if (!sourcesByPhotoId.has(source.photo_id)) {
+        sourcesByPhotoId.set(source.photo_id, []);
+      }
+      sourcesByPhotoId.get(source.photo_id)?.push(source);
+    });
+
+    const moreInfoByPhotoId = new Map<string, typeof allMoreInfo>();
+    allMoreInfo?.forEach((info) => {
+      if (!moreInfoByPhotoId.has(info.photo_id)) {
+        moreInfoByPhotoId.set(info.photo_id, []);
+      }
+      moreInfoByPhotoId.get(info.photo_id)?.push(info);
+    });
 
     // 3. Validate photo IDs match the daily set
     const { data: dailySetPhotos, error: dailySetError } = await supabase
@@ -176,7 +217,8 @@ export async function submitDailyChallenge(
         event_name: correctPhoto.event_name,
         description: correctPhoto.description,
         place: correctPhoto.place,
-        source_url: correctPhoto.source_url,
+        sources: sourcesByPhotoId.get(guess.photo_id) || [],
+        more_info: moreInfoByPhotoId.get(guess.photo_id) || [],
         license: correctPhoto.license,
         credit: correctPhoto.credit,
       };
