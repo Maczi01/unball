@@ -30,7 +30,9 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
         throw new Error("Failed to fetch available photos");
       }
       const data = await response.json();
-      setPhotos(data.photos);
+      // Defensive filter: ensure only eligible photos are shown
+      const eligiblePhotos = data.photos.filter((photo: AdminPhotoListItemDTO) => photo.is_daily_eligible === true);
+      setPhotos(eligiblePhotos);
       setPagination(data.pagination);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load photos");

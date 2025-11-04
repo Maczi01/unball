@@ -544,7 +544,7 @@ export async function getAvailablePhotosForDaily(
       `,
         { count: "exact" }
       )
-      .eq("is_daily_eligible", true)
+      .eq("is_daily_eligible", true) // Only eligible photos
       .is("first_used_in_daily_date", null) // STRICT UNIQUENESS: Only never-used photos
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
@@ -552,6 +552,11 @@ export async function getAvailablePhotosForDaily(
     if (error) throw error;
 
     const photos = (data || []) as AdminPhotoListItemDTO[];
+
+    // eslint-disable-next-line no-console
+    console.log(
+      `[Daily Sets] Fetched ${photos.length} available photos (eligible: ${photos.filter((p) => p.is_daily_eligible).length}, ineligible: ${photos.filter((p) => !p.is_daily_eligible).length})`
+    );
 
     const total_items = count || 0;
     const total_pages = Math.ceil(total_items / limit);
