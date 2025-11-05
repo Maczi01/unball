@@ -459,13 +459,21 @@ export async function publishDailySet(supabase: SupabaseClient, daily_set_id: st
 
     if (updateError) throw updateError;
 
-    // Update first_used_in_daily_date for photos (if null)
-    for (const photo of dailySet.photos) {
-      await supabase
-        .from("photos")
-        .update({ first_used_in_daily_date: dailySet.date_utc })
-        .eq("id", photo.photo_id)
-        .is("first_used_in_daily_date", null);
+    // Update first_used_in_daily_date and set is_daily_eligible to false for photos
+    const photoIds = dailySet.photos.map((p) => p.photo_id);
+    const { error: photoUpdateError } = await supabase
+      .from("photos")
+      .update({
+        first_used_in_daily_date: dailySet.date_utc,
+        is_daily_eligible: false,
+      })
+      .in("id", photoIds)
+      .is("first_used_in_daily_date", null);
+
+    if (photoUpdateError) {
+      // eslint-disable-next-line no-console
+      console.error("[Daily Sets] Error updating photos:", photoUpdateError);
+      throw photoUpdateError;
     }
 
     // eslint-disable-next-line no-console

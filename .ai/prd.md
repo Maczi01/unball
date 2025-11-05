@@ -54,7 +54,7 @@ Football fans want a quick, engaging way to test and showcase their broad knowle
 - **Normal mode:** Unlimited plays, results shown but **not persisted** server-side.
 - **Daily mode:**
   - Resets at **00:00 UTC**.
-  - Pre-scheduled sets (5 unique photos per day) with no repeats in Daily.
+  - Pre-scheduled sets (5 unique photos per day). **Photos are used only once** in Daily mode and never repeated.
   - Multiple plays permitted; only the **first attempt per device** counts for leaderboard submission.
 
 ### 3.3 Leaderboard
@@ -187,7 +187,7 @@ Football fans want a quick, engaging way to test and showcase their broad knowle
 | **US-009** | Set or edit nickname                         | As a player, I want to set a nickname to appear on the leaderboard.                                                           | **AC:** Nickname 3–20 characters; alphanumeric, spaces, hyphen, underscore. Profanity is blocked. Changes update only for **future eligible submissions**.                                                                                                  |
 | **US-010** | Anonymous device identification              | As a system, I want to assign an anonymous device token so I can enforce the first-attempt Daily rule without collecting PII. | **AC:** Stable `anon_device_token` stored in a cookie/local storage on first open. Token included in Daily submission. Graceful degradation if storage unavailable (disallow submission).                                                                   |
 | **US-011** | Reveal event details after the game          | As a player, I want to see the event details after completing the round to learn more.                                        | **AC:** After the 5th photo, reveal section displays `event_name` and `description` for each photo. Optional info (e.g., competition, credit) may be shown per license.                                                                                     |
-| **US-012** | Daily scheduler and uniqueness               | As an operator, I want Daily sets to be unique and scheduled so players get fresh content.                                    | **AC:** System publishes 5-photo set at 00:00 UTC daily. No photo reuse in Daily for at least 60 days. Supports a backup set for content removal.                                                                                                           |
+| **US-012** | Daily scheduler and uniqueness               | As an operator, I want Daily sets to be unique and scheduled so players get fresh content.                                    | **AC:** System publishes 5-photo set at 00:00 UTC daily. Each photo is used only once in Daily mode (never repeated). System sets `is_daily_eligible = false` when photo is published. Supports a backup set for content removal.                            |
 | **US-013** | Content ingestion with validation            | As a curator, I want to upload photo items with metadata so they can be used in the game.                                     | **AC:** Item must include all required metadata fields (3.4). Validate `year` in [1880, 2025], and presence of `lat`/`lon`/`license`. Rejection with clear errors if validation fails.                                                                      |
 | **US-014** | Performance and responsiveness               | As a player, I want fast load times and responsive interactions so the game feels smooth.                                     | **AC:** Initial load $< 2$ seconds (4G). Median map interaction latency $< 200$ ms. Responsive for mobile and desktop.                                                                                                                                      |
 | **US-015** | Analytics events                             | As a product team member, I want key events tracked so I can measure success.                                                 | **AC:** Log `start_round`, `guess_submitted` (with metrics), `round_complete`, `daily_submission` (with timestamps and token). Minimal performance impact ($<50$ ms budget per event).                                                                      |
@@ -238,7 +238,7 @@ Football fans want a quick, engaging way to test and showcase their broad knowle
 ### Content Health
 
 - Daily schedule maintained $\ge 7$ days ahead.
-- Zero repeats in Daily for at least 60 days.
+- Zero repeats in Daily (photos used only once).
 
 ### Performance
 
