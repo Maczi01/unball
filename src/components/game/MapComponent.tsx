@@ -28,6 +28,7 @@ const MapComponentInner = ({
   const map = useRef<mapboxgl.Map | null>(null);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
   const correctMarker = useRef<mapboxgl.Marker | null>(null);
+  const distanceMarker = useRef<mapboxgl.Marker | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
 
@@ -120,7 +121,14 @@ const MapComponentInner = ({
 
   // Update correct pin marker (feedback mode)
   useEffect(() => {
-    if (!map.current || !mapLoaded || !showFeedback) return;
+    if (!map.current || !mapLoaded || !showFeedback) {
+      // Remove distance marker when not in feedback mode
+      if (distanceMarker.current) {
+        distanceMarker.current.remove();
+        distanceMarker.current = null;
+      }
+      return;
+    }
 
     // Remove existing marker
     if (correctMarker.current) {
@@ -139,7 +147,7 @@ const MapComponentInner = ({
     }
 
     // Draw line between pins if both exist
-    if (userPin && correctPin && map.current) {
+    if (userPin && correctPin && map.current && kmError !== null) {
       const sourceId = "line-source";
       const layerId = "line-layer";
 
@@ -179,6 +187,29 @@ const MapComponentInner = ({
         },
       });
 
+      // Calculate midpoint for distance label
+      const midLon = (userPin.lon + correctPin.lon) / 2;
+      const midLat = (userPin.lat + correctPin.lat) / 2;
+
+      // Remove existing distance marker
+      if (distanceMarker.current) {
+        distanceMarker.current.remove();
+      }
+
+      // Create distance label element
+      const distanceEl = document.createElement("div");
+      distanceEl.className = "px-3 py-1.5 bg-white dark:bg-gray-800 rounded-md shadow-lg border-2 border-red-500 dark:border-red-400 text-sm font-semibold whitespace-nowrap";
+      distanceEl.innerHTML = `<span class="text-red-600 dark:text-red-400">${kmError.toFixed(1)} km</span>`;
+      distanceEl.setAttribute("aria-label", `Distance: ${kmError.toFixed(1)} kilometers`);
+
+      // Add distance marker at midpoint
+      distanceMarker.current = new mapboxgl.Marker({
+        element: distanceEl,
+        anchor: "center",
+      })
+        .setLngLat([midLon, midLat])
+        .addTo(map.current);
+
       // Fit bounds to show both pins
       const bounds = new mapboxgl.LngLatBounds();
       bounds.extend([userPin.lon, userPin.lat]);
@@ -189,7 +220,7 @@ const MapComponentInner = ({
         maxZoom: 10,
       });
     }
-  }, [correctPin, showFeedback, userPin, mapLoaded]);
+  }, [correctPin, showFeedback, userPin, mapLoaded, kmError]);
 
   const handleResetView = () => {
     if (map.current) {
