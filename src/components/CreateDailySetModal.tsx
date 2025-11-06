@@ -30,8 +30,10 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
         throw new Error("Failed to fetch available photos");
       }
       const data = await response.json();
-      // Defensive filter: ensure only eligible photos are shown
-      const eligiblePhotos = data.photos.filter((photo: AdminPhotoListItemDTO) => photo.is_daily_eligible === true);
+      // Defensive filter: ensure only eligible photos that have never been used are shown
+      const eligiblePhotos = data.photos.filter(
+        (photo: AdminPhotoListItemDTO) => photo.is_daily_eligible === true && photo.first_used_in_daily_date === null
+      );
       setPhotos(eligiblePhotos);
       setPagination(data.pagination);
     } catch (err) {
