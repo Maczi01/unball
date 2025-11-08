@@ -51,7 +51,9 @@ export function PhotoSourcesInput({ value, onChange, disabled }: PhotoSourcesInp
       </div>
 
       {value.length === 0 ? (
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">No sources added yet. Click &quot;Add Source&quot; to add one.</p>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          No sources added yet. Click &quot;Add Source&quot; to add one.
+        </p>
       ) : (
         <div className="space-y-4">
           {value.map((source, index) => (
@@ -97,7 +99,11 @@ export function PhotoSourcesInput({ value, onChange, disabled }: PhotoSourcesInp
 
               <div className="space-y-2">
                 <Label htmlFor={`source-type-${index}`}>Type</Label>
-                <Select value={source.source_type} onValueChange={(val) => updateSource(index, "source_type", val)} disabled={disabled}>
+                <Select
+                  value={source.source_type}
+                  onValueChange={(val) => updateSource(index, "source_type", val)}
+                  disabled={disabled}
+                >
                   <SelectTrigger id={`source-type-${index}`}>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>

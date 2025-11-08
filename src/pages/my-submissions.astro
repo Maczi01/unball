@@ -1,0 +1,17 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { MySubmissions } from "@/components/MySubmissions";
+
+export const prerender = false;
+
+const { user } = Astro.locals;
+
+// Redirect to login if not authenticated
+if (!user) {
+  return Astro.redirect(`/login?redirect=${encodeURIComponent("/my-submissions")}`);
+}
+---
+
+<Layout title="My Submissions - FootyGuess Daily" showNavigation={true}>
+  <MySubmissions client:load />
+</Layout>

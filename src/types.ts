@@ -672,13 +672,13 @@ export interface PhotoSubmissionFormData {
   lat: string; // String in input, converts to number for API
   lon: string; // String in input, converts to number for API
   description: string;
-  sources: Array<{ url: string; title: string; source_type: string }>;
-  more_info: Array<{
+  sources: { url: string; title: string; source_type: string }[];
+  more_info: {
     info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
     url: string;
     title: string;
     description: string;
-  }>;
+  }[];
   license: string;
   credit: string;
   tags: string[];

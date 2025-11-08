@@ -148,7 +148,7 @@ function validateUrl(value: string): boolean {
   }
 }
 
-function validateSources(sources: Array<{ url: string; title: string; source_type: string }>): string | null {
+function validateSources(sources: { url: string; title: string; source_type: string }[]): string | null {
   // Sources are optional, so empty array is valid
   if (sources.length === 0) return null;
 
@@ -161,12 +161,12 @@ function validateSources(sources: Array<{ url: string; title: string; source_typ
 }
 
 function validateMoreInfo(
-  moreInfo: Array<{
+  moreInfo: {
     info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
     url: string;
     title: string;
     description: string;
-  }>
+  }[]
 ): string | null {
   // More info is optional, so empty array is valid
   if (moreInfo.length === 0) return null;
@@ -328,7 +328,13 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       "license",
       "credit",
     ];
-    const optionalFields: (keyof PhotoSubmissionFormData)[] = ["competition", "place", "submitter_email", "sources", "more_info"];
+    const optionalFields: (keyof PhotoSubmissionFormData)[] = [
+      "competition",
+      "place",
+      "submitter_email",
+      "sources",
+      "more_info",
+    ];
 
     let isValid = true;
     // const errors: ValidationErrors = {};

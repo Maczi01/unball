@@ -31,13 +31,13 @@ export function PhotoEditForm({ photo, onSuccess, onCancel }: PhotoEditFormProps
     lat: photo.lat.toString(),
     lon: photo.lon.toString(),
     description: photo.description || "",
-    sources: [] as Array<{ url: string; title: string; source_type: string }>,
-    more_info: [] as Array<{
+    sources: [] as { url: string; title: string; source_type: string }[],
+    more_info: [] as {
       info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
       url: string;
       title: string;
       description: string;
-    }>,
+    }[],
     license: photo.license,
     credit: photo.credit,
     tags: photo.tags || [],

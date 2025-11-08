@@ -198,7 +198,8 @@ const MapComponentInner = ({
 
       // Create distance label element
       const distanceEl = document.createElement("div");
-      distanceEl.className = "px-3 py-1.5 bg-white dark:bg-gray-800 rounded-md shadow-lg border-2 border-red-500 dark:border-red-400 text-sm font-semibold whitespace-nowrap";
+      distanceEl.className =
+        "px-3 py-1.5 bg-white dark:bg-gray-800 rounded-md shadow-lg border-2 border-red-500 dark:border-red-400 text-sm font-semibold whitespace-nowrap";
       distanceEl.innerHTML = `<span class="text-red-600 dark:text-red-400">${kmError.toFixed(1)} km</span>`;
       distanceEl.setAttribute("aria-label", `Distance: ${kmError.toFixed(1)} kilometers`);
 

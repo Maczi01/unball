@@ -104,7 +104,13 @@ export class SubmitPhotoPage extends BasePage {
   /**
    * Fill optional fields
    */
-  async fillOptionalFields(options: { competition?: string; place?: string; description?: string; notes?: string; email?: string }) {
+  async fillOptionalFields(options: {
+    competition?: string;
+    place?: string;
+    description?: string;
+    notes?: string;
+    email?: string;
+  }) {
     if (options.competition) await this.competitionInput.fill(options.competition);
     if (options.place) await this.placeInput.fill(options.place);
     if (options.description) await this.descriptionTextarea.fill(options.description);

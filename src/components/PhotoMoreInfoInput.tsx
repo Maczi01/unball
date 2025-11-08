@@ -60,14 +60,17 @@ export function PhotoMoreInfoInput({ value, onChange, disabled }: PhotoMoreInfoI
 
       {value.length === 0 ? (
         <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          No additional information added yet. Click &quot;Add Info&quot; to add YouTube videos, articles, or other media.
+          No additional information added yet. Click &quot;Add Info&quot; to add YouTube videos, articles, or other
+          media.
         </p>
       ) : (
         <div className="space-y-4">
           {value.map((info, index) => (
             <div key={index} className="p-4 border border-neutral-200 dark:border-neutral-800 rounded-lg space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Info Item {index + 1}</span>
+                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  Info Item {index + 1}
+                </span>
                 <Button
                   type="button"
                   variant="ghost"
