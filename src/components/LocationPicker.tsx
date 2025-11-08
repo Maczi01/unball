@@ -130,6 +130,16 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
     markerRef.current.setDraggable(!disabled);
   }, [disabled]);
 
+  // Resize map when disabled state changes to prevent layout issues
+  useEffect(() => {
+    if (!mapRef.current) return;
+    // Small delay to ensure CSS transitions have completed
+    const timeoutId = setTimeout(() => {
+      mapRef.current?.resize();
+    }, 100);
+    return () => clearTimeout(timeoutId);
+  }, [disabled]);
+
   const handleLatChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
