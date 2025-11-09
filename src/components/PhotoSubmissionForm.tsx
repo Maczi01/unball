@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { usePhotoSubmission } from "@/components/hooks/usePhotoSubmission";
 import { PhotoFileUpload } from "@/components/PhotoFileUpload";
 import { LocationPicker } from "@/components/LocationPicker";
@@ -34,6 +34,15 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
     submitPhoto,
     resetForm,
   } = usePhotoSubmission(userEmail);
+
+  const formTopRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top when submission errors occur
+  useEffect(() => {
+    if (submissionState.status === "error" && formTopRef.current) {
+      formTopRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [submissionState.status]);
 
   // Warn on leaving page with unsaved changes
   useEffect(() => {
@@ -102,7 +111,7 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="space-y-2">
+      <div ref={formTopRef} className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Submit a Photo</h1>
         <p className="text-neutral-500 dark:text-neutral-400">
           Share your football photos with the community. All submissions will be reviewed before being added to the

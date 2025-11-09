@@ -27,6 +27,9 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
   const onChangeRef = useRef(onChange);
   const disabledRef = useRef(disabled);
 
+  // Track the last coordinates we flew to, to avoid re-flying on re-renders
+  const lastFlyToCoords = useRef<{ lat: number; lon: number } | null>(null);
+
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
@@ -54,6 +57,8 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
     // Handle marker drag
     marker.on("dragend", () => {
       const lngLat = marker.getLngLat();
+      // Update last coordinates to prevent re-flying on re-render
+      lastFlyToCoords.current = { lat: lngLat.lat, lon: lngLat.lng };
       onChangeRef.current({
         lat: lngLat.lat.toFixed(6),
         lon: lngLat.lng.toFixed(6),
@@ -94,6 +99,8 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
         if (disabledRef.current) return;
         const { lng, lat } = e.lngLat;
         updatePin(lng, lat, !disabledRef.current);
+        // Update last coordinates to prevent re-flying on re-render
+        lastFlyToCoords.current = { lat, lon: lng };
         onChangeRef.current({
           lat: lat.toFixed(6),
           lon: lng.toFixed(6),
@@ -120,10 +127,20 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
 
     if (!isNaN(latNum) && !isNaN(lonNum)) {
       updatePin(lonNum, latNum, !disabledRef.current);
-      mapRef.current.flyTo({
-        center: [lonNum, latNum],
-        zoom: 8,
-      });
+
+      // Only fly to new coordinates if they're different from the last time we flew
+      const coordsChanged =
+        !lastFlyToCoords.current ||
+        Math.abs(lastFlyToCoords.current.lat - latNum) > 0.00001 ||
+        Math.abs(lastFlyToCoords.current.lon - lonNum) > 0.00001;
+
+      if (coordsChanged) {
+        lastFlyToCoords.current = { lat: latNum, lon: lonNum };
+        mapRef.current.flyTo({
+          center: [lonNum, latNum],
+          zoom: 8,
+        });
+      }
     }
   }, [lat, lon, updatePin]);
 
@@ -212,13 +229,22 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
     // Update pin on map
     updatePin(parsedLon, parsedLat, !disabledRef.current);
 
+    // Update last flyTo coords and fly to the location
+    lastFlyToCoords.current = { lat: parsedLat, lon: parsedLon };
+    if (mapRef.current) {
+      mapRef.current.flyTo({
+        center: [parsedLon, parsedLat],
+        zoom: 8,
+      });
+    }
+
     // Clear the paste input after successful parse
     setPasteCoords("");
     setPasteError(null);
   }, [updatePin]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative z-0">
       <div className="space-y-2">
         <Label htmlFor="map-container">Location on Map</Label>
         {mapError ? (
@@ -234,7 +260,7 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
               ref={mapContainerRef}
               id="map-container"
               className={cn(
-                "w-full h-[400px] rounded-lg border border-neutral-200 dark:border-neutral-800",
+                "w-full h-[400px] rounded-lg border border-neutral-200 dark:border-neutral-800 relative overflow-hidden",
                 disabled && "opacity-50 pointer-events-none"
               )}
               aria-label="Interactive map for location selection"
