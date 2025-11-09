@@ -8,7 +8,6 @@ export interface PhotoSubmissionData {
   lat: number;
   lon: number;
   photo_url: string;
-  thumbnail_url?: string;
   original_url?: string;
   description?: string;
   source_url?: string;
@@ -98,7 +97,6 @@ export class PhotoSubmissionsService {
         lat: data.lat,
         lon: data.lon,
         photo_url: data.photo_url,
-        thumbnail_url: data.thumbnail_url,
         original_url: data.original_url,
         description: data.description,
         source_url: data.source_url,
@@ -275,7 +273,7 @@ export class PhotoSubmissionsService {
 
     let query = this.supabase
       .from("photo_submissions")
-      .select("id, event_name, year_utc, status, submitter_email, thumbnail_url, created_at", {
+      .select("id, event_name, year_utc, status, submitter_email, photo_url, created_at", {
         count: "exact",
       });
 

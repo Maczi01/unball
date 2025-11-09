@@ -98,16 +98,6 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
           onError={handleImageError}
           loading="eager"
         />
-
-        {/* Thumbnail as background (shown while loading) */}
-        {isLoading && photo.thumbnail_url && (
-          <img
-            src={photo.thumbnail_url}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover scale-110"
-          />
-        )}
       </div>
     </div>
   );

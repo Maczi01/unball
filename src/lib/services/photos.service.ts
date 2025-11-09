@@ -18,7 +18,7 @@ export class PhotosService {
     let query = this.supabase
       .from("photos")
       .select(
-        "id, photo_url, thumbnail_url, event_name, year_utc, lat, lon, is_daily_eligible, first_used_in_daily_date, created_at",
+        "id, photo_url, event_name, year_utc, lat, lon, is_daily_eligible, first_used_in_daily_date, created_at",
         { count: "exact" }
       );
 

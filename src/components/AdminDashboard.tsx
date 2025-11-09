@@ -41,7 +41,7 @@ interface DashboardStats {
   recent_photos: {
     id: string;
     event_name: string;
-    thumbnail_url: string | null;
+    photo_url: string;
     created_at: string;
   }[];
 }
@@ -273,17 +273,11 @@ export const AdminDashboard = () => {
               {stats.recent_photos.map((photo) => (
                 <a key={photo.id} href={`/admin/photos/${photo.id}/edit`} className="group block space-y-2">
                   <div className="aspect-video bg-neutral-100 dark:bg-neutral-800 rounded-lg overflow-hidden">
-                    {photo.thumbnail_url ? (
-                      <img
-                        src={photo.thumbnail_url}
-                        alt={photo.event_name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Image className="h-8 w-8 text-neutral-400" />
-                      </div>
-                    )}
+                    <img
+                      src={photo.photo_url}
+                      alt={photo.event_name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
                   </div>
                   <div className="text-sm">
                     <p className="font-medium text-neutral-900 dark:text-neutral-100 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400">

@@ -37,7 +37,6 @@ export async function getTodaysDailySet(supabase: SupabaseClient): Promise<Daily
           photos!inner (
             id,
             photo_url,
-            thumbnail_url,
             competition,
             place,
             tags
@@ -73,7 +72,6 @@ export async function getTodaysDailySet(supabase: SupabaseClient): Promise<Daily
       photo_id: dsp.photos.id,
       position: dsp.position,
       photo_url: dsp.photos.photo_url,
-      thumbnail_url: dsp.photos.thumbnail_url,
       competition: dsp.photos.competition,
       place: dsp.photos.place,
       tags: dsp.photos.tags,
@@ -541,7 +539,6 @@ export async function getAvailablePhotosForDaily(
         `
         id,
         photo_url,
-        thumbnail_url,
         event_name,
         year_utc,
         lat,

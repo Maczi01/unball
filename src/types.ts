@@ -42,7 +42,6 @@ export type DbUpdate<T extends keyof Database["public"]["Tables"]> = Database["p
 export interface NormalRoundPhotoDTO {
   photo_id: string; // Renamed from 'id' for consistency
   photo_url: string;
-  thumbnail_url: string | null;
   competition: string | null;
   place: string | null;
   tags: string[] | null;
@@ -148,7 +147,6 @@ export interface DailySetPhotoDTO {
   photo_id: string;
   position: number;
   photo_url: string;
-  thumbnail_url: string | null;
   competition: string | null;
   place: string | null;
   tags: string[] | null;
@@ -328,7 +326,7 @@ export interface CreditsResponseDTO {
  */
 export type CreatePhotoCommand = Omit<
   DbInsert<"photos">,
-  "id" | "created_at" | "updated_at" | "photo_url" | "thumbnail_url"
+  "id" | "created_at" | "updated_at" | "photo_url"
 > & {
   photo_file?: File | Blob; // Added for multipart upload handling
 };
@@ -347,7 +345,6 @@ export type AdminPhotoListItemDTO = Pick<
   DbTable<"photos">,
   | "id"
   | "photo_url"
-  | "thumbnail_url"
   | "event_name"
   | "year_utc"
   | "lat"
@@ -374,7 +371,7 @@ export interface AdminPhotosResponseDTO {
 export type UpdatePhotoCommand = Partial<
   Omit<
     DbUpdate<"photos">,
-    "id" | "created_at" | "updated_at" | "photo_url" | "thumbnail_url" | "first_used_in_daily_date"
+    "id" | "created_at" | "updated_at" | "photo_url" | "first_used_in_daily_date"
   >
 >;
 
@@ -727,7 +724,7 @@ export interface AdminPhotoSubmissionListItemDTO {
   year_utc: number;
   status: Database["public"]["Enums"]["submission_status"];
   submitter_email: string | null;
-  thumbnail_url: string | null;
+  photo_url: string;
   created_at: string;
 }
 

@@ -28,7 +28,7 @@ export const SubmissionCard = ({ submission, onClick, onQuickApprove, onQuickRej
     >
       <div className="flex gap-4 p-4">
         <PhotoThumbnail
-          thumbnailUrl={submission.thumbnail_url}
+          photoUrl={submission.photo_url}
           alt={submission.event_name}
           className="w-32 h-32 rounded flex-shrink-0"
         />

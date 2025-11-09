@@ -13,7 +13,6 @@ const PhotoSubmissionSchema = z.object({
   lat: z.number().min(-90).max(90),
   lon: z.number().min(-180).max(180),
   photo_url: z.string().url(),
-  thumbnail_url: z.string().url().optional(),
   original_url: z.string().url().optional(),
   description: z.string().optional(),
   source_url: z.string().url().optional(),

@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ValidationConstants } from "@/types";
 
@@ -19,6 +20,8 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [pasteCoords, setPasteCoords] = useState<string>("");
+  const [pasteError, setPasteError] = useState<string | null>(null);
 
   // Store latest onChange and disabled in refs to avoid map re-initialization
   const onChangeRef = useRef(onChange);
@@ -156,6 +159,64 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
     [lat]
   );
 
+  const handlePasteCoordinatesChange = useCallback((value: string) => {
+    setPasteCoords(value);
+    setPasteError(null);
+
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return;
+    }
+
+    // Try to match coordinates separated by comma, space, or both
+    const coordRegex = /^(-?\d+\.?\d*)\s*[,\s]\s*(-?\d+\.?\d*)$/;
+    const match = trimmed.match(coordRegex);
+
+    if (!match) {
+      // Don't show error while typing, only if pattern is close but invalid
+      if (trimmed.includes(',') || trimmed.includes(' ')) {
+        setPasteError("Invalid format. Use: latitude, longitude (e.g., 51.555, -0.108)");
+      }
+      return;
+    }
+
+    const parsedLat = parseFloat(match[1]);
+    const parsedLon = parseFloat(match[2]);
+
+    // Validate ranges
+    if (isNaN(parsedLat) || isNaN(parsedLon)) {
+      setPasteError("Invalid numbers in coordinates");
+      return;
+    }
+
+    if (parsedLat < ValidationConstants.COORDINATES.LAT_MIN || parsedLat > ValidationConstants.COORDINATES.LAT_MAX) {
+      setPasteError(`Latitude must be between ${ValidationConstants.COORDINATES.LAT_MIN} and ${ValidationConstants.COORDINATES.LAT_MAX}`);
+      return;
+    }
+
+    if (parsedLon < ValidationConstants.COORDINATES.LON_MIN || parsedLon > ValidationConstants.COORDINATES.LON_MAX) {
+      setPasteError(`Longitude must be between ${ValidationConstants.COORDINATES.LON_MIN} and ${ValidationConstants.COORDINATES.LON_MAX}`);
+      return;
+    }
+
+    // Format to 6 decimal places and update
+    const formattedLat = parsedLat.toFixed(6);
+    const formattedLon = parsedLon.toFixed(6);
+
+    onChangeRef.current({
+      lat: formattedLat,
+      lon: formattedLon,
+    });
+
+    // Update pin on map
+    updatePin(parsedLon, parsedLat, !disabledRef.current);
+
+    // Clear the paste input after successful parse
+    setPasteCoords("");
+    setPasteError(null);
+  }, [updatePin]);
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -185,51 +246,77 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="latitude">
-            Latitude <span className="text-red-500">*</span>
-          </Label>
+          <Label htmlFor="paste-coordinates">Quick Paste Coordinates (from Google Maps)</Label>
           <Input
-            id="latitude"
-            type="number"
-            step="0.000001"
-            min={ValidationConstants.COORDINATES.LAT_MIN}
-            max={ValidationConstants.COORDINATES.LAT_MAX}
-            value={lat}
-            onChange={handleLatChange}
+            id="paste-coordinates"
+            type="text"
+            value={pasteCoords}
+            onChange={(e) => handlePasteCoordinatesChange(e.target.value)}
             disabled={disabled}
-            placeholder="e.g., 51.5074"
-            className={cn(error && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!error}
-            aria-describedby={error ? "location-error" : undefined}
+            placeholder="e.g., 51.555, -0.108"
+            className={cn(pasteError && "border-red-500 focus-visible:ring-red-500")}
+            aria-invalid={!!pasteError}
+            aria-describedby={pasteError ? "paste-error" : "paste-description"}
           />
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Range: {ValidationConstants.COORDINATES.LAT_MIN} to {ValidationConstants.COORDINATES.LAT_MAX}
-          </p>
+          {pasteError ? (
+            <p id="paste-error" className="text-xs text-red-500 dark:text-red-400" role="alert">
+              {pasteError}
+            </p>
+          ) : (
+            <p id="paste-description" className="text-xs text-neutral-500 dark:text-neutral-400">
+              Paste coordinates in format: latitude, longitude (automatically formats to 6 decimal places)
+            </p>
+          )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="longitude">
-            Longitude <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="longitude"
-            type="number"
-            step="0.000001"
-            min={ValidationConstants.COORDINATES.LON_MIN}
-            max={ValidationConstants.COORDINATES.LON_MAX}
-            value={lon}
-            onChange={handleLonChange}
-            disabled={disabled}
-            placeholder="e.g., -0.1278"
-            className={cn(error && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!error}
-            aria-describedby={error ? "location-error" : undefined}
-          />
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Range: {ValidationConstants.COORDINATES.LON_MIN} to {ValidationConstants.COORDINATES.LON_MAX}
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="latitude">
+              Latitude <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="latitude"
+              type="number"
+              step="0.000001"
+              min={ValidationConstants.COORDINATES.LAT_MIN}
+              max={ValidationConstants.COORDINATES.LAT_MAX}
+              value={lat}
+              onChange={handleLatChange}
+              disabled={disabled}
+              placeholder="e.g., 51.5074"
+              className={cn(error && "border-red-500 focus-visible:ring-red-500")}
+              aria-invalid={!!error}
+              aria-describedby={error ? "location-error" : undefined}
+            />
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              Range: {ValidationConstants.COORDINATES.LAT_MIN} to {ValidationConstants.COORDINATES.LAT_MAX}
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="longitude">
+              Longitude <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="longitude"
+              type="number"
+              step="0.000001"
+              min={ValidationConstants.COORDINATES.LON_MIN}
+              max={ValidationConstants.COORDINATES.LON_MAX}
+              value={lon}
+              onChange={handleLonChange}
+              disabled={disabled}
+              placeholder="e.g., -0.1278"
+              className={cn(error && "border-red-500 focus-visible:ring-red-500")}
+              aria-invalid={!!error}
+              aria-describedby={error ? "location-error" : undefined}
+            />
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              Range: {ValidationConstants.COORDINATES.LON_MIN} to {ValidationConstants.COORDINATES.LON_MAX}
+            </p>
+          </div>
         </div>
       </div>
 

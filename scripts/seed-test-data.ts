@@ -24,7 +24,6 @@ const photos = [
   {
     id: "11111111-1111-1111-1111-111111111111",
     photo_url: "https://tomkinstimes.com/wp-content/uploads/2020/02/Origi-v-Spurs-CL-final-e1581933165219.jpg",
-    thumbnail_url: "https://tomkinstimes.com/wp-content/uploads/2020/02/Origi-v-Spurs-CL-final-e1581933165219.jpg",
     event_name: "Champions League Final 2019",
     competition: "UEFA Champions League",
     year_utc: 2019,
@@ -40,8 +39,6 @@ const photos = [
   {
     id: "22222222-2222-2222-2222-222222222222",
     photo_url:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Germany_and_Argentina_face_off_in_the_final_of_the_World_Cup_2014_-2014-07-13_%286%29.jpg/1280px-Germany_and_Argentina_face_off_in_the_final_of_the_World_Cup_2014_-2014-07-13_%286%29.jpg",
-    thumbnail_url:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Germany_and_Argentina_face_off_in_the_final_of_the_World_Cup_2014_-2014-07-13_%286%29.jpg/1280px-Germany_and_Argentina_face_off_in_the_final_of_the_World_Cup_2014_-2014-07-13_%286%29.jpg",
     event_name: "FIFA World Cup Final 2014",
     competition: "FIFA World Cup",
@@ -59,8 +56,6 @@ const photos = [
     id: "33333333-3333-3333-3333-333333333333",
     photo_url:
       "https://www.reuters.com/resizer/v2/ISCEQPPMMBJFVOQUDIAMNVYZYU.jpg?auth=9b9c07fca45d702010a4c4bb49ad7c95b2ac5504330234871600e8c85f6a562d&width=640&quality=80",
-    thumbnail_url:
-      "https://www.reuters.com/resizer/v2/ISCEQPPMMBJFVOQUDIAMNVYZYU.jpg?auth=9b9c07fca45d702010a4c4bb49ad7c95b2ac5504330234871600e8c85f6a562d&width=640&quality=80",
     event_name: "Premier League Match 2023",
     competition: "Premier League",
     year_utc: 2023,
@@ -77,8 +72,6 @@ const photos = [
     id: "44444444-4444-4444-4444-444444444444",
     photo_url:
       "https://phantom.estaticos-marca.com/7f8fa237b1a0575e2d50b938a5ad01fa/crop/0x4/2046x1152/resize/660/f/webp/assets/multimedia/imagenes/2022/03/20/16478074388951.jpg",
-    thumbnail_url:
-      "https://phantom.estaticos-marca.com/7f8fa237b1a0575e2d50b938a5ad01fa/crop/0x4/2046x1152/resize/660/f/webp/assets/multimedia/imagenes/2022/03/20/16478074388951.jpg",
     event_name: "El Clásico 2022",
     competition: "La Liga",
     year_utc: 2022,
@@ -94,7 +87,6 @@ const photos = [
   {
     id: "55555555-5555-5555-5555-555555555555",
     photo_url: "https://cdn.punchng.com/wp-content/uploads/2021/07/11233524/Italy-vs-Englad.jpg",
-    thumbnail_url: "https://cdn.punchng.com/wp-content/uploads/2021/07/11233524/Italy-vs-Englad.jpg",
     event_name: "UEFA Euro 2020 Final",
     competition: "UEFA European Championship",
     year_utc: 2021,
@@ -115,7 +107,6 @@ const morePhotos = [
   {
     id: "11111116-1111-1111-1111-111111111111",
     photo_url: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Geoff_Hurst_goal_1966_World_Cup_final.jpg",
-    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Geoff_Hurst_goal_1966_World_Cup_final.jpg",
     event_name: "1966 FIFA World Cup Final",
     competition: "FIFA World Cup",
     year_utc: 1966,
@@ -134,7 +125,6 @@ const morePhotos = [
   {
     id: "22222226-2222-2222-2222-222222222222",
     photo_url: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Maradona_hand_of_god_goal_1986.jpg",
-    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Maradona_hand_of_god_goal_1986.jpg",
     event_name: "1986 FIFA World Cup Quarter-final",
     competition: "FIFA World Cup",
     year_utc: 1986,
@@ -153,7 +143,6 @@ const morePhotos = [
   {
     id: "33333336-3333-3333-3333-333333333333",
     photo_url: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Man_United_1999_final_celebration.jpg",
-    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Man_United_1999_final_celebration.jpg",
     event_name: "1999 UEFA Champions League Final",
     competition: "UEFA Champions League",
     year_utc: 1999,
@@ -172,7 +161,6 @@ const morePhotos = [
   {
     id: "44444446-4444-4444-4444-444444444444",
     photo_url: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Liverpool_AC_Milan_2005_final_penalties.jpg",
-    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Liverpool_AC_Milan_2005_final_penalties.jpg",
     event_name: "2005 UEFA Champions League Final",
     competition: "UEFA Champions League",
     year_utc: 2005,
@@ -191,7 +179,6 @@ const morePhotos = [
   {
     id: "55555565-aaaa-bbbb-cccc-666666666666",
     photo_url: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Messi_World_Cup_2022_trophy.jpg",
-    thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Messi_World_Cup_2022_trophy.jpg",
     event_name: "2022 FIFA World Cup Final",
     competition: "FIFA World Cup",
     year_utc: 2022,

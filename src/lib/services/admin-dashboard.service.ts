@@ -130,7 +130,7 @@ export class AdminDashboardService {
   private async getRecentPhotos() {
     const { data, error } = await this.supabase
       .from("photos")
-      .select("id, event_name, thumbnail_url, created_at")
+      .select("id, event_name, photo_url, created_at")
       .order("created_at", { ascending: false })
       .limit(5);
 

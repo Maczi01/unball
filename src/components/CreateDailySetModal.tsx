@@ -211,13 +211,7 @@ export const CreateDailySetModal = ({ isOpen, onClose, onSuccess }: CreateDailyS
                           : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
                       } ${!isSelected && selectedPhotos.length >= 5 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                     >
-                      {photo.thumbnail_url ? (
-                        <img src={photo.thumbnail_url} alt={photo.event_name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
-                          <ImageIcon className="h-8 w-8 text-neutral-400" />
-                        </div>
-                      )}
+                      <img src={photo.photo_url} alt={photo.event_name} className="w-full h-full object-cover" />
 
                       {/* Selection Badge */}
                       {isSelected && (

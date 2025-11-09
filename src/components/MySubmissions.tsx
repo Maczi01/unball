@@ -14,8 +14,7 @@ interface PhotoSubmission {
   year_utc: number;
   status: SubmissionStatus;
   submitter_email: string | null;
-  thumbnail_url: string | null;
-  photo_url: string | null;
+  photo_url: string;
   created_at: string;
   competition: string | null;
   place: string | null;
@@ -229,17 +228,11 @@ export function MySubmissions() {
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Thumbnail */}
                 <div className="sm:w-48 h-48 sm:h-auto bg-neutral-100 dark:bg-neutral-800 flex-shrink-0">
-                  {submission.thumbnail_url || submission.photo_url ? (
-                    <img
-                      src={submission.thumbnail_url || submission.photo_url || ""}
-                      alt={submission.event_name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <ImageIcon className="h-12 w-12 text-neutral-400" />
-                    </div>
-                  )}
+                  <img
+                    src={submission.photo_url}
+                    alt={submission.event_name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
                 {/* Content */}
