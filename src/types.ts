@@ -324,10 +324,7 @@ export interface CreditsResponseDTO {
  * Request data for POST /api/admin/photos (multipart form)
  * Note: photo_file is handled separately as multipart upload
  */
-export type CreatePhotoCommand = Omit<
-  DbInsert<"photos">,
-  "id" | "created_at" | "updated_at" | "photo_url"
-> & {
+export type CreatePhotoCommand = Omit<DbInsert<"photos">, "id" | "created_at" | "updated_at" | "photo_url"> & {
   photo_file?: File | Blob; // Added for multipart upload handling
 };
 
@@ -369,10 +366,7 @@ export interface AdminPhotosResponseDTO {
  * All fields are optional (partial update)
  */
 export type UpdatePhotoCommand = Partial<
-  Omit<
-    DbUpdate<"photos">,
-    "id" | "created_at" | "updated_at" | "photo_url" | "first_used_in_daily_date"
-  >
+  Omit<DbUpdate<"photos">, "id" | "created_at" | "updated_at" | "photo_url" | "first_used_in_daily_date">
 >;
 
 // =============================================================================

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePhotoSubmission } from "@/components/hooks/usePhotoSubmission";
 import { PhotoFileUpload } from "@/components/PhotoFileUpload";
 import { LocationPicker } from "@/components/LocationPicker";
@@ -10,8 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { PhotoAnalysisResult } from "@/lib/services/photo-analysis.service";
 
 interface PhotoSubmissionFormProps {
   userEmail?: string;
@@ -36,6 +37,11 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
   } = usePhotoSubmission(userEmail);
 
   const formTopRef = useRef<HTMLDivElement>(null);
+
+  // AI Analysis state
+  const [aiAnalysis, setAiAnalysis] = useState<PhotoAnalysisResult | null>(null);
+  const [aiAnalyzing, setAiAnalyzing] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // Scroll to top when submission errors occur
   useEffect(() => {
@@ -74,6 +80,8 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
 
   const handleSubmitAnother = useCallback(() => {
     resetForm();
+    setAiAnalysis(null);
+    setAiError(null);
   }, [resetForm]);
 
   const handleViewSubmissions = useCallback(() => {
@@ -94,6 +102,62 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
       window.history.back();
     }
   }, [formData, onCancel]);
+
+  // AI Analysis handler
+  const handleAnalyzeWithAI = useCallback(async () => {
+    if (!formData.photo_file) return;
+
+    setAiAnalyzing(true);
+    setAiError(null);
+
+    try {
+      // Create FormData for API request
+      const apiFormData = new FormData();
+      apiFormData.append("photo", formData.photo_file);
+
+      // Call the API endpoint
+      const response = await fetch("/api/analyze-photo", {
+        method: "POST",
+        body: apiFormData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || "error" in result) {
+        setAiError(result.error || "Failed to analyze photo");
+        setAiAnalysis(null);
+      } else {
+        setAiAnalysis(result as PhotoAnalysisResult);
+        setAiError(null);
+
+        // Auto-fill form fields with AI suggestions
+        if (result.year) {
+          updateField("year_utc", result.year.toString());
+        }
+        if (result.description) {
+          updateField("description", result.description);
+        }
+        if (result.location) {
+          updateField("place", result.location);
+        }
+        if (result.competition) {
+          updateField("competition", result.competition);
+        }
+        if (result.tags && result.tags.length > 0) {
+          updateField("tags", result.tags);
+        }
+        if (result.stadium && !formData.event_name) {
+          // Suggest stadium name in event name if empty
+          updateField("event_name", result.stadium);
+        }
+      }
+    } catch (error) {
+      setAiError(error instanceof Error ? error.message : "Failed to analyze photo");
+      setAiAnalysis(null);
+    } finally {
+      setAiAnalyzing(false);
+    }
+  }, [formData.photo_file, formData.event_name, updateField]);
 
   // Show success modal
   if (submissionState.status === "success" && submissionState.result) {
@@ -150,6 +214,88 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
           error={validationErrors.photo_file}
           disabled={isSubmitting}
         />
+
+        {/* AI Analysis Section */}
+        {formData.photo_file && !isSubmitting && (
+          <div className="space-y-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAnalyzeWithAI}
+              disabled={aiAnalyzing}
+              className="w-full sm:w-auto"
+            >
+              {aiAnalyzing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Analyzing with AI...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Analyze with AI
+                </>
+              )}
+            </Button>
+
+            {/* AI Error */}
+            {aiError && (
+              <div className="flex items-start gap-2 p-3 rounded-md bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-900">
+                <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">{aiError}</p>
+              </div>
+            )}
+
+            {/* AI Results */}
+            {aiAnalysis && (
+              <div className="p-4 rounded-lg border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30 space-y-2">
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">AI Analysis Complete</p>
+                    <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                      The form has been pre-filled with AI suggestions. Please review and edit as needed.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Show detected info */}
+                <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-900 space-y-1.5 text-xs">
+                  <p className="font-medium text-blue-900 dark:text-blue-100">Detected Information:</p>
+                  {aiAnalysis.stadium && (
+                    <p className="text-blue-800 dark:text-blue-200">
+                      <span className="font-medium">Stadium:</span> {aiAnalysis.stadium}
+                    </p>
+                  )}
+                  {aiAnalysis.teams && aiAnalysis.teams.length > 0 && (
+                    <p className="text-blue-800 dark:text-blue-200">
+                      <span className="font-medium">Teams:</span> {aiAnalysis.teams.join(" vs ")}
+                    </p>
+                  )}
+                  {aiAnalysis.year && (
+                    <p className="text-blue-800 dark:text-blue-200">
+                      <span className="font-medium">Year:</span> {aiAnalysis.year}
+                    </p>
+                  )}
+                  {aiAnalysis.confidence && (
+                    <p className="text-blue-800 dark:text-blue-200">
+                      <span className="font-medium">Confidence:</span>{" "}
+                      <span
+                        className={cn(
+                          aiAnalysis.confidence === "high" && "text-green-600 dark:text-green-400",
+                          aiAnalysis.confidence === "medium" && "text-yellow-600 dark:text-yellow-400",
+                          aiAnalysis.confidence === "low" && "text-red-600 dark:text-red-400"
+                        )}
+                      >
+                        {aiAnalysis.confidence}
+                      </span>
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Required Fields */}

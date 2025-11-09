@@ -176,72 +176,79 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
     [lat]
   );
 
-  const handlePasteCoordinatesChange = useCallback((value: string) => {
-    setPasteCoords(value);
-    setPasteError(null);
+  const handlePasteCoordinatesChange = useCallback(
+    (value: string) => {
+      setPasteCoords(value);
+      setPasteError(null);
 
-    const trimmed = value.trim();
+      const trimmed = value.trim();
 
-    if (!trimmed) {
-      return;
-    }
-
-    // Try to match coordinates separated by comma, space, or both
-    const coordRegex = /^(-?\d+\.?\d*)\s*[,\s]\s*(-?\d+\.?\d*)$/;
-    const match = trimmed.match(coordRegex);
-
-    if (!match) {
-      // Don't show error while typing, only if pattern is close but invalid
-      if (trimmed.includes(',') || trimmed.includes(' ')) {
-        setPasteError("Invalid format. Use: latitude, longitude (e.g., 51.555, -0.108)");
+      if (!trimmed) {
+        return;
       }
-      return;
-    }
 
-    const parsedLat = parseFloat(match[1]);
-    const parsedLon = parseFloat(match[2]);
+      // Try to match coordinates separated by comma, space, or both
+      const coordRegex = /^(-?\d+\.?\d*)\s*[,\s]\s*(-?\d+\.?\d*)$/;
+      const match = trimmed.match(coordRegex);
 
-    // Validate ranges
-    if (isNaN(parsedLat) || isNaN(parsedLon)) {
-      setPasteError("Invalid numbers in coordinates");
-      return;
-    }
+      if (!match) {
+        // Don't show error while typing, only if pattern is close but invalid
+        if (trimmed.includes(",") || trimmed.includes(" ")) {
+          setPasteError("Invalid format. Use: latitude, longitude (e.g., 51.555, -0.108)");
+        }
+        return;
+      }
 
-    if (parsedLat < ValidationConstants.COORDINATES.LAT_MIN || parsedLat > ValidationConstants.COORDINATES.LAT_MAX) {
-      setPasteError(`Latitude must be between ${ValidationConstants.COORDINATES.LAT_MIN} and ${ValidationConstants.COORDINATES.LAT_MAX}`);
-      return;
-    }
+      const parsedLat = parseFloat(match[1]);
+      const parsedLon = parseFloat(match[2]);
 
-    if (parsedLon < ValidationConstants.COORDINATES.LON_MIN || parsedLon > ValidationConstants.COORDINATES.LON_MAX) {
-      setPasteError(`Longitude must be between ${ValidationConstants.COORDINATES.LON_MIN} and ${ValidationConstants.COORDINATES.LON_MAX}`);
-      return;
-    }
+      // Validate ranges
+      if (isNaN(parsedLat) || isNaN(parsedLon)) {
+        setPasteError("Invalid numbers in coordinates");
+        return;
+      }
 
-    // Format to 6 decimal places and update
-    const formattedLat = parsedLat.toFixed(6);
-    const formattedLon = parsedLon.toFixed(6);
+      if (parsedLat < ValidationConstants.COORDINATES.LAT_MIN || parsedLat > ValidationConstants.COORDINATES.LAT_MAX) {
+        setPasteError(
+          `Latitude must be between ${ValidationConstants.COORDINATES.LAT_MIN} and ${ValidationConstants.COORDINATES.LAT_MAX}`
+        );
+        return;
+      }
 
-    onChangeRef.current({
-      lat: formattedLat,
-      lon: formattedLon,
-    });
+      if (parsedLon < ValidationConstants.COORDINATES.LON_MIN || parsedLon > ValidationConstants.COORDINATES.LON_MAX) {
+        setPasteError(
+          `Longitude must be between ${ValidationConstants.COORDINATES.LON_MIN} and ${ValidationConstants.COORDINATES.LON_MAX}`
+        );
+        return;
+      }
 
-    // Update pin on map
-    updatePin(parsedLon, parsedLat, !disabledRef.current);
+      // Format to 6 decimal places and update
+      const formattedLat = parsedLat.toFixed(6);
+      const formattedLon = parsedLon.toFixed(6);
 
-    // Update last flyTo coords and fly to the location
-    lastFlyToCoords.current = { lat: parsedLat, lon: parsedLon };
-    if (mapRef.current) {
-      mapRef.current.flyTo({
-        center: [parsedLon, parsedLat],
-        zoom: 8,
+      onChangeRef.current({
+        lat: formattedLat,
+        lon: formattedLon,
       });
-    }
 
-    // Clear the paste input after successful parse
-    setPasteCoords("");
-    setPasteError(null);
-  }, [updatePin]);
+      // Update pin on map
+      updatePin(parsedLon, parsedLat, !disabledRef.current);
+
+      // Update last flyTo coords and fly to the location
+      lastFlyToCoords.current = { lat: parsedLat, lon: parsedLon };
+      if (mapRef.current) {
+        mapRef.current.flyTo({
+          center: [parsedLon, parsedLat],
+          zoom: 8,
+        });
+      }
+
+      // Clear the paste input after successful parse
+      setPasteCoords("");
+      setPasteError(null);
+    },
+    [updatePin]
+  );
 
   return (
     <div className="space-y-4 relative z-0">

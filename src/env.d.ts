@@ -27,6 +27,7 @@ interface ImportMetaEnv {
   readonly SUPABASE_URL: string;
   readonly SUPABASE_KEY: string;
   readonly OPENROUTER_API_KEY: string;
+  readonly GOOGLE_GEMINI_API_KEY: string;
   readonly CRON_SECRET: string;
 
   // Client-side (PUBLIC_ vars are bundled and safe to expose)
