@@ -289,7 +289,29 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
                       >
                         {aiAnalysis.confidence}
                       </span>
+                      {aiAnalysis.wikipediaEnriched && (
+                        <span className="ml-1 text-green-600 dark:text-green-400">(verified with Wikipedia)</span>
+                      )}
                     </p>
+                  )}
+                  {aiAnalysis.wikipediaSources && aiAnalysis.wikipediaSources.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-900">
+                      <p className="font-medium text-blue-900 dark:text-blue-100 mb-1">Wikipedia Sources:</p>
+                      <ul className="space-y-0.5">
+                        {aiAnalysis.wikipediaSources.map((source, index) => (
+                          <li key={index}>
+                            <a
+                              href={source}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 dark:text-blue-400 hover:underline"
+                            >
+                              {source.split("/wiki/")[1]?.replace(/_/g, " ") || source}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                 </div>
               </div>

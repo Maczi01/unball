@@ -27,22 +27,30 @@ GOOGLE_GEMINI_API_KEY=your_actual_api_key_here
 
 1. User uploads a photo in the submission form
 2. "Analyze with AI" button appears below the photo preview
-3. Click the button to trigger AI analysis (takes 2-5 seconds)
-4. Form fields are automatically filled with AI suggestions:
+3. Click the button to trigger AI analysis (takes 3-8 seconds)
+4. **Two-step analysis process:**
+   - **Step 1:** Gemini AI analyzes the image
+   - **Step 2:** Wikipedia verification for detected entities (stadium, teams, competition)
+5. Form fields are automatically filled with AI suggestions:
    - **Year** - Estimated based on image quality, kits, stadium features
-   - **Place/Location** - City, Country from stadium/context
-   - **Competition** - e.g., Premier League, Champions League, World Cup
+   - **Place/Location** - City, Country from stadium/context (enhanced with Wikipedia data)
+   - **Competition** - e.g., Premier League, Champions League, World Cup (verified against Wikipedia)
    - **Description** - Brief 1-2 sentence description of the scene
    - **Tags** - Relevant keywords (match-action, celebration, historic-moment, etc.)
-   - **Event Name** - Stadium name if detected
+   - **Event Name** - Stadium name if detected (verified against Wikipedia)
+6. Wikipedia sources are displayed as clickable links for verification
 
 ### AI Confidence Levels
 
 The AI provides a confidence rating for its analysis:
 
-- **High** - Very confident in the identification (visible jerseys, clear stadium, etc.)
-- **Medium** - Reasonably confident but some uncertainty
+- **High** - Very confident in the identification (visible jerseys, clear stadium, etc.) or verified with Wikipedia
+- **Medium** - Reasonably confident but some uncertainty, or partially verified with Wikipedia
 - **Low** - Rough estimates only, should be manually verified
+
+**Note:** Confidence levels are automatically upgraded when Wikipedia verification succeeds:
+- Low → Medium (if Wikipedia sources found)
+- Medium → High (if Wikipedia sources found)
 
 ### What Gets Detected
 
@@ -62,11 +70,13 @@ The AI provides a confidence rating for its analysis:
 
 ## Technical Details
 
-### Model
+### Models & APIs
 
-- Uses **Gemini 2.0 Flash Exp** model
-- Fast analysis (2-5 seconds typical)
+- **Gemini 2.0 Flash Exp** for image analysis
+- **Wikipedia API** for data verification and enrichment
+- Combined analysis takes 3-8 seconds typical
 - Cost-effective (~$0.001-0.003 per image with free tier)
+- Wikipedia API is completely free (no rate limits for reasonable use)
 
 ### Implementation
 
