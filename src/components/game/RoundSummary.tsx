@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { PhotoBreakdown } from "./PhotoBreakdown";
+import { motion } from "framer-motion";
+import { Award, CalendarDays, Compass, Home, MapPin, RefreshCw, Share2, Trophy, BarChart3 } from "lucide-react";
 import { NicknameInput } from "./NicknameInput";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,10 +19,16 @@ interface RoundSummaryProps {
   onSubmitWithNickname: (nickname: string, consent: boolean) => Promise<void>;
 }
 
+// Helper functions
+const fmt = (v: number): string => {
+  return Number.isFinite(v) ? v.toLocaleString() : "0";
+};
+
 export function RoundSummary({
   mode,
   results,
   totalScore,
+  totalTimeMs,
   isFirstSubmission,
   leaderboardRank,
   onViewLeaderboard,
@@ -38,15 +45,16 @@ export function RoundSummary({
   const showNicknameForm = isDailyMode && isFirstSubmission && !hasSubmitted;
   const showLeaderboardRank = isDailyMode && (hasSubmitted || !isFirstSubmission) && leaderboardRank !== undefined;
   const maxScore = results.length * 20000;
-  const percentage = (totalScore / maxScore) * 100;
+  const accuracy = Math.round((totalScore / maxScore) * 100);
+  const rounds = results.length;
 
   // Format time as MM:SS
-  // const formatTime = (ms: number) => {
-  //   const totalSeconds = Math.floor(ms / 1000);
-  //   const minutes = Math.floor(totalSeconds / 60);
-  //   const seconds = totalSeconds % 60;
-  //   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  // };
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   // Validate nickname
   const validateNickname = (value: string): NicknameValidation => {
@@ -82,21 +90,18 @@ export function RoundSummary({
 
   const handleNicknameChange = (value: string) => {
     setNickname(value);
-    // Clear error when user types
     if (nicknameError) {
       setNicknameError(null);
     }
   };
 
   const handleSubmit = async () => {
-    // Validate nickname
     const validation = validateNickname(nickname);
     if (!validation.isValid) {
       setNicknameError(validation.error || "Invalid nickname");
       return;
     }
 
-    // Check consent
     if (!consentGiven) {
       setNicknameError("You must agree to display your nickname on the leaderboard");
       return;
@@ -123,162 +128,252 @@ export function RoundSummary({
 
   // Get performance message
   const getPerformanceMessage = () => {
-    if (percentage >= 90) return "🏆 Outstanding Performance!";
-    if (percentage >= 75) return "🌟 Excellent Work!";
-    if (percentage >= 60) return "👏 Great Job!";
-    if (percentage >= 40) return "👍 Good Effort!";
-    return "📈 Room for Improvement!";
+    if (accuracy >= 90) return "Outstanding Performance!";
+    if (accuracy >= 75) return "Excellent Work!";
+    if (accuracy >= 60) return "Great Job!";
+    if (accuracy >= 40) return "Good Effort!";
+    return "Room for Improvement!";
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-8 text-white text-center">
-            <h1 className="text-4xl font-bold mb-2">Round Complete!</h1>
-            <p className="text-xl opacity-90">{getPerformanceMessage()}</p>
+    <div className="min-h-screen bg-gradient-to-b from-white to-sky-50 text-slate-900 dark:from-gray-900 dark:to-gray-800 dark:text-gray-100">
+      {/* Header band */}
+      <motion.section
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="overflow-hidden rounded-b-3xl bg-gradient-to-r from-sky-500 to-teal-400 text-white shadow-sm"
+      >
+        <div className="mx-auto max-w-6xl px-4 py-8 md:py-10">
+          <div className="text-3xl md:text-4xl font-semibold tracking-tight">Round Complete!</div>
+          <div className="mt-2 text-white/90 flex items-center gap-2">
+            <Trophy className="h-5 w-5" /> {mode === "daily" ? "Daily Challenge" : "Normal Mode"}
           </div>
-
-          {/* Content */}
-          <div className="p-6 md:p-8 space-y-6">
-            {/* Total score */}
-            <div className="max-w-md mx-auto">
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6 text-center border border-blue-200 dark:border-blue-800">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Total Score</p>
-                <p className="text-4xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">
-                  {totalScore.toLocaleString()}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                  out of {maxScore.toLocaleString()} ({percentage.toFixed(1)}%)
-                </p>
-              </div>
-            </div>
-
-            {/* Leaderboard rank (after submission) */}
-            {showLeaderboardRank && (
-              <div className="bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg p-6 text-center border-2 border-yellow-400 dark:border-yellow-600">
-                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  🎖️ You placed #{leaderboardRank} on today&#39;s leaderboard!
-                </p>
-              </div>
-            )}
-
-            {/* Photo breakdown */}
-            <div className="space-y-3">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Photo Breakdown</h2>
-              <div className="space-y-2">
-                {results.map((result, index) => (
-                  <PhotoBreakdown key={result.photo_id} result={result} index={index} />
-                ))}
-              </div>
-            </div>
-
-            {/* Nickname submission form (Daily, first attempt) */}
-            {showNicknameForm && (
-              <div className="space-y-4 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-800">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit to Leaderboard</h3>
-
-                <NicknameInput value={nickname} onChange={handleNicknameChange} error={nicknameError || undefined} />
-
-                {/* Consent checkbox */}
-                <div className="flex items-start gap-3 pt-2">
-                  <Checkbox
-                    id="consent"
-                    checked={consentGiven}
-                    onCheckedChange={(checked) => setConsentGiven(checked === true)}
-                    className="mt-1"
-                  />
-                  <label htmlFor="consent" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                    I agree to have my nickname displayed on the public leaderboard
-                  </label>
-                </div>
-
-                {/* Submit button */}
-                <Button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || !nickname || !consentGiven}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-                  size="lg"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit to Leaderboard"
-                  )}
-                </Button>
-              </div>
-            )}
-
-            {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              {showLeaderboardRank && (
-                <Button
-                  onClick={onViewLeaderboard}
-                  variant="default"
-                  size="lg"
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
-                  View Leaderboard
-                </Button>
-              )}
-
-              <Button onClick={onPlayAgain} variant="outline" size="lg" className="flex-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                Play Again
-              </Button>
-
-              <Button onClick={() => (window.location.href = "/")} variant="outline" size="lg" className="flex-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  />
-                </svg>
-                Home
-              </Button>
-            </div>
-          </div>
+          <div className="mt-3 text-lg text-white/95">🎯 {getPerformanceMessage()}</div>
         </div>
-      </div>
+      </motion.section>
+
+      <main className="mx-auto max-w-6xl px-4 py-8 md:py-12">
+        {/* Score + meta */}
+        {/*<section className="grid grid-cols-1 md:grid-cols-4 gap-4">*/}
+        <section className="">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="md:col-span-2 rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm p-6 text-center dark:bg-gray-800 dark:ring-gray-700"
+          >
+            <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Total Score</div>
+            <div className="mt-1 text-5xl font-semibold text-slate-900 dark:text-gray-100">{fmt(totalScore)}</div>
+            <div className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              out of {fmt(maxScore)} ({accuracy}%)
+            </div>
+            <div className="mt-4 h-2 w-full rounded-full bg-slate-100 overflow-hidden dark:bg-gray-700">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-sky-500 to-teal-400"
+                style={{ width: `${accuracy}%` }}
+              />
+            </div>
+          </motion.div>
+          {/*<InfoCard*/}
+          {/*  icon={<CalendarDays className="h-4 w-4 text-sky-600 dark:text-sky-400" />}*/}
+          {/*  label="Time"*/}
+          {/*  value={formatTime(totalTimeMs)}*/}
+          {/*  delay={0.45}*/}
+          {/*/>*/}
+          {/*<InfoCard*/}
+          {/*  icon={<Compass className="h-4 w-4 text-sky-600 dark:text-sky-400" />}*/}
+          {/*  label="Rounds"*/}
+          {/*  value={`${rounds}`}*/}
+          {/*  delay={0.5}*/}
+          {/*/>*/}
+        </section>
+
+        {/* Leaderboard rank (after submission) */}
+        {showLeaderboardRank && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.55 }}
+            className="mt-6 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-2xl p-6 text-center border-2 border-yellow-400 dark:border-yellow-600"
+          >
+            <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-2">
+              <Award className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+              You placed #{leaderboardRank} on today`&#39;`s leaderboard!
+            </p>
+          </motion.div>
+        )}
+
+        {/* Nickname submission form (Daily, first attempt) */}
+        {showNicknameForm && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.55 }}
+            className="mt-6 space-y-4 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border-2 border-blue-200 dark:border-blue-800"
+          >
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              Submit to Leaderboard
+            </h3>
+
+            <NicknameInput value={nickname} onChange={handleNicknameChange} error={nicknameError || undefined} />
+
+            {/* Consent checkbox */}
+            <div className="flex items-start gap-3 pt-2">
+              <Checkbox
+                id="consent"
+                checked={consentGiven}
+                onCheckedChange={(checked) => setConsentGiven(checked === true)}
+                className="mt-1"
+              />
+              <label htmlFor="consent" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                I agree to have my nickname displayed on the public leaderboard
+              </label>
+            </div>
+
+            {/* Submit button */}
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting || !nickname || !consentGiven}
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+              size="lg"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit to Leaderboard"
+              )}
+            </Button>
+          </motion.div>
+        )}
+
+        {/* 5-photo horizontal gallery */}
+        <section className="mt-10">
+          <motion.h2
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.6 }}
+            className="text-xl md:text-2xl font-semibold tracking-tight text-slate-900 dark:text-gray-100"
+          >
+            Your Photos
+          </motion.h2>
+          <div className="mt-4 overflow-x-auto">
+            <div className="min-w-[800px] grid grid-cols-5 gap-4 md:min-w-0 md:grid-cols-5">
+              {results.map((result, i) => (
+                <motion.div
+                  key={result.photo_id}
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.35, delay: 0.65 + i * 0.03 }}
+                  className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm overflow-hidden dark:bg-gray-800 dark:ring-gray-700"
+                >
+                  <img
+                    src={result.sources[0]?.url || ""}
+                    alt={result.place || "Photo"}
+                    className="h-40 w-full object-cover"
+                  />
+                  <div className="p-3 border-t border-slate-100 dark:border-gray-700">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium truncate flex items-center gap-1 text-slate-900 dark:text-gray-100">
+                          <MapPin className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400 flex-shrink-0" />
+                          {result.place || "Unknown"}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {fmt(result.km_error)} km away
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold text-slate-900 dark:text-gray-100">
+                          {fmt(result.total_score)}
+                        </div>
+                        <div className="text-[11px] text-gray-500 dark:text-gray-400">points</div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Actions */}
+        <section className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <motion.button
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.9 }}
+            onClick={onPlayAgain}
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-sky-600 text-white font-medium hover:bg-sky-700 transition-colors dark:bg-sky-600 dark:hover:bg-sky-700"
+          >
+            <RefreshCw className="h-4 w-4" /> Play Again
+          </motion.button>
+          {showLeaderboardRank && (
+            <motion.button
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.95 }}
+              onClick={onViewLeaderboard}
+              className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-sky-200 dark:border-sky-700 text-sky-700 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 font-medium transition-colors"
+            >
+              <BarChart3 className="h-4 w-4" /> View Leaderboard
+            </motion.button>
+          )}
+          <motion.button
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 1.0 }}
+            onClick={() => (window.location.href = "/")}
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-800 font-medium transition-colors"
+          >
+            <Home className="h-4 w-4" /> Home
+          </motion.button>
+          <motion.button
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 1.0 }}
+            onClick={() => (window.location.href = "/")}
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-800 font-medium transition-colors"
+          >
+            <Share2 className="h-4 w-4" /> Share Results
+          </motion.button>
+        </section>
+      </main>
+
+      <footer className="py-10 text-center text-sm text-gray-600 dark:text-gray-400">
+        © {new Date().getFullYear()} Photo Guesser
+      </footer>
     </div>
+  );
+}
+
+function InfoCard({
+  icon,
+  label,
+  value,
+  delay,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  delay: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay }}
+      className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm p-6 dark:bg-gray-800 dark:ring-gray-700"
+    >
+      <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 flex items-center gap-2">
+        {icon} {label}
+      </div>
+      <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-gray-100">{value}</div>
+    </motion.div>
   );
 }
