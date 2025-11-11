@@ -197,80 +197,6 @@ const morePhotos = [
 // Combine all photos for insertion into database
 const allPhotos = [...photos, ...morePhotos];
 
-// Define photo sources (mapping photo_id to source URLs)
-const photoSources = [
-  {
-    photo_id: "11111111-1111-1111-1111-111111111111",
-    url: "https://example.com/source1",
-    title: "Test Source 1",
-    source_type: "website",
-    position: 1,
-  },
-  {
-    photo_id: "22222222-2222-2222-2222-222222222222",
-    url: "https://example.com/source2",
-    title: "Test Source 2",
-    source_type: "website",
-    position: 1,
-  },
-  {
-    photo_id: "33333333-3333-3333-3333-333333333333",
-    url: "https://example.com/source3",
-    title: "Test Source 3",
-    source_type: "website",
-    position: 1,
-  },
-  {
-    photo_id: "44444444-4444-4444-4444-444444444444",
-    url: "https://example.com/source4",
-    title: "Test Source 4",
-    source_type: "website",
-    position: 1,
-  },
-  {
-    photo_id: "55555555-5555-5555-5555-555555555555",
-    url: "https://example.com/source5",
-    title: "Test Source 5",
-    source_type: "website",
-    position: 1,
-  },
-  {
-    photo_id: "11111116-1111-1111-1111-111111111111",
-    url: "https://en.wikipedia.org/wiki/1966_FIFA_World_Cup_Final",
-    title: "Wikipedia",
-    source_type: "website",
-    position: 1,
-  },
-  {
-    photo_id: "22222226-2222-2222-2222-222222222222",
-    url: "https://en.wikipedia.org/wiki/Argentina_v_England_(1986_FIFA_World_Cup)",
-    title: "Wikipedia",
-    source_type: "website",
-    position: 1,
-  },
-  {
-    photo_id: "33333336-3333-3333-3333-333333333333",
-    url: "https://en.wikipedia.org/wiki/1999_UEFA_Champions_League_Final",
-    title: "Wikipedia",
-    source_type: "website",
-    position: 1,
-  },
-  {
-    photo_id: "44444446-4444-4444-4444-444444444444",
-    url: "https://en.wikipedia.org/wiki/2005_UEFA_Champions_League_Final",
-    title: "Wikipedia",
-    source_type: "website",
-    position: 1,
-  },
-  {
-    photo_id: "55555565-aaaa-bbbb-cccc-666666666666",
-    url: "https://en.wikipedia.org/wiki/2022_FIFA_World_Cup_Final",
-    title: "Wikipedia",
-    source_type: "website",
-    position: 1,
-  },
-];
-
 async function seedData() {
   // eslint-disable-next-line no-console
   console.log("🌱 Starting seed...\n");
@@ -289,21 +215,7 @@ async function seedData() {
   // eslint-disable-next-line no-console
   console.log(`✅ Inserted ${photosData.length} photos\n`);
 
-  // 2. Insert photo sources
-  // eslint-disable-next-line no-console
-  console.log(`🔗 Inserting ${photoSources.length} photo sources...`);
-  const { data: sourcesData, error: sourcesError } = await supabase.from("photo_sources").insert(photoSources).select();
-
-  if (sourcesError) {
-    // eslint-disable-next-line no-console
-    console.error("❌ Error inserting photo sources:", sourcesError);
-    process.exit(1);
-  }
-
-  // eslint-disable-next-line no-console
-  console.log(`✅ Inserted ${sourcesData.length} photo sources\n`);
-
-  // 3. Create daily set for today
+  // 2. Create daily set for today
   const today = new Date().toISOString().split("T")[0];
   // eslint-disable-next-line no-console
   console.log(`📅 Creating daily set for ${today}...`);
@@ -327,7 +239,7 @@ async function seedData() {
   // eslint-disable-next-line no-console
   console.log(`✅ Created daily set: ${dailySetData.id}\n`);
 
-  // 4. Link ONLY FIRST 5 photos to daily set (positions 1-5)
+  // 3. Link ONLY FIRST 5 photos to daily set (positions 1-5)
   // eslint-disable-next-line no-console
   console.log("🔗 Linking first 5 photos to daily set...");
 
@@ -348,7 +260,7 @@ async function seedData() {
   // eslint-disable-next-line no-console
   console.log(`✅ Linked ${linkData.length} photos to daily set\n`);
 
-  // 5. Verify the data
+  // 4. Verify the data
   // eslint-disable-next-line no-console
   console.log("🔍 Verifying data...");
 

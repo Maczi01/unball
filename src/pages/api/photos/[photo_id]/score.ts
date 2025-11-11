@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // Fetch photo data from database
     const { data: photo, error: dbError } = await locals.supabase
       .from("photos")
-      .select("lat, lon, description, place, license, credit")
+      .select("lat, lon, description, place, license, credit, photo_url")
       .eq("id", photo_id)
       .single();
 
@@ -75,18 +75,6 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
           },
         }
       );
-    }
-
-    // Fetch photo sources
-    const { data: sources, error: sourcesError } = await locals.supabase
-      .from("photo_sources")
-      .select("id, url, title, source_type, position")
-      .eq("photo_id", photo_id)
-      .order("position", { ascending: true });
-
-    if (sourcesError) {
-      // eslint-disable-next-line no-console
-      console.error("[POST /api/photos/:photo_id/score] Error fetching sources:", sourcesError);
     }
 
     // Fetch photo more info
@@ -108,6 +96,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     const result: PhotoScoreResultDTO = {
       photo_id,
+      photo_url: photo.photo_url,
       location_score: locationScore,
       time_score: 0, // No longer scoring time/year
       total_score: totalScore,
@@ -119,11 +108,19 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       event_name: "", // Removed from schema
       description: photo.description,
       place: photo.place,
-      sources: sources || [],
       more_info: moreInfo || [],
       license: photo.license,
       credit: photo.credit,
     };
+
+    // export interface PhotoMoreInfoDTO {
+    //   id?: string;
+    //   info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
+    //   url: string;
+    //   title?: string | null;
+    //   description?: string | null;
+    //   position: number;
+    // }
 
     return new Response(JSON.stringify(result), {
       status: 200,

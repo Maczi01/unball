@@ -77,24 +77,13 @@ export interface CalculateScoreCommand {
 }
 
 /**
- * Photo source information
- * Maps to photo_sources table
- */
-export interface PhotoSourceDTO {
-  id?: string;
-  url: string;
-  title?: string | null;
-  source_type?: string | null;
-  position: number;
-}
-
-/**
  * Photo additional information (videos, articles, etc.)
  * Maps to photo_more_info table
  */
 export interface PhotoMoreInfoDTO {
   id?: string;
-  info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
+  // info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
+  info_type: string;
   url: string;
   title?: string | null;
   description?: string | null;
@@ -107,6 +96,7 @@ export interface PhotoMoreInfoDTO {
  */
 export interface PhotoScoreResultDTO {
   photo_id: string;
+  photo_url: string;
   location_score: number;
   time_score: number;
   total_score: number;
@@ -118,7 +108,6 @@ export interface PhotoScoreResultDTO {
   event_name: string;
   description: string | null;
   place: string | null;
-  sources: PhotoSourceDTO[];
   more_info: PhotoMoreInfoDTO[];
   license: string;
   credit: string;
@@ -302,7 +291,6 @@ export type AnalyticsEventResponseDTO = Pick<DbTable<"analytics_events">, "creat
  */
 export type PhotoCreditDTO = Pick<DbTable<"photos">, "event_name" | "license" | "credit" | "year_utc"> & {
   photo_id: string; // Derived from photos.id
-  sources: PhotoSourceDTO[];
 };
 
 /**
@@ -662,7 +650,6 @@ export interface PhotoSubmissionFormData {
   lat: string; // String in input, converts to number for API
   lon: string; // String in input, converts to number for API
   description: string;
-  sources: { url: string; title: string; source_type: string }[];
   more_info: {
     info_type: "youtube" | "video" | "article" | "interview" | "documentary" | "other";
     url: string;

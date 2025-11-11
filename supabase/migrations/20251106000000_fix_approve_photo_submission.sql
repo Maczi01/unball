@@ -1,12 +1,12 @@
 -- =====================================================================
 -- Migration: Fix approve_photo_submission function
 -- Created: 2025-11-06
--- Description: Updates approve_photo_submission to work with refactored
---              photo_sources table instead of photos.source_url column
+-- Updated: 2025-11-11
+-- Description: Updates approve_photo_submission function
 --
 -- Changes:
 --   - Remove source_url from photos INSERT (column no longer exists)
---   - Add source_url insertion into photo_sources table
+--   - Remove source_url insertion into photo_sources table (table removed)
 -- =====================================================================
 
 -- Drop the existing function
@@ -61,16 +61,6 @@ BEGIN
     set_daily_eligible
   )
   RETURNING id INTO new_photo_id;
-
-  -- Insert source_url into photo_sources table if it exists
-  IF COALESCE((metadata_overrides->>'source_url')::TEXT, submission_record.source_url) IS NOT NULL THEN
-    INSERT INTO photo_sources (photo_id, url, position)
-    VALUES (
-      new_photo_id,
-      COALESCE((metadata_overrides->>'source_url')::TEXT, submission_record.source_url),
-      1
-    );
-  END IF;
 
   -- Update submission status and link to approved photo
   UPDATE photo_submissions

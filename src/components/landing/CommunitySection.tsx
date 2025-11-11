@@ -19,12 +19,19 @@ export default function CommunitySection() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {communityPhotos.map((src, i) => (
           <div key={i} className="group relative overflow-hidden rounded-xl bg-white ring-1 ring-slate-100">
-            <img src={src} alt="travel snap" className="h-40 md:h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+            <img
+              src={src}
+              alt="travel snap"
+              className="h-40 md:h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
           </div>
         ))}
       </div>
       <div className="text-center mt-8">
-        <a href="/upload" className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-sky-200 text-sky-700 hover:bg-sky-50 font-medium">
+        <a
+          href="/upload"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-sky-200 text-sky-700 hover:bg-sky-50 font-medium"
+        >
           <Upload className="h-4 w-4" /> Share your snap
         </a>
       </div>

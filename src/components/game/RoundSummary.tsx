@@ -273,7 +273,7 @@ export function RoundSummary({
                   className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm overflow-hidden dark:bg-gray-800 dark:ring-gray-700"
                 >
                   <img
-                    src={result.sources[0]?.url || ""}
+                    src={result.photo_url}
                     alt={result.place || "Photo"}
                     className="h-40 w-full object-cover"
                   />

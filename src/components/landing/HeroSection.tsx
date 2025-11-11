@@ -74,8 +74,15 @@ export default function HeroSection() {
           className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4"
         >
           {heroImages.map((img, i) => (
-            <div key={i} className="group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100">
-              <img src={img.src} alt={img.alt} className="h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+            <div
+              key={i}
+              className="group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100"
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
               <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/50 to-transparent text-white">
                 <div className="text-sm opacity-90">{img.caption}</div>
               </div>

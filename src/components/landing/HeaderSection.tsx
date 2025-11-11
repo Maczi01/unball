@@ -11,13 +11,26 @@ export default function HeaderSection() {
           <span className="font-semibold text-lg tracking-tight">Snaptrip</span>
         </a>
         <nav className="hidden sm:flex items-center gap-6 text-sm text-gray-600">
-          <a className="hover:text-gray-900" href="#how">How it works</a>
-          <a className="hover:text-gray-900" href="#modes">Modes</a>
-          <a className="hover:text-gray-900" href="#community">Community</a>
+          <a className="hover:text-gray-900" href="#how">
+            How it works
+          </a>
+          <a className="hover:text-gray-900" href="#modes">
+            Modes
+          </a>
+          <a className="hover:text-gray-900" href="#community">
+            Community
+          </a>
         </nav>
         <div className="flex items-center gap-2">
-          <a href="/login" className="px-3 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Log in</a>
-          <a href="/signup" className="px-3 py-2 rounded-xl text-sm font-medium bg-sky-600 text-white hover:bg-sky-700 shadow-sm">Sign up</a>
+          <a href="/login" className="px-3 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">
+            Log in
+          </a>
+          <a
+            href="/signup"
+            className="px-3 py-2 rounded-xl text-sm font-medium bg-sky-600 text-white hover:bg-sky-700 shadow-sm"
+          >
+            Sign up
+          </a>
         </div>
       </div>
     </header>

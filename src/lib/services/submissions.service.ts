@@ -122,7 +122,7 @@ export async function submitDailyChallenge(
     const photoIds = guesses.map((g) => g.photo_id);
     const { data: photos, error: photosError } = await supabase
       .from("photos")
-      .select("id, lat, lon, year_utc, event_name, description, place, license, credit")
+      .select("id, lat, lon, year_utc, event_name, description, place, license, credit, photo_url")
       .in("id", photoIds);
 
     if (photosError) {
@@ -131,18 +131,6 @@ export async function submitDailyChallenge(
 
     if (!photos || photos.length !== guesses.length) {
       throw new Error("INVALID_PHOTO_IDS");
-    }
-
-    // Fetch photo sources for all photos
-    const { data: allSources, error: sourcesError } = await supabase
-      .from("photo_sources")
-      .select("id, photo_id, url, title, source_type, position")
-      .in("photo_id", photoIds)
-      .order("position", { ascending: true });
-
-    if (sourcesError) {
-      // eslint-disable-next-line no-console
-      console.error("[Submissions Service] Error fetching sources:", sourcesError);
     }
 
     // Fetch photo more info for all photos
@@ -157,15 +145,7 @@ export async function submitDailyChallenge(
       console.error("[Submissions Service] Error fetching more info:", moreInfoError);
     }
 
-    // Group sources and more info by photo_id
-    const sourcesByPhotoId = new Map<string, typeof allSources>();
-    allSources?.forEach((source) => {
-      if (!sourcesByPhotoId.has(source.photo_id)) {
-        sourcesByPhotoId.set(source.photo_id, []);
-      }
-      sourcesByPhotoId.get(source.photo_id)?.push(source);
-    });
-
+    // Group more info by photo_id
     const moreInfoByPhotoId = new Map<string, typeof allMoreInfo>();
     allMoreInfo?.forEach((info) => {
       if (!moreInfoByPhotoId.has(info.photo_id)) {
@@ -206,6 +186,7 @@ export async function submitDailyChallenge(
 
       return {
         photo_id: guess.photo_id,
+        photo_url: correctPhoto.photo_url,
         location_score: locationScore,
         time_score: timeScore,
         total_score: locationScore + timeScore,
@@ -217,7 +198,6 @@ export async function submitDailyChallenge(
         event_name: correctPhoto.event_name,
         description: correctPhoto.description,
         place: correctPhoto.place,
-        sources: sourcesByPhotoId.get(guess.photo_id) || [],
         more_info: moreInfoByPhotoId.get(guess.photo_id) || [],
         license: correctPhoto.license,
         credit: correctPhoto.credit,
