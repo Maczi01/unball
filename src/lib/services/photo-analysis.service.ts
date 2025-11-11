@@ -77,10 +77,8 @@ Return ONLY valid JSON, no additional text.`;
     const response = await result.response;
     const text = response.text();
 
-    // Try to extract JSON from the response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      // If no JSON found, return raw response
       return {
         confidence: "low",
         description: text,
@@ -90,7 +88,6 @@ Return ONLY valid JSON, no additional text.`;
 
     const analysisData = JSON.parse(jsonMatch[0]);
 
-    // Validate and structure the response
     const result_: PhotoAnalysisResult = {
       confidence: analysisData.confidence || "medium",
       rawResponse: text,
@@ -110,7 +107,6 @@ Return ONLY valid JSON, no additional text.`;
     }
     if (analysisData.description) result_.description = analysisData.description;
 
-    // Enrich with Wikipedia data
     const enrichedResult = await enrichWithWikipedia(result_);
 
     return enrichedResult;
@@ -152,7 +148,7 @@ async function searchWikipedia(query: string): Promise<{ title: string; extract:
 
     return {
       title: pageTitle,
-      extract: extract.substring(0, 500), // First 500 chars
+      extract: extract.substring(0, 500),
       url: `https://en.wikipedia.org/wiki/${encodeURIComponent(pageTitle.replace(/ /g, "_"))}`,
     };
   } catch (error) {

@@ -15,7 +15,7 @@ export const GET: APIRoute = async ({ locals }) => {
     // Fetch 5 random photos from the photos_metadata view
     const { data: photos, error: dbError } = await locals.supabase
       .from("photos_metadata")
-      .select("id, photo_url, competition, place, tags")
+      .select("id, photo_url, place, tags")
       .limit(100); // Get a larger pool to randomize from
 
     if (dbError) {
@@ -63,7 +63,6 @@ export const GET: APIRoute = async ({ locals }) => {
         photo_id: photo.id!,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         photo_url: photo.photo_url!,
-        competition: photo.competition,
         place: photo.place,
         tags: photo.tags,
       })),

@@ -42,7 +42,6 @@ export type DbUpdate<T extends keyof Database["public"]["Tables"]> = Database["p
 export interface NormalRoundPhotoDTO {
   photo_id: string; // Renamed from 'id' for consistency
   photo_url: string;
-  competition: string | null;
   place: string | null;
   tags: string[] | null;
 }

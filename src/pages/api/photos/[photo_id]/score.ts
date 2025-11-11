@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import type { PhotoScoreResultDTO } from "@/types";
-import { calculateDistance, calculateLocationScore, calculateTimeScore } from "@/lib/utils/scoreCalculation";
+import { calculateDistance, calculateLocationScore } from "@/lib/utils/scoreCalculation";
 
 export const prerender = false;
 
@@ -34,14 +34,14 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     // Parse request body
     const body = await request.json();
-    const { guessed_lat, guessed_lon, guessed_year } = body;
+    const { guessed_lat, guessed_lon } = body;
 
     // Validate input
-    if (typeof guessed_lat !== "number" || typeof guessed_lon !== "number" || typeof guessed_year !== "number") {
+    if (typeof guessed_lat !== "number" || typeof guessed_lon !== "number") {
       return new Response(
         JSON.stringify({
           error: "Invalid guess data",
-          details: ["guessed_lat, guessed_lon, and guessed_year must be numbers"],
+          details: ["guessed_lat and guessed_lon must be numbers"],
           timestamp: new Date().toISOString(),
         }),
         {
@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // Fetch photo data from database
     const { data: photo, error: dbError } = await locals.supabase
       .from("photos")
-      .select("lat, lon, year_utc, event_name, description, place, license, credit")
+      .select("lat, lon, description, place, license, credit")
       .eq("id", photo_id)
       .single();
 
@@ -103,23 +103,20 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     // Calculate score
     const kmError = calculateDistance(guessed_lat, guessed_lon, photo.lat, photo.lon);
-
-    const yearError = Math.abs(guessed_year - photo.year_utc);
     const locationScore = calculateLocationScore(kmError);
-    const timeScore = calculateTimeScore(yearError);
-    const totalScore = locationScore + timeScore;
+    const totalScore = locationScore;
 
     const result: PhotoScoreResultDTO = {
       photo_id,
       location_score: locationScore,
-      time_score: timeScore,
+      time_score: 0, // No longer scoring time/year
       total_score: totalScore,
       km_error: Math.round(kmError * 10) / 10,
-      year_error: yearError,
+      year_error: 0, // No longer calculating year error
       correct_lat: photo.lat,
       correct_lon: photo.lon,
-      correct_year: photo.year_utc,
-      event_name: photo.event_name,
+      correct_year: 0, // No longer using year
+      event_name: "", // Removed from schema
       description: photo.description,
       place: photo.place,
       sources: sources || [],

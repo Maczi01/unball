@@ -4,11 +4,10 @@ import { ValidationConstants } from "@/types";
 
 /**
  * Custom hook for managing current photo guess state
- * Handles pin placement and year selection
+ * Handles pin placement on the map
  */
 export function usePhotoGuess() {
   const [pin, setPin] = useState<PinLocation | null>(null);
-  const [year, setYear] = useState<number | null>(null);
 
   const setPinLocation = useCallback((lat: number, lon: number) => {
     // Validate coordinates
@@ -25,30 +24,17 @@ export function usePhotoGuess() {
     }
   }, []);
 
-  const setYearValue = useCallback((newYear: number) => {
-    // Validate year range
-    if (newYear >= ValidationConstants.YEAR.MIN && newYear <= ValidationConstants.YEAR.MAX) {
-      setYear(newYear);
-    } else {
-      // eslint-disable-next-line no-console
-      console.error("Invalid year:", newYear);
-    }
-  }, []);
-
   const clearGuess = useCallback(() => {
     setPin(null);
-    setYear(null);
   }, []);
 
   const isComplete = useMemo(() => {
-    return pin !== null && year !== null;
-  }, [pin, year]);
+    return pin !== null;
+  }, [pin]);
 
   return {
     pin,
-    year,
     setPin: setPinLocation,
-    setYear: setYearValue,
     clearGuess,
     isComplete,
   };

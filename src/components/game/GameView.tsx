@@ -3,7 +3,6 @@ import { GameHeader } from "./GameHeader";
 import { AlreadySubmittedNotice } from "./AlreadySubmittedNotice";
 import { PhotoDisplay } from "./PhotoDisplay";
 import { MapComponent } from "./MapComponent";
-import { YearPicker } from "./YearPicker";
 import { SubmitButton } from "./SubmitButton";
 import { FeedbackSection } from "./FeedbackSection";
 import { RoundSummary } from "./RoundSummary";
@@ -137,7 +136,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
     initializeGameState(initial.mode, initial.initialData, initial.isAlreadySubmitted)
   );
 
-  const { pin, year, setPin, setYear, clearGuess, isComplete } = usePhotoGuess();
+  const { pin, setPin, clearGuess, isComplete } = usePhotoGuess();
   const { elapsedMs } = useGameTimer(mode === "daily");
   const { deviceToken, isStorageAvailable } = useDeviceToken();
   const { hasSubmitted } = useSubmissionCheck(mode, deviceToken);
@@ -153,7 +152,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
 
   // Handle guess submission
   const handleSubmitGuess = useCallback(async () => {
-    if (!pin || year === null || !currentPhoto) return;
+    if (!pin || !currentPhoto) return;
 
     dispatch({ type: "SET_LOADING", payload: true });
 
@@ -161,7 +160,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       photo_id: currentPhoto.photoData.photo_id,
       guessed_lat: pin.lat,
       guessed_lon: pin.lon,
-      guessed_year: year,
+      guessed_year: 0, // Year is no longer used, but keeping for API compatibility
     };
 
     try {
@@ -201,7 +200,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
         },
       });
     }
-  }, [pin, year, currentPhoto, clearGuess]);
+  }, [pin, currentPhoto, clearGuess]);
 
   // Handle next photo
   const handleNextPhoto = useCallback(() => {
@@ -362,9 +361,6 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
                 totalPhotos={gameState.photos.length}
               />
             </div>
-
-            {/* Year picker */}
-            <YearPicker selectedYear={year} onYearChange={setYear} disabled={false} />
 
             {/* Submit button */}
             <SubmitButton isDisabled={!isComplete} isLoading={gameState.isLoading} onClick={handleSubmitGuess} />

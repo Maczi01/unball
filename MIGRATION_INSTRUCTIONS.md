@@ -1,3 +1,4 @@
+
 # Migration Instructions
 
 This guide explains how to apply the photo_submissions migration and regenerate TypeScript types.

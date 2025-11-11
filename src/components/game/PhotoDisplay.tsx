@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { DailySetPhotoDTO, NormalRoundPhotoDTO } from "@/types";
 
 interface PhotoDisplayProps {
@@ -11,12 +11,21 @@ interface PhotoDisplayProps {
 export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: PhotoDisplayProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const handleImageLoad = () => {
     setIsLoading(false);
     setHasError(false);
     onLoad?.();
   };
+
+  // Check if image is already loaded (cached)
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalHeight !== 0) {
+      handleImageLoad();
+    }
+  }, [photo.photo_url]);
 
   const handleImageError = () => {
     setIsLoading(false);
@@ -88,9 +97,10 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
         {/* Actual image */}
         {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
         <img
+          ref={imgRef}
           data-photo-id={photo.photo_id}
           src={photo.photo_url}
-          alt={`Football photo ${currentIndex + 1} of ${totalPhotos}${photo.place ? ` from ${photo.place}` : ""}`}
+          alt={`Photo ${currentIndex + 1} of ${totalPhotos}${photo.place ? ` from ${photo.place}` : ""}`}
           className={`w-full h-full object-cover transition-opacity duration-300 ${
             isLoading ? "opacity-0" : "opacity-100"
           }`}

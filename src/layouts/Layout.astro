@@ -27,7 +27,6 @@ const { user } = Astro.locals;
     <title>{title}</title>
   </head>
   <body>
-    {showNavigation && <Navigation user={user} />}
     <main>
       <slot />
     </main>

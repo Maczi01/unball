@@ -1,5 +1,5 @@
-import { ScoreCard } from "./ScoreCard";
-import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { MapPin, Compass, Award, ArrowRight, Link as LinkIcon } from "lucide-react";
 import { MapComponent } from "./MapComponent";
 import type { PhotoScoreResultDTO } from "@/types";
 
@@ -13,6 +13,11 @@ interface FeedbackSectionProps {
   photoUrl: string;
 }
 
+// Helper functions
+const fmt = (v: number): string => {
+  return Number.isFinite(v) ? v.toLocaleString() : "0";
+};
+
 export function FeedbackSection({
   result,
   runningTotal,
@@ -22,331 +27,300 @@ export function FeedbackSection({
   userGuessPin,
   photoUrl,
 }: FeedbackSectionProps) {
+  const progress = Math.min(100, Math.round((currentPhoto / totalPhotos) * 100));
   const isLastPhoto = currentPhoto === totalPhotos;
-  const maxTotalScore = totalPhotos * 20000;
-  const photosCompleted = currentPhoto;
-
-  // Calculate percentage for running total
-  const percentage = (runningTotal / (photosCompleted * 20000)) * 100;
-
-  // Celebration message based on score
-  const getCelebrationMessage = () => {
-    const photoPercentage = (result.total_score / 20000) * 100;
-    if (photoPercentage >= 90) return "🎉 Incredible! Almost perfect!";
-    if (photoPercentage >= 75) return "🌟 Excellent guess!";
-    if (photoPercentage >= 50) return "👍 Good effort!";
-    return "📍 Keep trying!";
-  };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-4 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Photo {currentPhoto} Results</h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {photosCompleted} of {totalPhotos} photos completed
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-600 dark:text-gray-400">Running Total</div>
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">
-                {runningTotal.toLocaleString()}
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-to-b from-white to-sky-50 text-slate-900 dark:from-gray-900 dark:to-gray-800 dark:text-gray-100">
+      <Header runningTotal={runningTotal} />
+
+      <main className="mx-auto max-w-6xl px-4 py-8 md:py-12">
+        <ScoreBanner points={result.total_score} distanceKm={result.km_error} />
+
+        <section className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <PhotoCard src={photoUrl} />
+          <MapCard
+            userPin={userGuessPin}
+            correctPin={{ lat: result.correct_lat, lon: result.correct_lon }}
+            kmError={result.km_error}
+          />
+        </section>
+
+        <section className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <DetailsCard result={result} />
+          <div className="space-y-6">
+            <ProgressCard
+              progress={progress}
+              roundIndex={currentPhoto}
+              totalRounds={totalPhotos}
+              runningTotal={runningTotal}
+            />
+            <ActionsCard onNext={onNext} isLastPhoto={isLastPhoto} />
           </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+function Header({ runningTotal }: { runningTotal: number }) {
+  return (
+    <header className="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/70 border-b border-slate-100 dark:bg-gray-900/60 dark:border-gray-700">
+      <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+        <a href="/" className="font-semibold tracking-tight text-slate-900 dark:text-gray-100">
+          Photo Guesser
+        </a>
+        <div className="text-sm text-gray-600 dark:text-gray-400">
+          Running total: <span className="font-semibold text-sky-700 dark:text-sky-400">{fmt(runningTotal)}</span>
         </div>
       </div>
+    </header>
+  );
+}
 
-      {/* Main content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-7xl mx-auto p-4 space-y-4">
-          {/* Celebration message with score - more compact */}
-          <div className="text-center bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg py-4 px-6 shadow-lg">
-            <p className="text-xl font-bold text-white mb-1" id="feedback-title">
-              {getCelebrationMessage()}
-            </p>
-            <p className="text-4xl font-black text-white tabular-nums">{result.total_score.toLocaleString()} points</p>
-            <p className="text-sm text-blue-100 mt-1">out of 20,000 possible</p>
-          </div>
-
-          {/* Two column layout: Photo & Map - more compact */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Left: Photo */}
-            <div className="space-y-3">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                <img src={photoUrl} alt="Football match" className="w-full h-auto max-h-[300px] object-contain" />
-              </div>
-            </div>
-
-            {/* Right: Map with both pins */}
-            <div>
-              <div className="h-[300px] lg:h-[380px]">
-                <MapComponent
-                  userPin={userGuessPin}
-                  correctPin={{ lat: result.correct_lat, lon: result.correct_lon }}
-                  showFeedback={true}
-                  kmError={result.km_error}
-                  onPinPlace={() => {
-                    // eslint-disable-next-line no-console
-                    console.log("Pin moved");
-                  }}
-                  onPinMove={() => {
-                    // eslint-disable-next-line no-console
-                    console.log("Pin moved");
-                  }}
-                  className="h-full rounded-lg shadow-lg"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Photo Info section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-purple-600 dark:text-purple-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              Photo Information
-            </h3>
-
-            <div className="space-y-4">
-              {/* Event Details */}
-              <div>
-                <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{result.event_name}</h4>
-                {result.description && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{result.description}</p>
-                )}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    <span>Year: {result.correct_year}</span>
-                  </div>
-                  {result.place && (
-                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                      <span>Place: {result.place}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Photo Credit */}
-              <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Photo Attribution</h4>
-                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <p>
-                    <span className="font-medium">Credit:</span> {result.credit}
-                  </p>
-                  <p>
-                    <span className="font-medium">License:</span> {result.license}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* More Info section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-blue-600 dark:text-blue-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              More Information
-            </h3>
-
-            <div className="space-y-4">
-              {/* Source URL - YouTube or other links */}
-              {result.source_url ? (
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Watch Video</h4>
-                  <a
-                    href={result.source_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
-                    </svg>
-                    Watch on YouTube
-                  </a>
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600 mb-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    No additional video content available for this match.
-                  </p>
-                </div>
-              )}
-
-              {/* Additional resources placeholder */}
-              <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                  Learn more about this historic football moment and relive the action through archived footage and
-                  highlights.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Score card */}
-          <ScoreCard result={result} animate={true} />
-
-          {/* Running total progress */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Round Progress</h4>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {photosCompleted} of {totalPhotos} photos
-                </span>
-              </div>
-
-              {/* Progress bar */}
-              <div className="space-y-2">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
-                    style={{ width: `${(photosCompleted / totalPhotos) * 100}%` }}
-                    role="progressbar"
-                    aria-valuenow={photosCompleted}
-                    aria-valuemin={0}
-                    aria-valuemax={totalPhotos}
-                  />
-                </div>
-
-                {/* Running total score */}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Total Score</span>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">
-                      {runningTotal.toLocaleString()}
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      out of {maxTotalScore.toLocaleString()} ({percentage.toFixed(1)}%)
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+function ScoreBanner({ points, distanceKm }: { points: number; distanceKm: number }) {
+  const title =
+    points >= 18000 ? "Legendary!" : points >= 12000 ? "Great shot!" : points >= 6000 ? "Nice one!" : "Keep trying!";
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="relative overflow-hidden rounded-2xl p-6 md:p-8 bg-gradient-to-r from-sky-500 to-teal-400 text-white shadow-sm"
+    >
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div className="text-sm/5 opacity-95">🎯 {title}</div>
+          <div className="text-3xl md:text-5xl font-semibold tracking-tight mt-1">{fmt(points)} points</div>
+          <div className="mt-2 text-white/90 text-sm">{fmt(distanceKm)} km away</div>
+        </div>
+        <div className="hidden md:block h-[120px] w-px bg-white/25" />
+        <div className="flex items-center gap-3">
+          <Badge icon={MapPin} label={`${fmt(distanceKm)} km`} sub="distance" />
+          <Badge icon={Award} label={`${Math.max(0, Math.round((points / 20000) * 100))}%`} sub="of max" />
         </div>
       </div>
+      <div aria-hidden className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+    </motion.div>
+  );
+}
 
-      {/* Fixed bottom action bar */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto flex justify-center">
-          <Button
-            size="lg"
-            onClick={onNext}
-            className="min-w-[250px] text-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
-          >
-            {isLastPhoto ? (
-              <>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                See Final Results
-              </>
-            ) : (
-              <>
-                Next Photo
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 ml-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </>
-            )}
-          </Button>
+function Badge({ icon: Icon, label, sub }: { icon: React.ElementType; label: string; sub: string }) {
+  return (
+    <div className="rounded-2xl bg-white/15 backdrop-blur px-4 py-3 text-white shadow-sm ring-1 ring-white/20">
+      <div className="flex items-center gap-2">
+        <Icon className="h-4 w-4" />
+        <div>
+          <div className="text-sm font-medium leading-none">{label}</div>
+          <div className="text-xs opacity-80">{sub}</div>
         </div>
       </div>
     </div>
+  );
+}
+
+function PhotoCard({ src }: { src: string }) {
+  const hasSrc = src && src.length > 0;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.45 }}
+      className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 dark:bg-gray-800 dark:ring-gray-700"
+    >
+      {hasSrc ? (
+        <img src={src} alt="round photography" className="w-full h-[360px] md:h-[420px] object-cover" />
+      ) : (
+        <div className="w-full h-[360px] md:h-[420px] grid place-content-center bg-slate-100 text-slate-500 text-sm dark:bg-gray-700 dark:text-gray-400">
+          No photo available
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+function MapCard({
+  userPin,
+  correctPin,
+  kmError,
+}: {
+  userPin: { lat: number; lon: number } | null;
+  correctPin: { lat: number; lon: number };
+  kmError: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.45, delay: 0.05 }}
+      className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 p-4 dark:bg-gray-800 dark:ring-gray-700"
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-2 text-slate-800 dark:text-gray-200">
+          <MapPin className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+          <span className="font-medium">Your guess vs actual location</span>
+        </div>
+        <span className="text-sm text-gray-600 dark:text-gray-400">{fmt(kmError)} km away</span>
+      </div>
+      <div className="h-[320px] md:h-[360px] rounded-xl overflow-hidden">
+        <MapComponent
+          userPin={userPin}
+          correctPin={correctPin}
+          showFeedback={true}
+          kmError={kmError}
+          onPinPlace={() => {
+            // Read-only in feedback
+          }}
+          onPinMove={() => {
+            // Read-only in feedback
+          }}
+          className="h-full"
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+function DetailsCard({ result }: { result: PhotoScoreResultDTO }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.45, delay: 0.1 }}
+      className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 p-6 dark:bg-gray-800 dark:ring-gray-700"
+    >
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Photo information</h3>
+      <div className="mt-4 space-y-4">
+        {/* Event name */}
+        <div>
+          <h4 className="text-xl font-bold text-slate-900 dark:text-gray-100">{result.event_name}</h4>
+          {result.description && <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{result.description}</p>}
+        </div>
+
+        {/* Details */}
+        <dl className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          {result.place && (
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+              <dt className="font-medium">Place:</dt>
+              <dd className="ml-1 text-gray-700 dark:text-gray-300">{result.place}</dd>
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <Compass className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+            <dt className="font-medium">Distance:</dt>
+            <dd className="ml-1">{fmt(result.km_error)} km</dd>
+          </div>
+          <div className="flex items-center gap-2">
+            <Award className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+            <dt className="font-medium">Points:</dt>
+            <dd className="ml-1">{fmt(result.total_score)}</dd>
+          </div>
+        </dl>
+
+        {/* Attribution */}
+        <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Photo Attribution</h4>
+          <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+            <p>
+              <span className="font-medium">Credit:</span> {result.credit}
+            </p>
+            <p>
+              <span className="font-medium">License:</span> {result.license}
+            </p>
+          </div>
+        </div>
+
+        {/*/!* Source URL *!/*/}
+        {/*{result.sources*/}
+        {/*  .source_url && (*/}
+        {/*  <div className="pt-3 border-t border-gray-200 dark:border-gray-700">*/}
+        {/*    <a*/}
+        {/*      href={result.source_url}*/}
+        {/*      target="_blank"*/}
+        {/*      rel="noopener noreferrer"*/}
+        {/*      className="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"*/}
+        {/*    >*/}
+        {/*      <LinkIcon className="h-4 w-4" />*/}
+        {/*      View source*/}
+        {/*    </a>*/}
+        {/*  </div>*/}
+        {/*)}*/}
+      </div>
+    </motion.div>
+  );
+}
+
+function ProgressCard({
+  progress,
+  roundIndex,
+  totalRounds,
+  runningTotal,
+}: {
+  progress: number;
+  roundIndex: number;
+  totalRounds: number;
+  runningTotal: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.45, delay: 0.15 }}
+      className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 p-6 dark:bg-gray-800 dark:ring-gray-700"
+    >
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-100">Round progress</h3>
+      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        {roundIndex} of {totalRounds} photos
+      </p>
+      <div className="mt-4 h-3 w-full rounded-full bg-slate-100 overflow-hidden dark:bg-gray-700">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-sky-500 to-teal-400"
+          style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
+        />
+      </div>
+      <div className="mt-3 text-sm text-gray-700 dark:text-gray-300">
+        Total score: <span className="font-semibold text-sky-700 dark:text-sky-400">{fmt(runningTotal)}</span>
+      </div>
+    </motion.div>
+  );
+}
+
+function ActionsCard({ onNext, isLastPhoto }: { onNext: () => void; isLastPhoto: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.45, delay: 0.2 }}
+      className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 p-6 flex flex-col dark:bg-gray-800 dark:ring-gray-700"
+    >
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-gray-100">What&#39;s next?</h3>
+      <div className="mt-4">
+        <button
+          onClick={onNext}
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-sky-600 text-white text-base font-medium hover:bg-sky-700 transition-colors"
+        >
+          {isLastPhoto ? (
+            <>
+              See Final Results
+              <Award className="h-5 w-5" />
+            </>
+          ) : (
+            <>
+              Next photo
+              <ArrowRight className="h-5 w-5" />
+            </>
+          )}
+        </button>
+      </div>
+      <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+        {isLastPhoto ? "Complete all photos to see your final score!" : "Continue to the next photo when you're ready."}
+      </p>
+    </motion.div>
   );
 }
