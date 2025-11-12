@@ -63,13 +63,6 @@ const MapComponentInner = ({
         }),
         "top-right"
       );
-
-      // Handle map clicks for pin placement (when not in feedback mode)
-      map.current.on("click", (e) => {
-        if (!showFeedback) {
-          onPinPlace(e.lngLat.lat, e.lngLat.lng);
-        }
-      });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("Failed to initialize map:", error);
@@ -83,7 +76,26 @@ const MapComponentInner = ({
         map.current = null;
       }
     };
-  }, [onPinPlace, showFeedback]);
+  }, []); // Only run once on mount
+
+  // Handle map clicks separately
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+
+    const handleClick = (e: mapboxgl.MapMouseEvent) => {
+      if (!showFeedback) {
+        onPinPlace(e.lngLat.lat, e.lngLat.lng);
+      }
+    };
+
+    map.current.on("click", handleClick);
+
+    return () => {
+      if (map.current) {
+        map.current.off("click", handleClick);
+      }
+    };
+  }, [mapLoaded, onPinPlace, showFeedback]);
 
   // Update user pin marker
   useEffect(() => {

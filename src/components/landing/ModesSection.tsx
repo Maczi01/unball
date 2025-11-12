@@ -7,14 +7,14 @@ const modes = [
     icon: MapPin,
     desc: "Guess random travel photos anytime. Practice and improve your sense of place.",
     cta: "Start Guessing",
-    href: "/play",
+    href: "/play/normal",
   },
   {
     title: "Daily Challenge",
     icon: Trophy,
     desc: "One global photo every day at 00:00 UTC. First try counts for the leaderboard.",
     cta: "Play Daily",
-    href: "/daily",
+    href: "/play/daily",
   },
 ];
 

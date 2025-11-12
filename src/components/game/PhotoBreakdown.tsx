@@ -10,7 +10,7 @@ export function PhotoBreakdown({ result, index }: PhotoBreakdownProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const photoNumber = index + 1;
-  const percentage = (result.total_score / 20000) * 100;
+  const percentage = (result.total_score / 10000) * 100;
 
   // Determine color based on score percentage
   const getScoreColor = () => {
@@ -43,9 +43,7 @@ export function PhotoBreakdown({ result, index }: PhotoBreakdownProps) {
         <div className="flex-1 text-left min-w-0">
           <h4 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{result.event_name}</h4>
           <div className="flex items-center gap-3 mt-1">
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {result.km_error.toFixed(1)} km • {result.year_error} {result.year_error === 1 ? "year" : "years"}
-            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{result.km_error.toFixed(1)} km away</span>
           </div>
         </div>
 
@@ -79,7 +77,7 @@ export function PhotoBreakdown({ result, index }: PhotoBreakdownProps) {
             {/* Location score */}
             <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Location</span>
+                <span className="text-gray-600 dark:text-gray-400">Location Score</span>
                 <span className="font-semibold text-gray-900 dark:text-gray-100">
                   {result.location_score.toLocaleString()} / 10,000
                 </span>
@@ -91,28 +89,12 @@ export function PhotoBreakdown({ result, index }: PhotoBreakdownProps) {
                 />
               </div>
             </div>
-
-            {/* Time score */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Time</span>
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
-                  {result.time_score.toLocaleString()} / 10,000
-                </span>
-              </div>
-              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  className={`h-full ${getBarColor()} transition-all`}
-                  style={{ width: `${(result.time_score / 10000) * 100}%` }}
-                />
-              </div>
-            </div>
           </div>
 
           {/* Correct answer */}
           <div className="pt-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-400">
             <p>
-              Correct: {result.correct_year} • {result.correct_lat.toFixed(2)}°, {result.correct_lon.toFixed(2)}°
+              Correct location: {result.correct_lat.toFixed(2)}°, {result.correct_lon.toFixed(2)}°
             </p>
           </div>
 

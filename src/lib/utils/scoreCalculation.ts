@@ -6,9 +6,7 @@ import type { GuessDTO, PhotoScoreResultDTO } from "@/types";
  */
 const SCORING_CONSTANTS = {
   MAX_LOCATION_SCORE: 10000,
-  MAX_TIME_SCORE: 10000,
   KM_PENALTY_FACTOR: 5, // Points deducted per km of error
-  YEAR_PENALTY_FACTOR: 400, // Points deducted per year of error
 };
 
 /**
@@ -47,45 +45,29 @@ export function calculateLocationScore(kmError: number): number {
 }
 
 /**
- * Calculate time score based on year difference
- * Max 10,000 points, reduced by 400 points per year
- */
-export function calculateTimeScore(yearError: number): number {
-  const score = SCORING_CONSTANTS.MAX_TIME_SCORE - Math.abs(yearError) * SCORING_CONSTANTS.YEAR_PENALTY_FACTOR;
-  return Math.max(0, Math.round(score));
-}
-
-/**
  * Calculate complete score for a photo guess
  * This is client-side calculation for immediate feedback
  * Server will recalculate for authoritative scoring
  */
 export function calculateScore(
   guess: GuessDTO,
-  correct: { lat: number; lon: number; year: number }
+  correct: { lat: number; lon: number }
 ): Partial<PhotoScoreResultDTO> {
   try {
     // Calculate distance error
     const kmError = calculateDistance(guess.guessed_lat, guess.guessed_lon, correct.lat, correct.lon);
 
-    // Calculate year error
-    const yearError = guess.guessed_year - correct.year;
-
     // Calculate scores
     const locationScore = calculateLocationScore(kmError);
-    const timeScore = calculateTimeScore(yearError);
-    const totalScore = locationScore + timeScore;
+    const totalScore = locationScore;
 
     return {
       photo_id: guess.photo_id,
       location_score: locationScore,
-      time_score: timeScore,
       total_score: totalScore,
       km_error: Math.round(kmError * 10) / 10, // Round to 1 decimal place
-      year_error: Math.abs(yearError),
       correct_lat: correct.lat,
       correct_lon: correct.lon,
-      correct_year: correct.year,
     };
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -94,13 +76,10 @@ export function calculateScore(
     return {
       photo_id: guess.photo_id,
       location_score: 0,
-      time_score: 0,
       total_score: 0,
       km_error: 0,
-      year_error: 0,
       correct_lat: correct.lat,
       correct_lon: correct.lon,
-      correct_year: correct.year,
     };
   }
 }

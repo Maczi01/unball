@@ -5,7 +5,7 @@ import type {
   SubmissionCheckResponseDTO,
   SubmissionDetailsDTO,
 } from "@/types";
-import { calculateDistance, calculateLocationScore, calculateTimeScore } from "@/lib/utils/scoreCalculation";
+import { calculateDistance, calculateLocationScore } from "@/lib/utils/scoreCalculation";
 
 /**
  * Checks if a user/device has already submitted for a specific date
@@ -122,7 +122,7 @@ export async function submitDailyChallenge(
     const photoIds = guesses.map((g) => g.photo_id);
     const { data: photos, error: photosError } = await supabase
       .from("photos")
-      .select("id, lat, lon, year_utc, event_name, description, place, license, credit, photo_url")
+      .select("id, lat, lon, event_name, description, place, license, credit, photo_url")
       .in("id", photoIds);
 
     if (photosError) {
@@ -179,22 +179,17 @@ export async function submitDailyChallenge(
       }
 
       const kmError = calculateDistance(guess.guessed_lat, guess.guessed_lon, correctPhoto.lat, correctPhoto.lon);
-      const yearError = Math.abs(guess.guessed_year - correctPhoto.year_utc);
 
       const locationScore = calculateLocationScore(kmError);
-      const timeScore = calculateTimeScore(yearError);
 
       return {
         photo_id: guess.photo_id,
         photo_url: correctPhoto.photo_url,
         location_score: locationScore,
-        time_score: timeScore,
-        total_score: locationScore + timeScore,
+        total_score: locationScore,
         km_error: Math.round(kmError * 10) / 10,
-        year_error: yearError,
         correct_lat: correctPhoto.lat,
         correct_lon: correctPhoto.lon,
-        correct_year: correctPhoto.year_utc,
         event_name: correctPhoto.event_name,
         description: correctPhoto.description,
         place: correctPhoto.place,

@@ -56,14 +56,13 @@ export interface NormalRoundResponseDTO {
 }
 
 /**
- * Single guess for a photo (location + year)
+ * Single guess for a photo (location only)
  * Used in both Normal and Daily mode submissions
  */
 export interface GuessDTO {
   photo_id: string;
   guessed_lat: number;
   guessed_lon: number;
-  guessed_year: number;
 }
 
 /**
@@ -98,13 +97,10 @@ export interface PhotoScoreResultDTO {
   photo_id: string;
   photo_url: string;
   location_score: number;
-  time_score: number;
   total_score: number;
   km_error: number;
-  year_error: number;
   correct_lat: number;
   correct_lon: number;
-  correct_year: number;
   event_name: string;
   description: string | null;
   place: string | null;
@@ -135,7 +131,6 @@ export interface DailySetPhotoDTO {
   photo_id: string;
   position: number;
   photo_url: string;
-  competition: string | null;
   place: string | null;
   tags: string[] | null;
 }
@@ -504,10 +499,6 @@ export const ValidationConstants = {
     MAX_LENGTH: 20,
     REGEX: /^[a-zA-Z0-9 _-]+$/,
   },
-  YEAR: {
-    MIN: 1880,
-    MAX: 2025,
-  },
   COORDINATES: {
     LAT_MIN: -90,
     LAT_MAX: 90,
@@ -591,7 +582,6 @@ export interface GameError {
  */
 export interface CurrentGuess {
   pin: PinLocation | null;
-  year: number | null;
 }
 
 /**

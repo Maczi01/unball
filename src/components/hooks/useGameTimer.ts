@@ -37,7 +37,7 @@ export function useGameTimer(isRunning: boolean) {
         if (startTimeRef.current !== null) {
           setElapsedMs(Date.now() - startTimeRef.current);
         }
-      }, 100);
+      }, 1000); // Update every 1 second instead of 100ms
     } else {
       pauseTimer();
     }

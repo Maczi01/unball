@@ -98,14 +98,11 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       photo_id,
       photo_url: photo.photo_url,
       location_score: locationScore,
-      time_score: 0, // No longer scoring time/year
       total_score: totalScore,
       km_error: Math.round(kmError * 10) / 10,
-      year_error: 0, // No longer calculating year error
       correct_lat: photo.lat,
       correct_lon: photo.lon,
-      correct_year: 0, // No longer using year
-      event_name: "", // Removed from schema
+      event_name: "", // TODO: Fetch from database when schema is updated
       description: photo.description,
       place: photo.place,
       more_info: moreInfo || [],

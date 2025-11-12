@@ -160,7 +160,6 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       photo_id: currentPhoto.photoData.photo_id,
       guessed_lat: pin.lat,
       guessed_lon: pin.lon,
-      guessed_year: 0, // Year is no longer used, but keeping for API compatibility
     };
 
     try {
@@ -173,7 +172,6 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
         body: JSON.stringify({
           guessed_lat: guess.guessed_lat,
           guessed_lon: guess.guessed_lon,
-          guessed_year: guess.guessed_year,
         }),
       });
 

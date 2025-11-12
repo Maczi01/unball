@@ -8,13 +8,11 @@ interface ScoreCardProps {
 
 export function ScoreCard({ result, animate = true }: ScoreCardProps) {
   const [displayLocationScore, setDisplayLocationScore] = useState(0);
-  const [displayTimeScore, setDisplayTimeScore] = useState(0);
 
   // Animate score counting
   useEffect(() => {
     if (!animate) {
       setDisplayLocationScore(result.location_score);
-      setDisplayTimeScore(result.time_score);
       return;
     }
 
@@ -29,20 +27,18 @@ export function ScoreCard({ result, animate = true }: ScoreCardProps) {
       const progress = currentStep / steps;
 
       setDisplayLocationScore(Math.round(result.location_score * progress));
-      setDisplayTimeScore(Math.round(result.time_score * progress));
 
       if (currentStep >= steps) {
         clearInterval(interval);
         setDisplayLocationScore(result.location_score);
-        setDisplayTimeScore(result.time_score);
       }
     }, stepDuration);
 
     return () => clearInterval(interval);
-  }, [result.location_score, result.time_score, animate]);
+  }, [result.location_score, animate]);
 
-  const totalScore = displayLocationScore + displayTimeScore;
-  const maxScore = 20000;
+  const totalScore = displayLocationScore;
+  const maxScore = 10000;
 
   // Calculate score color based on percentage
   const getScoreColor = (score: number, max: number) => {
@@ -90,39 +86,11 @@ export function ScoreCard({ result, animate = true }: ScoreCardProps) {
           </div>
         </div>
 
-        {/* Time score */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Time</span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {result.year_error} {result.year_error === 1 ? "year" : "years"} off
-            </span>
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-purple-500 transition-all duration-500 ease-out"
-                  style={{ width: `${(displayTimeScore / 10000) * 100}%` }}
-                  role="progressbar"
-                  aria-valuenow={displayTimeScore}
-                  aria-valuemin={0}
-                  aria-valuemax={10000}
-                />
-              </div>
-              <span className={`ml-3 text-lg font-bold tabular-nums ${getScoreColor(result.time_score, 10000)}`}>
-                {formatNumber(displayTimeScore)}
-              </span>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">out of 10,000</p>
-          </div>
-        </div>
-
         {/* Divider */}
         <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
           {/* Total score */}
           <div className="flex items-center justify-between">
-            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">Total</span>
+            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">Total Score</span>
             <div className="text-right">
               <div className={`text-2xl font-bold tabular-nums ${getScoreColor(totalScore, maxScore)}`}>
                 {formatNumber(totalScore)}

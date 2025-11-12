@@ -44,7 +44,7 @@ export function RoundSummary({
   const isDailyMode = mode === "daily";
   const showNicknameForm = isDailyMode && isFirstSubmission && !hasSubmitted;
   const showLeaderboardRank = isDailyMode && (hasSubmitted || !isFirstSubmission) && leaderboardRank !== undefined;
-  const maxScore = results.length * 20000;
+  const maxScore = results.length * 10000;
   const accuracy = Math.round((totalScore / maxScore) * 100);
   const rounds = results.length;
 
