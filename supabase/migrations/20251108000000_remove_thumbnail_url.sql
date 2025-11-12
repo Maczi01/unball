@@ -42,7 +42,7 @@ CREATE OR REPLACE VIEW photos_metadata AS
 SELECT
   id,
   photo_url,
-  competition,
+--   competition,
   place,
   tags
 FROM photos;
@@ -54,9 +54,9 @@ CREATE OR REPLACE VIEW photos_with_answers AS
 SELECT
   id,
   photo_url,
-  event_name,
-  competition,
-  year_utc,
+--   event_name,
+--   competition,
+--   year_utc,
   place,
   lat,
   lon,

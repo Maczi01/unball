@@ -42,9 +42,9 @@ create table photos (
   original_url text null,
 
   -- Answer fields (protected during gameplay)
-  event_name varchar(255) not null,
-  competition varchar(255) null,
-  year_utc integer not null check (year_utc between 1880 and 2025),
+--   event_name varchar(255) not null,
+--   competition varchar(255) null,
+--   year_utc integer not null check (year_utc between 1880 and 2025),
   place varchar(255) null,
 
   -- Coordinates (answer data)
@@ -315,7 +315,7 @@ select
   id,
   photo_url,
   thumbnail_url,
-  competition,
+--   competition,
   place,
   tags
 from photos;
@@ -328,9 +328,9 @@ select
   id,
   photo_url,
   thumbnail_url,
-  event_name,
-  competition,
-  year_utc,
+--   event_name,
+--   competition,
+--   year_utc,
   place,
   lat,
   lon,
