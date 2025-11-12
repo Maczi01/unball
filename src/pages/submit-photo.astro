@@ -32,65 +32,63 @@ const hasPermission = userProfile.can_add_photos;
 const userEmail = userProfile.email || user.email;
 ---
 
-<Layout title="Submit Photo - FootyGuess Daily">
-  <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-    <div class="container mx-auto px-4 py-8 md:py-12">
-      {
-        !hasPermission ? (
-          // Permission Error View
-          <div class="max-w-2xl mx-auto">
-            <div class="bg-white dark:bg-neutral-900 rounded-lg shadow-lg p-8 text-center">
-              <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950">
-                <svg
-                  class="h-8 w-8 text-red-600 dark:text-red-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
+<Layout title="Submit Photo - FootyGuess Daily" showNavigation={false}>
+  {
+    !hasPermission ? (
+      // Permission Error View
+      <div class="min-h-screen bg-gradient-to-b from-white to-sky-50 dark:from-slate-950 dark:to-slate-900 grid place-content-center px-4">
+        <div class="max-w-lg mx-auto">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl ring-1 ring-slate-100 dark:ring-slate-800 shadow-lg p-8 text-center">
+            <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950">
+              <svg
+                class="h-8 w-8 text-red-600 dark:text-red-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            </div>
 
-              <h1 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Permission Required</h1>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Permission Required</h1>
 
-              <p class="text-neutral-600 dark:text-neutral-400 mb-6">
-                You don't have permission to submit photos at this time. Please contact an administrator to request
-                photo submission access.
+            <p class="text-slate-600 dark:text-slate-400 mb-6">
+              You don't have permission to submit photos at this time. Please contact an administrator to request photo
+              submission access.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <a
+                href="/"
+                class="inline-flex items-center justify-center rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-medium text-white shadow hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-colors"
+              >
+                Go to Home
+              </a>
+              <a
+                href="/profile"
+                class="inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-colors"
+              >
+                View Profile
+              </a>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
+              <p class="text-sm text-slate-500 dark:text-slate-400">
+                Logged in as: <strong>{userEmail}</strong>
               </p>
-
-              <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <a
-                  href="/"
-                  class="inline-flex items-center justify-center rounded-md bg-neutral-900 dark:bg-neutral-100 px-4 py-2 text-sm font-medium text-white dark:text-neutral-900 shadow hover:bg-neutral-700 dark:hover:bg-neutral-300 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-colors"
-                >
-                  Go to Home
-                </a>
-                <a
-                  href="/profile"
-                  class="inline-flex items-center justify-center rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-colors"
-                >
-                  View Profile
-                </a>
-              </div>
-
-              <div class="mt-8 pt-8 border-t border-neutral-200 dark:border-neutral-800">
-                <p class="text-sm text-neutral-500 dark:text-neutral-400">
-                  Logged in as: <strong>{userEmail}</strong>
-                </p>
-              </div>
             </div>
           </div>
-        ) : (
-          // Photo Submission Form
-          <PhotoSubmissionForm client:load userEmail={userEmail} />
-        )
-      }
-    </div>
-  </div>
+        </div>
+      </div>
+    ) : (
+      // Photo Submission Form
+      <PhotoSubmissionForm client:load userEmail={userEmail} />
+    )
+  }
 </Layout>

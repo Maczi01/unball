@@ -59,7 +59,7 @@ export default function HeroSection() {
             <Play className="h-4 w-4" /> Play Now
           </a>
           <a
-            href="/upload"
+            href="/submit-photo"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-sky-200 text-sky-700 hover:bg-sky-50 font-medium"
           >
             <Upload className="h-4 w-4" /> Upload Photo

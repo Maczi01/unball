@@ -1,18 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { usePhotoSubmission } from "@/components/hooks/usePhotoSubmission";
-import { PhotoFileUpload } from "@/components/PhotoFileUpload";
-import { LocationPicker } from "@/components/LocationPicker";
-import { TagsInput } from "@/components/TagsInput";
-import { PhotoSourcesInput } from "@/components/PhotoSourcesInput";
-import { PhotoMoreInfoInput } from "@/components/PhotoMoreInfoInput";
-import { SubmissionSuccess } from "@/components/SubmissionSuccess";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2, AlertCircle, Sparkles, Info } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Upload, MapPin, ImagePlus, Loader2, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { PhotoAnalysisResult } from "@/lib/services/photo-analysis.service";
+import { LocationPicker } from "@/components/LocationPicker";
 
 interface PhotoSubmissionFormProps {
   userEmail?: string;
@@ -20,47 +9,37 @@ interface PhotoSubmissionFormProps {
   onCancel?: () => void;
 }
 
-const COMMON_LICENSES = ["CC-BY-SA 4.0", "CC-BY 4.0", "CC-BY-NC 4.0", "CC-BY-NC-SA 4.0", "Public Domain", "CC0 1.0"];
-
 export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionFormProps) {
-  const {
-    formData,
-    validationErrors,
-    submissionState,
-    photoPreview,
-    isFormValid,
-    updateField,
-    updatePhoto,
-    validateField,
-    submitPhoto,
-    resetForm,
-  } = usePhotoSubmission(userEmail);
-
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [tags, setTags] = useState("");
+  const [place, setPlace] = useState("");
+  const [lat, setLat] = useState("");
+  const [lon, setLon] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const formTopRef = useRef<HTMLDivElement>(null);
 
-  // AI Analysis state
-  const [aiAnalysis, setAiAnalysis] = useState<PhotoAnalysisResult | null>(null);
-  const [aiAnalyzing, setAiAnalyzing] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
-
-  // Scroll to top when submission errors occur
+  // Generate preview for uploaded file
   useEffect(() => {
-    if (submissionState.status === "error" && formTopRef.current) {
-      formTopRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!file) {
+      setPreview(null);
+      return;
     }
-  }, [submissionState.status]);
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
 
   // Warn on leaving page with unsaved changes
   useEffect(() => {
-    const hasChanges =
-      formData.photo_file !== null ||
-      formData.event_name !== "" ||
-      formData.year_utc !== "" ||
-      formData.lat !== "" ||
-      formData.lon !== "";
+    const hasChanges = file !== null || title !== "" || place !== "";
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasChanges && submissionState.status !== "success") {
+      if (hasChanges && !success) {
         e.preventDefault();
         e.returnValue = "";
       }
@@ -68,55 +47,75 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [formData, submissionState.status]);
+  }, [file, title, place, success]);
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      await submitPhoto();
-    },
-    [submitPhoto]
-  );
+  const handleFiles = (files: FileList | null) => {
+    const f = files && files[0];
+    if (!f) return;
 
-  const handleSubmitAnother = useCallback(() => {
-    resetForm();
-    setAiAnalysis(null);
-    setAiError(null);
-  }, [resetForm]);
-
-  const handleViewSubmissions = useCallback(() => {
-    window.location.href = "/my-submissions";
-  }, []);
-
-  const handleCancelClick = useCallback(() => {
-    const hasChanges = formData.photo_file !== null || formData.event_name !== "" || formData.year_utc !== "";
-
-    if (hasChanges) {
-      const confirmed = window.confirm("You have unsaved changes. Are you sure you want to leave?");
-      if (!confirmed) return;
+    const isImage = /^image\//.test(f.type);
+    if (!isImage) {
+      setErrors((e) => ({ ...e, file: "Please choose an image file." }));
+      return;
     }
 
-    if (onCancel) {
-      onCancel();
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (f.size > maxSize) {
+      setErrors((e) => ({ ...e, file: "File size must be under 10MB." }));
+      return;
+    }
+
+    setErrors((e) => ({ ...e, file: "" }));
+    setFile(f);
+  };
+
+  const parseTags = (v: string): string[] =>
+    v
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+  const validate = (): boolean => {
+    const next: Record<string, string> = {};
+
+    if (!file) next.file = "Photo is required.";
+    if (!place) next.place = "Please add a location.";
+    if (!lat || !lon) {
+      next.location = "Please select location on map.";
     } else {
-      window.history.back();
+      const latNum = parseFloat(lat);
+      const lonNum = parseFloat(lon);
+      if (isNaN(latNum) || latNum < -90 || latNum > 90) {
+        next.lat = "Invalid latitude.";
+      }
+      if (isNaN(lonNum) || lonNum < -180 || lonNum > 180) {
+        next.lon = "Invalid longitude.";
+      }
     }
-  }, [formData, onCancel]);
 
-  // AI Analysis handler
-  const handleAnalyzeWithAI = useCallback(async () => {
-    if (!formData.photo_file) return;
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
 
-    setAiAnalyzing(true);
-    setAiError(null);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate() || !file) return;
+
+    setSubmitting(true);
 
     try {
-      // Create FormData for API request
       const apiFormData = new FormData();
-      apiFormData.append("photo", formData.photo_file);
+      apiFormData.append("photo_file", file);
+      apiFormData.append("place", place);
+      apiFormData.append("lat", lat);
+      apiFormData.append("lon", lon);
 
-      // Call the API endpoint
-      const response = await fetch("/api/analyze-photo", {
+      if (title) apiFormData.append("title", title);
+      const tagArray = parseTags(tags);
+      if (tagArray.length > 0) apiFormData.append("tags", JSON.stringify(tagArray));
+      if (userEmail) apiFormData.append("submitter_email", userEmail);
+
+      const response = await fetch("/api/photo-submissions", {
         method: "POST",
         body: apiFormData,
       });
@@ -124,499 +123,237 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
       const result = await response.json();
 
       if (!response.ok || "error" in result) {
-        setAiError(result.error || "Failed to analyze photo");
-        setAiAnalysis(null);
+        setErrors({ submit: result.error || "Failed to submit photo" });
+        formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       } else {
-        setAiAnalysis(result as PhotoAnalysisResult);
-        setAiError(null);
-
-        // Auto-fill form fields with AI suggestions
-        if (result.year) {
-          updateField("year_utc", result.year.toString());
-        }
-        if (result.description) {
-          updateField("description", result.description);
-        }
-        if (result.location) {
-          updateField("place", result.location);
-        }
-        if (result.competition) {
-          updateField("competition", result.competition);
-        }
-        if (result.tags && result.tags.length > 0) {
-          updateField("tags", result.tags);
-        }
-        if (result.stadium && !formData.event_name) {
-          // Suggest stadium name in event name if empty
-          updateField("event_name", result.stadium);
-        }
+        setSuccess(true);
+        setSubmissionId(result.submission_id);
       }
     } catch (error) {
-      setAiError(error instanceof Error ? error.message : "Failed to analyze photo");
-      setAiAnalysis(null);
+      setErrors({ submit: error instanceof Error ? error.message : "Failed to submit photo" });
+      formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } finally {
-      setAiAnalyzing(false);
+      setSubmitting(false);
     }
-  }, [formData.photo_file, formData.event_name, updateField]);
+  };
 
-  // Show success modal
-  if (submissionState.status === "success" && submissionState.result) {
+  const handleReset = () => {
+    setFile(null);
+    setPreview(null);
+    setTitle("");
+    setTags("");
+    setPlace("");
+    setLat("");
+    setLon("");
+    setErrors({});
+    setSuccess(false);
+    setSubmissionId(null);
+  };
+
+  // Success view
+  if (success && submissionId) {
     return (
-      <SubmissionSuccess
-        submission={submissionState.result}
-        onSubmitAnother={handleSubmitAnother}
-        onViewSubmissions={handleViewSubmissions}
-      />
+      <div className="min-h-[60vh] grid place-content-center text-center px-4">
+        <div className="max-w-md mx-auto space-y-6">
+          <div className="mx-auto w-16 h-16 rounded-full bg-green-100 dark:bg-green-950 grid place-content-center">
+            <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Submission Received!</h2>
+            <p className="text-slate-600 dark:text-slate-400">
+              Your photo has been submitted for review. We&#39;ll review it soon and notify you once it&#39;s approved.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+            <button
+              onClick={handleReset}
+              className="px-5 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+            >
+              Submit Another
+            </button>
+            <button
+              onClick={() => (window.location.href = "/my-submissions")}
+              className="px-5 py-2.5 rounded-xl text-sm font-medium bg-sky-600 text-white hover:bg-sky-700 transition-colors"
+            >
+              View My Submissions
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
-  const isSubmitting = submissionState.status === "submitting" || submissionState.status === "validating";
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto">
-      {/* Header */}
-      <div ref={formTopRef} className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Submit a Photo</h1>
-        <p className="text-neutral-500 dark:text-neutral-400">
-          Share your football photos with the community. All submissions will be reviewed before being added to the
-          game.
-        </p>
-      </div>
-
-      {/* Error banner */}
-      {submissionState.status === "error" && submissionState.error && (
-        <div
-          className="flex items-start gap-3 p-4 rounded-lg border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/50"
-          role="alert"
-        >
-          <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <h3 className="font-semibold text-red-900 dark:text-red-100">Submission Error</h3>
-            <p className="text-sm text-red-700 dark:text-red-300">{submissionState.error}</p>
+    <div className="min-h-screen bg-gradient-to-b from-white to-sky-50 dark:from-slate-950 dark:to-slate-900">
+      <header className="sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-slate-950/60 bg-white/70 dark:bg-slate-950/70 border-b border-slate-100 dark:border-slate-800">
+        <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ImagePlus className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+            <span className="font-semibold tracking-tight text-slate-900 dark:text-slate-100">Add a Photo</span>
           </div>
+          <div className="text-xs text-slate-600 dark:text-slate-400">Upload your football shot</div>
         </div>
-      )}
+      </header>
 
-      {/* Photo Upload */}
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold mb-2">
-            Photo <span className="text-red-500">*</span>
-          </h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Upload a clear, high-quality photo of a football event.
-          </p>
-        </div>
-        <PhotoFileUpload
-          value={formData.photo_file}
-          onChange={updatePhoto}
-          preview={photoPreview}
-          error={validationErrors.photo_file}
-          disabled={isSubmitting}
-        />
+      <main className="mx-auto max-w-3xl px-4 py-8 md:py-10">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div ref={formTopRef} />
 
-        {/* AI Analysis Section */}
-        {formData.photo_file && !isSubmitting && (
-          <div className="space-y-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleAnalyzeWithAI}
-              disabled={aiAnalyzing}
-              className="w-full sm:w-auto"
-            >
-              {aiAnalyzing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing with AI...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Analyze with AI
-                </>
-              )}
-            </Button>
+          {/* Error banner */}
+          {errors.submit && (
+            <div className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 p-4">
+              <p className="text-sm text-red-700 dark:text-red-300">{errors.submit}</p>
+            </div>
+          )}
 
-            {/* AI Error */}
-            {aiError && (
-              <div className="flex items-start gap-2 p-3 rounded-md bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-900">
-                <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">{aiError}</p>
-              </div>
-            )}
-
-            {/* AI Results */}
-            {aiAnalysis && (
-              <div className="p-4 rounded-lg border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30 space-y-2">
-                <div className="flex items-start gap-2">
-                  <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">AI Analysis Complete</p>
-                    <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                      The form has been pre-filled with AI suggestions. Please review and edit as needed.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Show detected info */}
-                <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-900 space-y-1.5 text-xs">
-                  <p className="font-medium text-blue-900 dark:text-blue-100">Detected Information:</p>
-                  {aiAnalysis.stadium && (
-                    <p className="text-blue-800 dark:text-blue-200">
-                      <span className="font-medium">Stadium:</span> {aiAnalysis.stadium}
-                    </p>
-                  )}
-                  {aiAnalysis.teams && aiAnalysis.teams.length > 0 && (
-                    <p className="text-blue-800 dark:text-blue-200">
-                      <span className="font-medium">Teams:</span> {aiAnalysis.teams.join(" vs ")}
-                    </p>
-                  )}
-                  {aiAnalysis.year && (
-                    <p className="text-blue-800 dark:text-blue-200">
-                      <span className="font-medium">Year:</span> {aiAnalysis.year}
-                    </p>
-                  )}
-                  {aiAnalysis.confidence && (
-                    <p className="text-blue-800 dark:text-blue-200">
-                      <span className="font-medium">Confidence:</span>{" "}
-                      <span
-                        className={cn(
-                          aiAnalysis.confidence === "high" && "text-green-600 dark:text-green-400",
-                          aiAnalysis.confidence === "medium" && "text-yellow-600 dark:text-yellow-400",
-                          aiAnalysis.confidence === "low" && "text-red-600 dark:text-red-400"
-                        )}
-                      >
-                        {aiAnalysis.confidence}
-                      </span>
-                      {aiAnalysis.wikipediaEnriched && (
-                        <span className="ml-1 text-green-600 dark:text-green-400">(verified with Wikipedia)</span>
-                      )}
-                    </p>
-                  )}
-                  {aiAnalysis.wikipediaSources && aiAnalysis.wikipediaSources.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-900">
-                      <p className="font-medium text-blue-900 dark:text-blue-100 mb-1">Wikipedia Sources:</p>
-                      <ul className="space-y-0.5">
-                        {aiAnalysis.wikipediaSources.map((source, index) => (
-                          <li key={index}>
-                            <a
-                              href={source}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 dark:text-blue-400 hover:underline"
-                            >
-                              {source.split("/wiki/")[1]?.replace(/_/g, " ") || source}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
+          {/* Photo Upload */}
+          <section className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm">
+            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
+              <ImagePlus className="h-4 w-4 text-sky-600 dark:text-sky-400" /> Photo
+            </div>
+            <div className="p-4">
+              <label
+                htmlFor="file"
+                className={cn(
+                  "relative block w-full rounded-xl border-2 border-dashed bg-slate-50/60 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer",
+                  errors.file ? "border-red-300 dark:border-red-900" : "border-slate-200 dark:border-slate-700"
+                )}
+              >
+                <input
+                  id="file"
+                  name="file"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={(e) => handleFiles(e.currentTarget.files)}
+                  disabled={submitting}
+                />
+                <div className="grid place-content-center text-center p-8">
+                  {preview ? (
+                    <img src={preview} alt="preview" className="w-full max-h-80 object-contain rounded-md" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-slate-500 dark:text-slate-400">
+                      <Upload className="h-6 w-6" />
+                      <p className="text-sm">Drag & drop or click to upload</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">JPEG, PNG, HEIC · up to 10MB</p>
                     </div>
                   )}
                 </div>
-              </div>
-            )}
+              </label>
+              {errors.file && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{errors.file}</p>}
+            </div>
+          </section>
+
+          {/* Details */}
+          <section className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm p-4 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Title <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span>
+              </label>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="E.g., Sunrise over old town"
+                disabled={submitting}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-200 dark:focus:ring-sky-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Tags <span className="text-slate-400 dark:text-slate-500 font-normal">(comma separated)</span>
+              </label>
+              <input
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="city, coast, night"
+                disabled={submitting}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-200 dark:focus:ring-sky-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+              />
+            </div>
+          </section>
+
+          {/* Location */}
+          <section className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm p-4 space-y-4">
+            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-3">
+              <MapPin className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+              Location
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Place</label>
+              <input
+                value={place}
+                onChange={(e) => {
+                  setPlace(e.target.value);
+                  setErrors((prev) => ({ ...prev, place: "" }));
+                }}
+                placeholder="City, Country"
+                disabled={submitting}
+                className={cn(
+                  "w-full rounded-xl border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-200 dark:focus:ring-sky-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400",
+                  errors.place ? "border-red-300 dark:border-red-900" : "border-slate-200 dark:border-slate-700"
+                )}
+              />
+              {errors.place && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.place}</p>}
+            </div>
+
+            {/* Location Picker */}
+            <div className="pt-2">
+              <LocationPicker
+                lat={lat}
+                lon={lon}
+                onChange={({ lat, lon }) => {
+                  setLat(lat);
+                  setLon(lon);
+                  setErrors((prev) => ({ ...prev, location: "", lat: "", lon: "" }));
+                }}
+                error={errors.location || errors.lat || errors.lon}
+                disabled={submitting}
+              />
+            </div>
+          </section>
+
+          {/* Actions */}
+          <div className="flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setFile(null);
+                setPreview(null);
+                setTitle("");
+                setPlace("");
+                setTags("");
+                setLat("");
+                setLon("");
+                setErrors({});
+              }}
+              disabled={submitting}
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
+            >
+              Clear
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className={cn(
+                "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-medium shadow-sm text-sm transition-colors",
+                submitting
+                  ? "bg-slate-300 dark:bg-slate-700 cursor-not-allowed"
+                  : "bg-sky-600 hover:bg-sky-700 dark:bg-sky-700 dark:hover:bg-sky-600"
+              )}
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Uploading…
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4" /> Submit Photo
+                </>
+              )}
+            </button>
           </div>
-        )}
-      </section>
-
-      {/* Required Fields */}
-      <section className="space-y-6">
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Event Details</h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Required information about the football event.
-          </p>
-        </div>
-
-        {/* Event Name */}
-        <div className="space-y-2">
-          <Label htmlFor="event_name">
-            Event Name <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="event_name"
-            type="text"
-            value={formData.event_name}
-            onChange={(e) => updateField("event_name", e.target.value)}
-            onBlur={() => validateField("event_name")}
-            disabled={isSubmitting}
-            placeholder="e.g., 1998 FIFA World Cup Final"
-            maxLength={255}
-            className={cn(validationErrors.event_name && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!validationErrors.event_name}
-            aria-describedby={validationErrors.event_name ? "event_name-error" : undefined}
-          />
-          {validationErrors.event_name && (
-            <p id="event_name-error" className="text-sm text-red-500 dark:text-red-400" role="alert">
-              {validationErrors.event_name}
-            </p>
-          )}
-        </div>
-
-        {/* Year */}
-        <div className="space-y-2">
-          <Label htmlFor="year_utc">
-            Year <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="year_utc"
-            type="number"
-            min={1880}
-            max={2025}
-            value={formData.year_utc}
-            onChange={(e) => updateField("year_utc", e.target.value)}
-            onBlur={() => validateField("year_utc")}
-            disabled={isSubmitting}
-            placeholder="e.g., 1998"
-            className={cn(validationErrors.year_utc && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!validationErrors.year_utc}
-            aria-describedby={validationErrors.year_utc ? "year_utc-error" : undefined}
-          />
-          {validationErrors.year_utc && (
-            <p id="year_utc-error" className="text-sm text-red-500 dark:text-red-400" role="alert">
-              {validationErrors.year_utc}
-            </p>
-          )}
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">Year of the event (1880-2025)</p>
-        </div>
-
-        {/* Location */}
-        <LocationPicker
-          lat={formData.lat}
-          lon={formData.lon}
-          onChange={({ lat, lon }) => {
-            updateField("lat", lat);
-            updateField("lon", lon);
-          }}
-          error={validationErrors.lat || validationErrors.lon}
-          disabled={isSubmitting}
-        />
-
-        {/* License */}
-        <div className="space-y-2">
-          <Label htmlFor="license">
-            License <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="license"
-            type="text"
-            value={formData.license}
-            onChange={(e) => updateField("license", e.target.value)}
-            onBlur={() => validateField("license")}
-            disabled={isSubmitting}
-            placeholder="e.g., CC-BY-SA 4.0"
-            maxLength={100}
-            list="license-suggestions"
-            className={cn(validationErrors.license && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!validationErrors.license}
-            aria-describedby={validationErrors.license ? "license-error" : "license-description"}
-          />
-          <datalist id="license-suggestions">
-            {COMMON_LICENSES.map((license) => (
-              <option key={license} value={license} />
-            ))}
-          </datalist>
-          {validationErrors.license && (
-            <p id="license-error" className="text-sm text-red-500 dark:text-red-400" role="alert">
-              {validationErrors.license}
-            </p>
-          )}
-          <p id="license-description" className="text-xs text-neutral-500 dark:text-neutral-400">
-            Photo license (e.g., Creative Commons). Start typing to see suggestions.
-          </p>
-        </div>
-
-        {/* Credit */}
-        <div className="space-y-2">
-          <Label htmlFor="credit">
-            Credit / Photographer <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="credit"
-            type="text"
-            value={formData.credit}
-            onChange={(e) => updateField("credit", e.target.value)}
-            onBlur={() => validateField("credit")}
-            disabled={isSubmitting}
-            placeholder="e.g., John Smith"
-            maxLength={255}
-            className={cn(validationErrors.credit && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!validationErrors.credit}
-            aria-describedby={validationErrors.credit ? "credit-error" : undefined}
-          />
-          {validationErrors.credit && (
-            <p id="credit-error" className="text-sm text-red-500 dark:text-red-400" role="alert">
-              {validationErrors.credit}
-            </p>
-          )}
-        </div>
-      </section>
-
-      {/* Optional Fields */}
-      <section className="space-y-6">
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Additional Information</h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Optional details that help provide more context.
-          </p>
-        </div>
-
-        {/* Competition */}
-        <div className="space-y-2">
-          <Label htmlFor="competition">Competition</Label>
-          <Input
-            id="competition"
-            type="text"
-            value={formData.competition}
-            onChange={(e) => updateField("competition", e.target.value)}
-            onBlur={() => validateField("competition")}
-            disabled={isSubmitting}
-            placeholder="e.g., FIFA World Cup"
-            maxLength={255}
-            className={cn(validationErrors.competition && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!validationErrors.competition}
-          />
-          {validationErrors.competition && (
-            <p className="text-sm text-red-500 dark:text-red-400" role="alert">
-              {validationErrors.competition}
-            </p>
-          )}
-        </div>
-
-        {/* Place */}
-        <div className="space-y-2">
-          <Label htmlFor="place">Place / Location Name</Label>
-          <Input
-            id="place"
-            type="text"
-            value={formData.place}
-            onChange={(e) => updateField("place", e.target.value)}
-            onBlur={() => validateField("place")}
-            disabled={isSubmitting}
-            placeholder="e.g., Stade de France, Paris"
-            maxLength={255}
-            className={cn(validationErrors.place && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!validationErrors.place}
-          />
-          {validationErrors.place && (
-            <p className="text-sm text-red-500 dark:text-red-400" role="alert">
-              {validationErrors.place}
-            </p>
-          )}
-        </div>
-
-        {/* Description */}
-        <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={(e) => updateField("description", e.target.value)}
-            disabled={isSubmitting}
-            placeholder="Describe the moment captured in the photo..."
-            rows={4}
-            className="resize-none"
-          />
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Provide context about what&#39;s happening in the photo
-          </p>
-        </div>
-
-        {/* Sources */}
-        <PhotoSourcesInput
-          value={formData.sources}
-          onChange={(sources) => updateField("sources", sources)}
-          disabled={isSubmitting}
-        />
-        {validationErrors.sources && (
-          <p className="text-sm text-red-500 dark:text-red-400" role="alert">
-            {validationErrors.sources}
-          </p>
-        )}
-
-        {/* More Info */}
-        <PhotoMoreInfoInput
-          value={formData.more_info}
-          onChange={(moreInfo) => updateField("more_info", moreInfo)}
-          disabled={isSubmitting}
-        />
-        {validationErrors.more_info && (
-          <p className="text-sm text-red-500 dark:text-red-400" role="alert">
-            {validationErrors.more_info}
-          </p>
-        )}
-
-        {/* Tags */}
-        <TagsInput value={formData.tags} onChange={(tags) => updateField("tags", tags)} disabled={isSubmitting} />
-
-        {/* Notes */}
-        <div className="space-y-2">
-          <Label htmlFor="notes">Notes for Moderators</Label>
-          <Textarea
-            id="notes"
-            value={formData.notes}
-            onChange={(e) => updateField("notes", e.target.value)}
-            disabled={isSubmitting}
-            placeholder="Any additional information for the review team..."
-            rows={3}
-            className="resize-none"
-          />
-        </div>
-
-        {/* Email */}
-        <div className="space-y-2">
-          <Label htmlFor="submitter_email">Your Email</Label>
-          <Input
-            id="submitter_email"
-            type="email"
-            value={formData.submitter_email}
-            onChange={(e) => updateField("submitter_email", e.target.value)}
-            onBlur={() => validateField("submitter_email")}
-            disabled={isSubmitting}
-            placeholder="your.email@example.com"
-            className={cn(validationErrors.submitter_email && "border-red-500 focus-visible:ring-red-500")}
-            aria-invalid={!!validationErrors.submitter_email}
-          />
-          {validationErrors.submitter_email && (
-            <p className="text-sm text-red-500 dark:text-red-400" role="alert">
-              {validationErrors.submitter_email}
-            </p>
-          )}
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Optional: Receive updates about your submission
-          </p>
-        </div>
-      </section>
-
-      {/* Form Actions */}
-      <div className="flex flex-col-reverse sm:flex-row gap-3 pt-6 border-t border-neutral-200 dark:border-neutral-800">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleCancelClick}
-          disabled={isSubmitting}
-          className="w-full sm:w-auto"
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={!isFormValid || isSubmitting} className="w-full sm:w-auto sm:ml-auto">
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting...
-            </>
-          ) : (
-            "Submit Photo"
-          )}
-        </Button>
-      </div>
-
-      {!isFormValid && Object.keys(validationErrors).length > 0 && (
-        <p className="text-sm text-red-500 dark:text-red-400 text-center" role="alert">
-          Please fix {Object.keys(validationErrors).length} error(s) before submitting
-        </p>
-      )}
-    </form>
+        </form>
+      </main>
+    </div>
   );
 }

@@ -256,7 +256,7 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
         <Label htmlFor="map-container">Location on Map</Label>
         {mapError ? (
           <div
-            className="w-full h-[400px] flex items-center justify-center border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900/50"
+            className="w-full h-[600px] flex items-center justify-center border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900/50"
             role="alert"
           >
             <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center px-4">{mapError}</p>
@@ -267,7 +267,7 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
               ref={mapContainerRef}
               id="map-container"
               className={cn(
-                "w-full h-[400px] rounded-lg border border-neutral-200 dark:border-neutral-800 relative overflow-hidden",
+                "w-full h-[600px] rounded-lg border border-neutral-200 dark:border-neutral-800 relative overflow-hidden",
                 disabled && "opacity-50 pointer-events-none"
               )}
               aria-label="Interactive map for location selection"
