@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Upload, MapPin, ImagePlus, Loader2, CheckCircle2 } from "lucide-react";
+import { Upload, MapPin, ImagePlus, Loader2, CheckCircle2, MapPinned } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LocationPicker } from "@/components/LocationPicker";
+import exifr from "exifr";
 
 interface PhotoSubmissionFormProps {
   userEmail?: string;
@@ -9,7 +10,7 @@ interface PhotoSubmissionFormProps {
   onCancel?: () => void;
 }
 
-export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionFormProps) {
+export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [title, setTitle] = useState("");
@@ -21,6 +22,8 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const [extractingLocation, setExtractingLocation] = useState(false);
+  const [locationExtracted, setLocationExtracted] = useState(false);
   const formTopRef = useRef<HTMLDivElement>(null);
 
   // Generate preview for uploaded file
@@ -49,7 +52,33 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [file, title, place, success]);
 
-  const handleFiles = (files: FileList | null) => {
+  const extractLocationFromPhoto = async (file: File) => {
+    setExtractingLocation(true);
+    setLocationExtracted(false);
+
+    try {
+      // Parse EXIF data from the image
+      const exifData = await exifr.parse(file, {
+        gps: true,
+        pick: ["latitude", "longitude"],
+      });
+
+      if (exifData && exifData.latitude && exifData.longitude) {
+        // Set the coordinates
+        setLat(exifData.latitude.toFixed(6));
+        setLon(exifData.longitude.toFixed(6));
+        setLocationExtracted(true);
+        setErrors((prev) => ({ ...prev, location: "", lat: "", lon: "" }));
+      }
+    } catch {
+      // Silently fail - not all photos have GPS data
+      // No GPS data found in photo
+    } finally {
+      setExtractingLocation(false);
+    }
+  };
+
+  const handleFiles = async (files: FileList | null) => {
     const f = files && files[0];
     if (!f) return;
 
@@ -67,6 +96,9 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
 
     setErrors((e) => ({ ...e, file: "" }));
     setFile(f);
+
+    // Try to extract location from photo
+    await extractLocationFromPhoto(f);
   };
 
   const parseTags = (v: string): string[] =>
@@ -148,6 +180,7 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
     setErrors({});
     setSuccess(false);
     setSubmissionId(null);
+    setLocationExtracted(false);
   };
 
   // Success view
@@ -241,16 +274,31 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
                 </div>
               </label>
               {errors.file && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{errors.file}</p>}
+
+              {/* Location extraction status */}
+              {extractingLocation && (
+                <div className="mt-3 flex items-center gap-2 text-sm text-sky-600 dark:text-sky-400">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Extracting location from photo...</span>
+                </div>
+              )}
+              {locationExtracted && (
+                <div className="mt-3 flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                  <MapPinned className="h-4 w-4" />
+                  <span>Location automatically extracted from photo!</span>
+                </div>
+              )}
             </div>
           </section>
 
           {/* Details */}
           <section className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm p-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label htmlFor="title" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Title <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span>
               </label>
               <input
+                id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="E.g., Sunrise over old town"
@@ -259,10 +307,11 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label htmlFor="tags" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Tags <span className="text-slate-400 dark:text-slate-500 font-normal">(comma separated)</span>
               </label>
               <input
+                id="tags"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 placeholder="city, coast, night"
@@ -279,8 +328,11 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
               Location
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Place</label>
+              <label htmlFor="place" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Place
+              </label>
               <input
+                id="place"
                 value={place}
                 onChange={(e) => {
                   setPlace(e.target.value);
@@ -305,6 +357,7 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
                   setLat(lat);
                   setLon(lon);
                   setErrors((prev) => ({ ...prev, location: "", lat: "", lon: "" }));
+                  setLocationExtracted(false); // User manually changed location
                 }}
                 error={errors.location || errors.lat || errors.lon}
                 disabled={submitting}
@@ -325,6 +378,7 @@ export function PhotoSubmissionForm({ userEmail, onCancel }: PhotoSubmissionForm
                 setLat("");
                 setLon("");
                 setErrors({});
+                setLocationExtracted(false);
               }}
               disabled={submitting}
               className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"

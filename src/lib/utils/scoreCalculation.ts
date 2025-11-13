@@ -49,10 +49,7 @@ export function calculateLocationScore(kmError: number): number {
  * This is client-side calculation for immediate feedback
  * Server will recalculate for authoritative scoring
  */
-export function calculateScore(
-  guess: GuessDTO,
-  correct: { lat: number; lon: number }
-): Partial<PhotoScoreResultDTO> {
+export function calculateScore(guess: GuessDTO, correct: { lat: number; lon: number }): Partial<PhotoScoreResultDTO> {
   try {
     // Calculate distance error
     const kmError = calculateDistance(guess.guessed_lat, guess.guessed_lon, correct.lat, correct.lon);

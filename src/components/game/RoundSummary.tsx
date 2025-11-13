@@ -272,11 +272,7 @@ export function RoundSummary({
                   transition={{ duration: 0.35, delay: 0.65 + i * 0.03 }}
                   className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm overflow-hidden dark:bg-gray-800 dark:ring-gray-700"
                 >
-                  <img
-                    src={result.photo_url}
-                    alt={result.place || "Photo"}
-                    className="h-40 w-full object-cover"
-                  />
+                  <img src={result.photo_url} alt={result.place || "Photo"} className="h-40 w-full object-cover" />
                   <div className="p-3 border-t border-slate-100 dark:border-gray-700">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
