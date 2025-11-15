@@ -1,0 +1,10 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Leaderboard } from "@/components/Leaderboard";
+
+export const prerender = false;
+---
+
+<Layout title="Leaderboard - FootyGuess Daily" showNavigation={true}>
+  <Leaderboard client:load />
+</Layout>
