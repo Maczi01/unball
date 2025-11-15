@@ -6,11 +6,14 @@ import HowItWorksSection from "../components/landing/HowItWorksSection";
 import ModesSection from "../components/landing/ModesSection";
 import CommunitySection from "../components/landing/CommunitySection";
 import FooterSection from "../components/landing/FooterSection";
+
+// Get auth state from middleware
+const { user } = Astro.locals;
 ---
 
 <Layout>
   <div class="min-h-screen bg-gradient-to-b from-white to-sky-50 text-gray-900">
-    <HeaderSection client:load />
+    <HeaderSection client:load userEmail={user?.email} />
     <main>
       <HeroSection client:load />
       <HowItWorksSection client:load />

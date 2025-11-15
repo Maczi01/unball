@@ -34,6 +34,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // DEBUG: Log auth state
+    console.log("[Middleware] Path:", context.url.pathname);
+    console.log("[Middleware] User:", user ? `${user.email} (${user.id})` : "null");
+    console.log("[Middleware] Cookies:", context.request.headers.get("Cookie")?.substring(0, 100));
+
     // Attach to context for use in pages and API routes
     context.locals.supabase = supabase;
     context.locals.user = user;

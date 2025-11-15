@@ -1,6 +1,10 @@
 import { Camera } from "lucide-react";
 
-export default function HeaderSection() {
+interface HeaderSectionProps {
+  userEmail?: string | null;
+}
+
+export default function HeaderSection({ userEmail }: HeaderSectionProps) {
   return (
     <header className="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/70 border-b border-slate-100">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
@@ -22,15 +26,29 @@ export default function HeaderSection() {
           </a>
         </nav>
         <div className="flex items-center gap-2">
-          <a href="/login" className="px-3 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">
-            Log in
-          </a>
-          <a
-            href="/signup"
-            className="px-3 py-2 rounded-xl text-sm font-medium bg-sky-600 text-white hover:bg-sky-700 shadow-sm"
-          >
-            Sign up
-          </a>
+          {userEmail ? (
+            <>
+              <span className="text-sm text-gray-700 hidden sm:inline">{userEmail}</span>
+              <a
+                href="/api/auth/logout"
+                className="px-3 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                Log out
+              </a>
+            </>
+          ) : (
+            <>
+              <a href="/login" className="px-3 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">
+                Log in
+              </a>
+              <a
+                href="/signup"
+                className="px-3 py-2 rounded-xl text-sm font-medium bg-sky-600 text-white hover:bg-sky-700 shadow-sm"
+              >
+                Sign up
+              </a>
+            </>
+          )}
         </div>
       </div>
     </header>
