@@ -56,6 +56,9 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
     setExtractingLocation(true);
     setLocationExtracted(false);
 
+    // eslint-disable-next-line no-console
+    console.log("📸 Starting EXIF extraction for:", file.name);
+
     try {
       // Parse EXIF data from the image
       const exifData = await exifr.parse(file, {
@@ -63,16 +66,29 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
         pick: ["latitude", "longitude"],
       });
 
+      // eslint-disable-next-line no-console
+      console.log("📍 EXIF data:", exifData);
+
       if (exifData && exifData.latitude && exifData.longitude) {
+        // eslint-disable-next-line no-console
+        console.log("✅ Location found:", {
+          latitude: exifData.latitude,
+          longitude: exifData.longitude,
+          formatted: `${exifData.latitude.toFixed(6)}, ${exifData.longitude.toFixed(6)}`,
+        });
+
         // Set the coordinates
         setLat(exifData.latitude.toFixed(6));
         setLon(exifData.longitude.toFixed(6));
         setLocationExtracted(true);
         setErrors((prev) => ({ ...prev, location: "", lat: "", lon: "" }));
+      } else {
+        // eslint-disable-next-line no-console
+        console.log("⚠️ No GPS data found in photo");
       }
-    } catch {
-      // Silently fail - not all photos have GPS data
-      // No GPS data found in photo
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("❌ EXIF extraction error:", error);
     } finally {
       setExtractingLocation(false);
     }
