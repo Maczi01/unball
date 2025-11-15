@@ -63,7 +63,6 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
       // Parse EXIF data from the image
       const exifData = await exifr.parse(file, {
         gps: true,
-        pick: ["latitude", "longitude"],
       });
 
       // eslint-disable-next-line no-console
@@ -256,8 +255,10 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
           )}
 
           {/* Photo Upload */}
-          <section className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm">
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
+          <section
+            className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm">
+            <div
+              className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
               <ImagePlus className="h-4 w-4 text-sky-600 dark:text-sky-400" /> Photo
             </div>
             <div className="p-4">
@@ -308,38 +309,12 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
           </section>
 
           {/* Details */}
-          <section className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm p-4 space-y-4">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Title <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span>
-              </label>
-              <input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="E.g., Sunrise over old town"
-                disabled={submitting}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-200 dark:focus:ring-sky-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
-              />
-            </div>
-            <div>
-              <label htmlFor="tags" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Tags <span className="text-slate-400 dark:text-slate-500 font-normal">(comma separated)</span>
-              </label>
-              <input
-                id="tags"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder="city, coast, night"
-                disabled={submitting}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-200 dark:focus:ring-sky-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
-              />
-            </div>
-          </section>
 
           {/* Location */}
-          <section className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm p-4 space-y-4">
-            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-3">
+          <section
+            className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm p-4 space-y-4">
+            <div
+              className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-3">
               <MapPin className="h-4 w-4 text-sky-600 dark:text-sky-400" />
               Location
             </div>
@@ -380,6 +355,37 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
               />
             </div>
           </section>
+
+          <section
+            className="rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-100 dark:ring-slate-800 shadow-sm p-4 space-y-4">
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Title <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span>
+              </label>
+              <input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="E.g., Sunrise over old town"
+                disabled={submitting}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-200 dark:focus:ring-sky-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+              />
+            </div>
+            <div>
+              <label htmlFor="tags" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Tags <span className="text-slate-400 dark:text-slate-500 font-normal">(comma separated)</span>
+              </label>
+              <input
+                id="tags"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="city, coast, night"
+                disabled={submitting}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-sky-200 dark:focus:ring-sky-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+              />
+            </div>
+          </section>
+
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-3">
