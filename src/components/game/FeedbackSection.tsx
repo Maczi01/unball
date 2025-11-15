@@ -87,7 +87,7 @@ function ScoreBanner({
   points,
   distanceKm,
   onNext,
-  isLastPhoto
+  isLastPhoto,
 }: {
   points: number;
   distanceKm: number;
@@ -117,7 +117,7 @@ function ScoreBanner({
         <div className="hidden md:block h-[120px] w-px bg-white/25" />
         <button
           onClick={onNext}
-          className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/20 hover:bg-white/30 text-white font-medium transition-colors backdrop-blur-sm ring-1 ring-white/30 hover:ring-white/40"
+          className="shrink-0 inline-flex cursor-pointer items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/20 hover:bg-white/30 text-white font-medium transition-colors backdrop-blur-sm ring-1 ring-white/30 hover:ring-white/40"
         >
           {isLastPhoto ? (
             <>

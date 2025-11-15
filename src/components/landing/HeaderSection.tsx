@@ -1,4 +1,12 @@
-import { Camera } from "lucide-react";
+import { Camera, User, LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderSectionProps {
   userEmail?: string | null;
@@ -24,18 +32,35 @@ export default function HeaderSection({ userEmail }: HeaderSectionProps) {
           <a className="hover:text-gray-900" href="#community">
             Community
           </a>
+          <a className="hover:text-gray-900" href="/users">
+            Users
+          </a>
         </nav>
         <div className="flex items-center gap-2">
           {userEmail ? (
-            <>
-              <span className="text-sm text-gray-700 hidden sm:inline">{userEmail}</span>
-              <a
-                href="/api/auth/logout"
-                className="px-3 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100"
-              >
-                Log out
-              </a>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">
+                <span className="hidden sm:inline">{userEmail}</span>
+                <User className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <a href="/profile" className="flex items-center cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <a href="/api/auth/logout" className="flex items-center cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <a href="/login" className="px-3 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">
