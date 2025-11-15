@@ -35,7 +35,12 @@ export function FeedbackSection({
       <Header runningTotal={runningTotal} />
 
       <main className="mx-auto max-w-6xl px-4 py-8 md:py-12">
-        <ScoreBanner points={result.total_score} distanceKm={result.km_error} />
+        <ScoreBanner
+          points={result.total_score}
+          distanceKm={result.km_error}
+          onNext={onNext}
+          isLastPhoto={isLastPhoto}
+        />
 
         <section className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <PhotoCard src={photoUrl} />
@@ -78,7 +83,17 @@ function Header({ runningTotal }: { runningTotal: number }) {
   );
 }
 
-function ScoreBanner({ points, distanceKm }: { points: number; distanceKm: number }) {
+function ScoreBanner({
+  points,
+  distanceKm,
+  onNext,
+  isLastPhoto
+}: {
+  points: number;
+  distanceKm: number;
+  onNext: () => void;
+  isLastPhoto: boolean;
+}) {
   const title =
     points >= 18000 ? "Legendary!" : points >= 12000 ? "Great shot!" : points >= 6000 ? "Nice one!" : "Keep trying!";
   return (
@@ -99,6 +114,23 @@ function ScoreBanner({ points, distanceKm }: { points: number; distanceKm: numbe
           <Badge icon={MapPin} label={`${fmt(distanceKm)} km`} sub="distance" />
           <Badge icon={Award} label={`${Math.max(0, Math.round((points / 20000) * 100))}%`} sub="of max" />
         </div>
+        <div className="hidden md:block h-[120px] w-px bg-white/25" />
+        <button
+          onClick={onNext}
+          className="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/20 hover:bg-white/30 text-white font-medium transition-colors backdrop-blur-sm ring-1 ring-white/30 hover:ring-white/40"
+        >
+          {isLastPhoto ? (
+            <>
+              Final Results
+              <Award className="h-5 w-5" />
+            </>
+          ) : (
+            <>
+              Next photo
+              <ArrowRight className="h-5 w-5" />
+            </>
+          )}
+        </button>
       </div>
       <div aria-hidden className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
     </motion.div>
