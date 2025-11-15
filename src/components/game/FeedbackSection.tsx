@@ -160,7 +160,7 @@ function MapCard({
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2 text-slate-800 dark:text-gray-200">
           <MapPin className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-          <span className="font-medium">Your guess vs actual location</span>
+          <span className="font-medium">Your guess 🎯 vs actual location 🏁</span>
         </div>
         <span className="text-sm text-gray-600 dark:text-gray-400">{fmt(kmError)} km away</span>
       </div>

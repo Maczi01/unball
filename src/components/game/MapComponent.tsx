@@ -109,12 +109,29 @@ const MapComponentInner = ({
     // Add new marker if pin exists
     if (userPin) {
       const el = document.createElement("div");
-      el.className = "w-8 h-8 bg-blue-500 rounded-full border-4 border-white shadow-lg cursor-move";
+
+      if (showFeedback) {
+        // Show bullseye emoji in feedback mode
+        el.className = "flex items-center justify-center w-10 h-10 bg-white rounded-full border-4 border-blue-500 shadow-lg";
+        el.innerHTML = '<span class="text-2xl">🎯</span>';
+      } else {
+        // Show map pin icon during guessing
+        el.className = "relative cursor-move";
+        el.innerHTML = `
+          <svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 0C7.163 0 0 7.163 0 16C0 28 16 40 16 40C16 40 32 28 32 16C32 7.163 24.837 0 16 0Z" fill="#EF4444"/>
+            <circle cx="16" cy="15" r="6" fill="white"/>
+          </svg>
+        `;
+        el.style.transform = 'translate(-16px, -40px)'; // Center the pin at the point
+      }
+
       el.setAttribute("aria-label", "Your guess location");
 
       userMarker.current = new mapboxgl.Marker({
         element: el,
         draggable: !showFeedback, // Only draggable when not in feedback mode
+        anchor: showFeedback ? 'center' : 'bottom',
       })
         .setLngLat([userPin.lon, userPin.lat])
         .addTo(map.current);
@@ -150,7 +167,8 @@ const MapComponentInner = ({
     // Add correct pin marker
     if (correctPin) {
       const el = document.createElement("div");
-      el.className = "w-8 h-8 bg-green-500 rounded-full border-4 border-white shadow-lg";
+      el.className = "flex items-center justify-center w-10 h-10 bg-white rounded-full border-4 border-green-500 shadow-lg";
+      el.innerHTML = '<span class="text-2xl">🏁</span>';
       el.setAttribute("aria-label", "Correct location");
 
       correctMarker.current = new mapboxgl.Marker({ element: el })
@@ -310,8 +328,8 @@ const MapComponentInner = ({
 
       {/* Keyboard navigation instructions */}
       <div className="sr-only" role="status" aria-live="polite">
-        {!showFeedback && "Click on the map to place your guess pin. You can drag the pin to adjust your guess."}
-        {showFeedback && "Viewing feedback: blue pin shows your guess, green pin shows the correct location."}
+        {!showFeedback && "Click on the map to place your guess pin (bullseye icon). You can drag the pin to adjust your guess."}
+        {showFeedback && "Viewing feedback: bullseye shows your guess, checkered flag shows the correct location."}
       </div>
     </div>
   );
