@@ -101,7 +101,7 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
           data-photo-id={photo.photo_id}
           src={photo.photo_url}
           alt={`Photo ${currentIndex + 1} of ${totalPhotos}${photo.place ? ` from ${photo.place}` : ""}`}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${
+          className={`w-full h-full object-contain transition-opacity duration-300 ${
             isLoading ? "opacity-0" : "opacity-100"
           }`}
           onLoad={handleImageLoad}
