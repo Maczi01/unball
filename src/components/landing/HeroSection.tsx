@@ -29,22 +29,26 @@ export default function HeroSection() {
       </div>
 
       <div className="mx-auto max-w-6xl px-4 pt-20 pb-16 lg:pb-24">
-        <motion.h1
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-4xl md:text-6xl font-semibold tracking-tight text-slate-900 text-center"
-        >
+        {/*<motion.h1*/}
+        {/*  initial={{ opacity: 0, y: 8 }}*/}
+        {/*  animate={{ opacity: 1, y: 0 }}*/}
+        {/*  transition={{ duration: 0.5 }}*/}
+        {/*  className="text-4xl md:text-6xl font-semibold tracking-tight text-slate-900 text-center"*/}
+        {/*>*/}
+        <div className="text-4xl md:text-6xl font-semibold tracking-tight text-slate-900 text-center">
           Guess where the world takes you.
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.05 }}
-          className="mt-4 text-lg md:text-xl text-gray-600 text-center max-w-2xl mx-auto"
-        >
+        </div>
+        {/*</motion.h1>*/}
+        {/*<motion.p*/}
+        {/*  initial={{ opacity: 0, y: 8 }}*/}
+        {/*  animate={{ opacity: 1, y: 0 }}*/}
+        {/*  transition={{ duration: 0.6, delay: 0.05 }}*/}
+        {/*  className="mt-4 text-lg md:text-xl text-gray-600 text-center max-w-2xl mx-auto"*/}
+        {/*>*/}
+        <div className="mt-4 text-lg md:text-xl text-gray-600 text-center max-w-2xl mx-auto">
           Upload travel photos. Let everyone guess the location. Simple, fast, and dangerously fun.
-        </motion.p>
+        </div>
+        {/*</motion.p>*/}
 
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -67,12 +71,13 @@ export default function HeroSection() {
         </motion.div>
 
         {/* Hero preview cards */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4"
-        >
+        {/*<motion.div*/}
+        {/*  initial={{ opacity: 0, scale: 0.98 }}*/}
+        {/*  animate={{ opacity: 1, scale: 1 }}*/}
+        {/*  transition={{ duration: 0.5, delay: 0.15 }}*/}
+        {/*  className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4"*/}
+        {/*>*/}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
           {heroImages.map((img, i) => (
             <div
               key={i}
@@ -88,7 +93,8 @@ export default function HeroSection() {
               </div>
             </div>
           ))}
-        </motion.div>
+        </div>
+        {/*</motion.div>*/}
       </div>
     </section>
   );

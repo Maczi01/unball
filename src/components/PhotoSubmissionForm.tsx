@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Upload, MapPin, ImagePlus, Loader2, CheckCircle2, MapPinned } from "lucide-react";
+import { Upload, MapPin, ImagePlus, Loader2, CheckCircle2, MapPinned, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LocationPicker } from "@/components/LocationPicker";
 import exifr from "exifr";
@@ -24,6 +24,7 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [extractingLocation, setExtractingLocation] = useState(false);
   const [locationExtracted, setLocationExtracted] = useState(false);
+  const [noLocationFound, setNoLocationFound] = useState(false);
   const formTopRef = useRef<HTMLDivElement>(null);
 
   // Generate preview for uploaded file
@@ -52,9 +53,59 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [file, title, place, success]);
 
+  const reverseGeocode = async (lat: number, lon: number): Promise<string | null> => {
+    try {
+      // eslint-disable-next-line no-console
+      console.log("🌍 Reverse geocoding:", { lat, lon });
+
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`,
+        {
+          headers: {
+            "User-Agent": "UnballPhotoApp/1.0",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        // eslint-disable-next-line no-console
+        console.warn("⚠️ Geocoding API error:", response.status);
+        return null;
+      }
+
+      const data = await response.json();
+      // eslint-disable-next-line no-console
+      console.log("📍 Geocoding result:", data);
+
+      // Extract city/town and country
+      const address = data.address || {};
+      const city =
+        address.city ||
+        address.town ||
+        address.village ||
+        address.municipality ||
+        address.county ||
+        "";
+      const country = address.country || "";
+
+      if (city && country) {
+        return `${city}, ${country}`;
+      } else if (country) {
+        return country;
+      }
+
+      return null;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("❌ Reverse geocoding error:", error);
+      return null;
+    }
+  };
+
   const extractLocationFromPhoto = async (file: File) => {
     setExtractingLocation(true);
     setLocationExtracted(false);
+    setNoLocationFound(false);
 
     // eslint-disable-next-line no-console
     console.log("📸 Starting EXIF extraction for:", file.name);
@@ -80,17 +131,39 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
         setLat(exifData.latitude.toFixed(6));
         setLon(exifData.longitude.toFixed(6));
         setLocationExtracted(true);
+        setNoLocationFound(false);
         setErrors((prev) => ({ ...prev, location: "", lat: "", lon: "" }));
+
+        // Try to get place name from coordinates
+        const placeName = await reverseGeocode(exifData.latitude, exifData.longitude);
+        if (placeName) {
+          setPlace(placeName);
+          setErrors((prev) => ({ ...prev, place: "" }));
+          // eslint-disable-next-line no-console
+          console.log("✅ Place name set:", placeName);
+        }
       } else {
         // eslint-disable-next-line no-console
         console.log("⚠️ No GPS data found in photo");
+        setNoLocationFound(true);
+        setLocationExtracted(false);
       }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("❌ EXIF extraction error:", error);
+      setNoLocationFound(true);
+      setLocationExtracted(false);
     } finally {
       setExtractingLocation(false);
     }
+  };
+
+  const handleRemovePhoto = () => {
+    setFile(null);
+    setPreview(null);
+    setLocationExtracted(false);
+    setNoLocationFound(false);
+    setErrors((e) => ({ ...e, file: "" }));
   };
 
   const handleFiles = async (files: FileList | null) => {
@@ -196,6 +269,7 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
     setSuccess(false);
     setSubmissionId(null);
     setLocationExtracted(false);
+    setNoLocationFound(false);
   };
 
   // Success view
@@ -280,7 +354,22 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
                 />
                 <div className="grid place-content-center text-center p-8">
                   {preview ? (
-                    <img src={preview} alt="preview" className="w-full max-h-80 object-contain rounded-md" />
+                    <div className="relative">
+                      <img src={preview} alt="preview" className="w-full max-h-80 object-contain rounded-md" />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleRemovePhoto();
+                        }}
+                        disabled={submitting}
+                        className="absolute top-2 right-2 p-2 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Remove photo"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-slate-500 dark:text-slate-400">
                       <Upload className="h-6 w-6" />
@@ -303,6 +392,12 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
                 <div className="mt-3 flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
                   <MapPinned className="h-4 w-4" />
                   <span>Location automatically extracted from photo!</span>
+                </div>
+              )}
+              {noLocationFound && (
+                <div className="mt-3 flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                  <MapPin className="h-4 w-4" />
+                  <span>No GPS location found in photo. Please select location manually below.</span>
                 </div>
               )}
             </div>
@@ -401,6 +496,7 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
                 setLon("");
                 setErrors({});
                 setLocationExtracted(false);
+                setNoLocationFound(false);
               }}
               disabled={submitting}
               className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
