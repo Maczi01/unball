@@ -385,17 +385,6 @@ it('should handle API error', async () => {
 - Test components from the user's perspective
 - Avoid `container.querySelector()` - use accessible queries
 
-## Coverage Requirements
-
-The project maintains the following coverage targets:
-
-| Component | Target Coverage |
-|-----------|----------------|
-| Critical paths (scoring, leaderboard) | 90%+ |
-| Business logic (services, utilities) | 80%+ |
-| UI components (interactive) | 70%+ |
-| Overall project | 75%+ |
-
 ### Viewing Coverage
 
 ```bash

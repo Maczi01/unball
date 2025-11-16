@@ -176,14 +176,6 @@ npm run test:coverage     # Generate coverage report
 npm run test:e2e          # Run end-to-end tests
 npm run test:e2e:ui       # Run E2E tests with UI
 ```
-
-### Test Coverage Goals
-
-- **Critical paths**: 90%+ coverage (scoring, leaderboard, daily scheduling)
-- **Business logic**: 80%+ coverage (services, utilities)
-- **UI components**: 70%+ coverage (interactive components)
-- **Overall project**: 75%+ coverage target
-
 ### Key Test Scenarios
 
 1. **Scoring Accuracy**
