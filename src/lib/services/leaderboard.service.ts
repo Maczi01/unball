@@ -73,10 +73,7 @@ export async function getLeaderboard(
  * @param limit - Maximum number of entries to return (default: 100)
  * @returns Leaderboard response for today
  */
-export async function getTodaysLeaderboard(
-  supabase: SupabaseClient,
-  limit = 100
-): Promise<LeaderboardResponseDTO> {
+export async function getTodaysLeaderboard(supabase: SupabaseClient, limit = 100): Promise<LeaderboardResponseDTO> {
   const today = new Date().toISOString().split("T")[0];
   return getLeaderboard(supabase, today, limit);
 }
@@ -89,10 +86,7 @@ export async function getTodaysLeaderboard(
  * @param limit - Maximum number of dates to return (default: 30)
  * @returns Array of dates with leaderboard data
  */
-export async function getAvailableLeaderboardDates(
-  supabase: SupabaseClient,
-  limit = 30
-): Promise<string[]> {
+export async function getAvailableLeaderboardDates(supabase: SupabaseClient, limit = 30): Promise<string[]> {
   try {
     const { data, error } = await supabase
       .from("leaderboard_with_users")

@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Award, CalendarDays, Compass, Home, MapPin, RefreshCw, Share2, Trophy, BarChart3 } from "lucide-react";
+import { Award, BarChart3, Home, MapPin, RefreshCw, Share2, Trophy } from "lucide-react";
 import { NicknameInput } from "./NicknameInput";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { GameMode, PhotoScoreResultDTO, NicknameValidation } from "@/types";
+import type { GameMode, NicknameValidation, PhotoScoreResultDTO } from "@/types";
 import { ValidationConstants } from "@/types";
 
 interface RoundSummaryProps {
   mode: GameMode;
   results: PhotoScoreResultDTO[];
   totalScore: number;
-  totalTimeMs: number;
   isFirstSubmission: boolean; // Daily mode only
   leaderboardRank?: number; // After submission
   onViewLeaderboard: () => void;
@@ -28,7 +27,6 @@ export function RoundSummary({
   mode,
   results,
   totalScore,
-  totalTimeMs,
   isFirstSubmission,
   leaderboardRank,
   onViewLeaderboard,
@@ -46,15 +44,6 @@ export function RoundSummary({
   const showLeaderboardRank = isDailyMode && (hasSubmitted || !isFirstSubmission) && leaderboardRank !== undefined;
   const maxScore = results.length * 10000;
   const accuracy = Math.round((totalScore / maxScore) * 100);
-  const rounds = results.length;
-
-  // Format time as MM:SS
-  const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  };
 
   // Validate nickname
   const validateNickname = (value: string): NicknameValidation => {
@@ -345,31 +334,5 @@ export function RoundSummary({
         © {new Date().getFullYear()} Photo Guesser
       </footer>
     </div>
-  );
-}
-
-function InfoCard({
-  icon,
-  label,
-  value,
-  delay,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  delay: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
-      className="rounded-2xl bg-white ring-1 ring-slate-100 shadow-sm p-6 dark:bg-gray-800 dark:ring-gray-700"
-    >
-      <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 flex items-center gap-2">
-        {icon} {label}
-      </div>
-      <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-gray-100">{value}</div>
-    </motion.div>
   );
 }

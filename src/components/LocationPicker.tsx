@@ -3,7 +3,6 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ValidationConstants } from "@/types";
 
@@ -115,8 +114,7 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
       // eslint-disable-next-line no-console
       console.error("Map initialization error:", err);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, [updatePin]); // Only run once on mount
 
   // Update pin position when lat/lon props change
   useEffect(() => {

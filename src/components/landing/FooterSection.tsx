@@ -11,13 +11,10 @@ export default function FooterSection() {
           <span>© {new Date().getFullYear()} Snaptrip</span>
         </div>
         <div className="flex items-center gap-4">
-          <a className="hover:text-gray-900" href="#">
-            Twitter
-          </a>
-          <a className="hover:text-gray-900" href="#">
+          <a className="hover:text-gray-900" href={"/"}>
             Instagram
           </a>
-          <a className="hover:text-gray-900" href="#">
+          <a className="hover:text-gray-900" href={"/"}>
             Contact
           </a>
         </div>

@@ -1,4 +1,4 @@
-import { Camera, User, LogOut } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,20 +16,18 @@ export default function HeaderSection({ userEmail }: HeaderSectionProps) {
   return (
     <header className="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/70 border-b border-slate-100">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-sky-500 grid place-content-center text-white">
-            <Camera className="h-4 w-4" />
-          </div>
+        <a href="/" className="flex items-center gap-2">
+          <img src="/logo.png" alt="Snaptrip logo" className="h-8 w-8" />
           <span className="font-semibold text-lg tracking-tight">Snaptrip</span>
         </a>
         <nav className="hidden sm:flex items-center gap-6 text-sm text-gray-600">
-          <a className="hover:text-gray-900" href="#how">
+          <a className="hover:text-gray-900" href="/">
             How it works
           </a>
-          <a className="hover:text-gray-900" href="#modes">
+          <a className="hover:text-gray-900" href="/">
             Modes
           </a>
-          <a className="hover:text-gray-900" href="#community">
+          <a className="hover:text-gray-900" href="/">
             Community
           </a>
           <a className="hover:text-gray-900" href="/users">

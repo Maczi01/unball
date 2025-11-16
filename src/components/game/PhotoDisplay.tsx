@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import type { DailySetPhotoDTO, NormalRoundPhotoDTO } from "@/types";
 
 interface PhotoDisplayProps {
@@ -13,11 +13,11 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const handleImageLoad = () => {
+  const handleImageLoad = useCallback(() => {
     setIsLoading(false);
     setHasError(false);
     onLoad?.();
-  };
+  }, [onLoad]);
 
   // Check if image is already loaded (cached)
   useEffect(() => {
@@ -25,7 +25,7 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
     if (img && img.complete && img.naturalHeight !== 0) {
       handleImageLoad();
     }
-  }, [photo.photo_url]);
+  }, [handleImageLoad, photo.photo_url]);
 
   const handleImageError = () => {
     setIsLoading(false);

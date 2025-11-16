@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MapPin, Compass, Award, ArrowRight, Link as LinkIcon } from "lucide-react";
+import { MapPin, Compass, Award, ArrowRight } from "lucide-react";
 import { MapComponent } from "./MapComponent";
 import type { PhotoScoreResultDTO } from "@/types";
 

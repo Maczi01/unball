@@ -317,7 +317,6 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
         mode={mode}
         results={gameState.photos.filter((p) => p.result !== null).map((p) => p.result as PhotoScoreResultDTO)}
         totalScore={gameState.totalScore}
-        totalTimeMs={elapsedMs}
         isFirstSubmission={mode === "daily" && !hasSubmitted && !isAlreadySubmitted}
         leaderboardRank={leaderboardRank}
         onViewLeaderboard={handleViewLeaderboard}
