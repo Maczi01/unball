@@ -3,13 +3,13 @@ import "../styles/global.css";
 
 interface Props {
   title?: string;
-  showNavigation?: boolean;
+  // showNavigation?: boolean;
 }
 
-const { title = "FootyGuess Daily - Test Your Football Knowledge", showNavigation = true } = Astro.props;
+const { title = "FootyGuess Daily - Test Your Football Knowledge" } = Astro.props;
 
 // Get auth state from middleware
-const { user } = Astro.locals;
+// const { user } = Astro.locals;
 ---
 
 <!doctype html>

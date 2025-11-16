@@ -107,6 +107,7 @@ export default tseslint.config(
 
       // Misc
       'tests/setup/vitest.setup.ts',
+      'src/db/**'
     ]
   },
   baseConfig,

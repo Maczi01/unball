@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, AlertCircle, Trophy, Clock, Calendar, Medal, Award } from "lucide-react";
-import type { LeaderboardResponseDTO, LeaderboardEntryDTO } from "@/types";
+import { AlertCircle, Award, Calendar, Clock, Loader2, Medal, Trophy } from "lucide-react";
+import type { LeaderboardResponseDTO } from "@/types";
 
 interface LeaderboardProps {
   date?: string;
@@ -13,7 +12,7 @@ export function Leaderboard({ date }: LeaderboardProps) {
   const [leaderboard, setLeaderboard] = useState<LeaderboardResponseDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string>(date || "today");
+  const [selectedDate] = useState<string>(date || "today");
 
   useEffect(() => {
     async function fetchLeaderboard() {
@@ -21,8 +20,7 @@ export function Leaderboard({ date }: LeaderboardProps) {
         setLoading(true);
         setError(null);
 
-        const endpoint =
-          selectedDate === "today" ? "/api/leaderboard" : `/api/leaderboard/${selectedDate}`;
+        const endpoint = selectedDate === "today" ? "/api/leaderboard" : `/api/leaderboard/${selectedDate}`;
 
         const response = await fetch(endpoint);
 
@@ -144,7 +142,7 @@ export function Leaderboard({ date }: LeaderboardProps) {
       {/* Top 3 Podium */}
       {leaderboard.leaderboard.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {leaderboard.leaderboard.slice(0, 3).map((entry, index) => (
+          {leaderboard.leaderboard.slice(0, 3).map((entry) => (
             <Card
               key={entry.rank}
               className={`${
@@ -238,9 +236,7 @@ export function Leaderboard({ date }: LeaderboardProps) {
               <Trophy className="h-12 w-12 mx-auto text-neutral-400" />
               <div>
                 <h3 className="text-lg font-semibold">No Submissions Yet</h3>
-                <p className="text-neutral-500 dark:text-neutral-400 mt-1">
-                  Be the first to submit for this date!
-                </p>
+                <p className="text-neutral-500 dark:text-neutral-400 mt-1">Be the first to submit for this date!</p>
               </div>
             </div>
           </CardContent>
