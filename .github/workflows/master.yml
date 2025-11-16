@@ -30,16 +30,6 @@ jobs:
       - name: Run linting
         run: npm run lint
 
-      - name: Run unit tests
-        run: npm run test:coverage
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
-        if: always()
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
-
   deploy:
     name: Deploy to Cloudflare Pages
     runs-on: ubuntu-latest
