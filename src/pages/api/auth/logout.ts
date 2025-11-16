@@ -8,20 +8,20 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ locals, redirect, cookies }) => {
   try {
-    // 1. Sign out using Supabase client
+    // Sign out using Supabase client
     await locals.supabase.auth.signOut();
 
-    // 2. Clear the specific Supabase auth cookies used for the session.
-    // Explicitly deleting the known cookies is more reliable than iterating.
-    const cookieOptions = { path: "/" };
+    // Clear all Supabase auth cookies
+    const allCookies = cookies.getAll();
+    allCookies.forEach((cookie) => {
+      if (cookie.name.startsWith("sb-")) {
+        cookies.delete(cookie.name, { path: "/" });
+      }
+    });
 
-    cookies.delete("sb-access-token", cookieOptions);
-    cookies.delete("sb-refresh-token", cookieOptions);
-
-    // 3. Redirect to home page
+    // Redirect to home page
     return redirect("/");
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error("Logout error:", error);
     // Still redirect even on error to prevent stuck state
     return redirect("/?error=logout-failed");
