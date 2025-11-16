@@ -100,7 +100,6 @@ describe("calculateLocationScore", () => {
   });
 });
 
-
 describe("Score Calculation - Location Scenarios", () => {
   it("should achieve perfect score (10000) with exact guess", () => {
     const score = calculateLocationScore(0);
