@@ -1,8 +1,8 @@
-# FootyGuess Daily
+# GeoGuess Daily
 
-> Test your football knowledge through visual recognition of iconic moments in football history
+> Test your travel knowledge by guessing where holiday photos were taken around the world
 
-**FootyGuess Daily** is a web-first, mobile-responsive game for football fans. Players are shown football-related photos and must guess both the event's location on a world map and the year it occurred. Challenge yourself with 5 photos per round and compete on the global leaderboard!
+**GeoGuess Daily** is a web-first, mobile-responsive game for travel enthusiasts. Players are shown vacation and holiday photos from around the globe and must guess the location on a world map. Challenge yourself with 5 photos per round and compete on the global leaderboard!
 
 ## Table of Contents
 
@@ -25,18 +25,16 @@
 
 ### 🎯 Scoring System
 
-- **20,000 points maximum per photo**
-  - 10,000 points for location accuracy
-  - 10,000 points for time accuracy
-- Linear deduction based on distance error (km) and time error (years)
+- **10,000 points maximum per photo**
+  - Points awarded based on location accuracy
+- Linear deduction based on distance error (km)
 - Transparent scoring formulas with real-time feedback
 
 ### 🗺️ Interactive Gameplay
 
 - Place pins on an interactive world map powered by Mapbox
-- Select years using a bounded picker (1880-2025)
 - Visual feedback showing your guess vs. correct answer
-- Detailed event information revealed after completion
+- Detailed location information revealed after each guess
 
 ### 🏆 Global Leaderboard
 
