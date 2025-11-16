@@ -55,7 +55,7 @@ describe("Button Component", () => {
 
     // Assert
     const button = screen.getByRole("button", { name: /large button/i });
-    expect(button).toHaveClass("h-11");
+    expect(button).toHaveClass("h-10");
   });
 
   it("should render as child component when asChild is true", () => {

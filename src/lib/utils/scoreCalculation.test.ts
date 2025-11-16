@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateDistance, calculateLocationScore, calculateTimeScore } from "./scoreCalculation";
+import { calculateDistance, calculateLocationScore } from "./scoreCalculation";
 
 /**
  * Tests for score calculation utilities
@@ -100,91 +100,35 @@ describe("calculateLocationScore", () => {
   });
 });
 
-describe("calculateTimeScore", () => {
-  it("should return maximum score (10000) for 0 year error", () => {
-    const score = calculateTimeScore(0);
+
+describe("Score Calculation - Location Scenarios", () => {
+  it("should achieve perfect score (10000) with exact guess", () => {
+    const score = calculateLocationScore(0);
     expect(score).toBe(10000);
   });
 
-  it("should deduct 400 points per year", () => {
-    // 5 year error = 2000 points deducted
-    const score = calculateTimeScore(5);
-    expect(score).toBe(8000);
-  });
-
-  it("should return 5000 points for 12.5 year error", () => {
-    // 12.5 years * 400 = 5000 points deducted
-    const score = calculateTimeScore(12.5);
-    expect(score).toBe(5000);
-  });
-
-  it("should return 0 for 25 year error (maximum penalty)", () => {
-    // 25 years * 400 = 10000 points deducted (entire score)
-    const score = calculateTimeScore(25);
-    expect(score).toBe(0);
-  });
-
-  it("should return 0 for errors greater than 25 years", () => {
-    const score = calculateTimeScore(100);
-    expect(score).toBe(0);
-  });
-
-  it("should handle negative year differences (absolute value)", () => {
-    const score = calculateTimeScore(-10);
-    expect(score).toBe(6000); // Same as +10
-  });
-
-  it("should round the score to nearest integer", () => {
-    // 5.5 year error = 2200 points deducted = 7800
-    const score = calculateTimeScore(5.5);
-    expect(Number.isInteger(score)).toBe(true);
-  });
-
-  it("should handle very small year differences correctly", () => {
-    // 1 year error = 400 points deducted
-    const score = calculateTimeScore(1);
-    expect(score).toBe(9600);
-  });
-});
-
-describe("Score Calculation - Combined Scenarios", () => {
-  it("should achieve perfect score (20000) with exact guess", () => {
-    const locationScore = calculateLocationScore(0);
-    const timeScore = calculateTimeScore(0);
-    const totalScore = locationScore + timeScore;
-    expect(totalScore).toBe(20000);
-  });
-
-  it("should achieve reasonable score with small errors", () => {
-    // 50 km error (9750 points) + 2 year error (9200 points) = 18950 points
-    const locationScore = calculateLocationScore(50);
-    const timeScore = calculateTimeScore(2);
-    const totalScore = locationScore + timeScore;
-    expect(totalScore).toBe(18950);
+  it("should achieve high score with small errors", () => {
+    // 50 km error = 250 points deducted = 9750 points
+    const score = calculateLocationScore(50);
+    expect(score).toBe(9750);
   });
 
   it("should achieve medium score with moderate errors", () => {
-    // 500 km error (7500 points) + 10 year error (6000 points) = 13500 points
-    const locationScore = calculateLocationScore(500);
-    const timeScore = calculateTimeScore(10);
-    const totalScore = locationScore + timeScore;
-    expect(totalScore).toBe(13500);
+    // 500 km error = 2500 points deducted = 7500 points
+    const score = calculateLocationScore(500);
+    expect(score).toBe(7500);
   });
 
   it("should achieve low score with large errors", () => {
-    // 1500 km error (2500 points) + 20 year error (2000 points) = 4500 points
-    const locationScore = calculateLocationScore(1500);
-    const timeScore = calculateTimeScore(20);
-    const totalScore = locationScore + timeScore;
-    expect(totalScore).toBe(4500);
+    // 1500 km error = 7500 points deducted = 2500 points
+    const score = calculateLocationScore(1500);
+    expect(score).toBe(2500);
   });
 
   it("should achieve minimum score (0) with maximum errors", () => {
-    // 3000 km error (0 points) + 50 year error (0 points) = 0 points
-    const locationScore = calculateLocationScore(3000);
-    const timeScore = calculateTimeScore(50);
-    const totalScore = locationScore + timeScore;
-    expect(totalScore).toBe(0);
+    // 3000 km error = 15000 points deducted = 0 points (capped at 0)
+    const score = calculateLocationScore(3000);
+    expect(score).toBe(0);
   });
 });
 
@@ -195,25 +139,10 @@ describe("Edge Cases and Boundary Conditions", () => {
     expect(score).toBe(0);
   });
 
-  it("should handle fractional year errors", () => {
-    const score = calculateTimeScore(2.5);
-    expect(score).toBe(9000);
-  });
-
   it("should maintain score boundaries at exactly 2000 km", () => {
     const scoreBefore = calculateLocationScore(1999);
     const scoreAt = calculateLocationScore(2000);
     const scoreAfter = calculateLocationScore(2001);
-
-    expect(scoreBefore).toBeGreaterThan(0);
-    expect(scoreAt).toBe(0);
-    expect(scoreAfter).toBe(0);
-  });
-
-  it("should maintain score boundaries at exactly 25 years", () => {
-    const scoreBefore = calculateTimeScore(24);
-    const scoreAt = calculateTimeScore(25);
-    const scoreAfter = calculateTimeScore(26);
 
     expect(scoreBefore).toBeGreaterThan(0);
     expect(scoreAt).toBe(0);
