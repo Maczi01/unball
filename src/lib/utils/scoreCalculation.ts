@@ -6,7 +6,8 @@ import type { GuessDTO, PhotoScoreResultDTO } from "@/types";
  */
 const SCORING_CONSTANTS = {
   MAX_LOCATION_SCORE: 10000,
-  KM_PENALTY_FACTOR: 5, // Points deducted per km of error
+  MAX_SCORE_RADIUS_KM: 10, // 20km diameter = 10km radius for max points
+  KM_PENALTY_FACTOR: 5, // Points deducted per km of error beyond the max score radius
 };
 
 /**
@@ -37,10 +38,18 @@ export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2
 
 /**
  * Calculate location score based on distance error
- * Max 10,000 points, reduced by 5 points per km
+ * Max 10,000 points within 10km radius (20km diameter)
+ * Beyond 10km, reduced by 5 points per km
  */
 export function calculateLocationScore(kmError: number): number {
-  const score = SCORING_CONSTANTS.MAX_LOCATION_SCORE - kmError * SCORING_CONSTANTS.KM_PENALTY_FACTOR;
+  // If within max score radius, award full points
+  if (kmError <= SCORING_CONSTANTS.MAX_SCORE_RADIUS_KM) {
+    return SCORING_CONSTANTS.MAX_LOCATION_SCORE;
+  }
+
+  // Beyond max score radius, apply penalty for extra distance
+  const excessDistance = kmError - SCORING_CONSTANTS.MAX_SCORE_RADIUS_KM;
+  const score = SCORING_CONSTANTS.MAX_LOCATION_SCORE - excessDistance * SCORING_CONSTANTS.KM_PENALTY_FACTOR;
   return Math.max(0, Math.round(score));
 }
 

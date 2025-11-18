@@ -473,6 +473,7 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
                 }}
                 error={errors.location || errors.lat || errors.lon}
                 disabled={submitting}
+                showAccuracyCircle={locationExtracted || (lat !== "" && lon !== "")}
               />
             </div>
           </section>
