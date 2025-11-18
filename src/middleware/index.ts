@@ -34,14 +34,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
       data: { user },
     } = await supabase.auth.getUser();
 
-
     // Attach to context for use in pages and API routes
     context.locals.supabase = supabase;
     context.locals.user = user;
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     context.locals.session = user ? { user } : null;
   } catch (error) {
     // Log error but don't block the request
+    // eslint-disable-next-line no-console
     console.error("Middleware error:", error);
     // Set defaults if Supabase fails
     context.locals.user = null;
