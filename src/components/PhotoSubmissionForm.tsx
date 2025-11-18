@@ -25,6 +25,7 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
   const [extractingLocation, setExtractingLocation] = useState(false);
   const [locationExtracted, setLocationExtracted] = useState(false);
   const [noLocationFound, setNoLocationFound] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const formTopRef = useRef<HTMLDivElement>(null);
 
   // Generate preview for uploaded file
@@ -157,6 +158,7 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
     setPreview(null);
     setLocationExtracted(false);
     setNoLocationFound(false);
+    setIsDragging(false);
     setErrors((e) => ({ ...e, file: "" }));
   };
 
@@ -181,6 +183,34 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
 
     // Try to extract location from photo
     await extractLocationFromPhoto(f);
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (submitting) return;
+
+    const files = e.dataTransfer?.files;
+    await handleFiles(files);
   };
 
   const parseTags = (v: string): string[] =>
@@ -264,6 +294,7 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
     setSubmissionId(null);
     setLocationExtracted(false);
     setNoLocationFound(false);
+    setIsDragging(false);
   };
 
   // Success view
@@ -330,9 +361,14 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
             <div className="p-4">
               <label
                 htmlFor="file"
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
                 className={cn(
                   "relative block w-full rounded-xl border-2 border-dashed bg-slate-50/60 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer",
-                  errors.file ? "border-red-300 dark:border-red-900" : "border-slate-200 dark:border-slate-700"
+                  errors.file ? "border-red-300 dark:border-red-900" : "border-slate-200 dark:border-slate-700",
+                  isDragging && "border-sky-400 dark:border-sky-500 bg-sky-50/60 dark:bg-sky-900/20"
                 )}
               >
                 <input
@@ -485,6 +521,7 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
                 setErrors({});
                 setLocationExtracted(false);
                 setNoLocationFound(false);
+                setIsDragging(false);
               }}
               disabled={submitting}
               className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
