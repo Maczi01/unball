@@ -3,12 +3,15 @@ import "../styles/global.css";
 
 interface Props {
   title?: string;
-  showNavigation?: boolean;
+  // showNavigation?: boolean;
 }
 
-const { title = "FootyGuess Daily - Test Your Football Knowledge", showNavigation = true } = Astro.props;
+const { title = "FootyGuess Daily - Test Your Football Knowledge" } = Astro.props;
 
 // Get auth state from middleware
+// @typescript-eslint/no-unused-vars
+//  Ignore unused variabable with eslint comment
+/* eslint-disable no-unused-vars */
 const { user } = Astro.locals;
 ---
 
