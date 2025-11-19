@@ -64,9 +64,16 @@ jobs:
           PUBLIC_MAPBOX_ACCESS_TOKEN: ${{ secrets.PUBLIC_MAPBOX_ACCESS_TOKEN }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
 
+      - name: Fix routes.json for Cloudflare
+        run: |
+          if [ -f dist/routes.json ]; then
+            mv dist/routes.json dist/_routes.json
+          fi
+        shell: bash
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./dist --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+          command: pages deploy dist --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
