@@ -4,15 +4,10 @@
 name = "unball"
 compatibility_date = "2025-11-02"
 compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
 
 # For local development with Wrangler
 # Run: npx wrangler pages dev ./dist
-
-[build]
-command = "npm ci --ignore-scripts && npm run build && if [ -f dist/routes.json ]; then mv dist/routes.json dist/_routes.json; fi"
-
-[pages]
-pages_build_output_dir = "dist"
 
 # Uncomment and configure KV namespaces if needed
 # [[kv_namespaces]]
