@@ -14,6 +14,11 @@ command = "npm ci --ignore-scripts && npm run build && if [ -f dist/routes.json 
 [pages]
 pages_build_output_dir = "dist"
 
+[[kv_namespaces]]
+binding = "SESSION"
+id = "preview_id"
+preview_id = "preview_id"
+
 [env.production]
 # Environment variables for production (set in Cloudflare dashboard or via GitHub secrets)
 # SUPABASE_URL
@@ -21,3 +26,12 @@ pages_build_output_dir = "dist"
 # OPENROUTER_API_KEY
 # PUBLIC_MAPBOX_ACCESS_TOKEN
 # CRON_SECRET
+
+[env.production.kv_namespaces]
+# You need to create a KV namespace in Cloudflare dashboard and replace this ID
+# Steps:
+# 1. Go to Cloudflare Dashboard → Workers & Pages → KV
+# 2. Create a namespace called "SESSION" (or any name)
+# 3. Copy the namespace ID and replace below
+binding = "SESSION"
+id = "YOUR_KV_NAMESPACE_ID"
