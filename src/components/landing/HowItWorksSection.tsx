@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Camera, MapPin, Compass } from "lucide-react";
 
 const howItWorksItems = [
@@ -30,12 +29,8 @@ export default function HowItWorksSection() {
         {howItWorksItems.map((item, i) => {
           const Icon = item.icon;
           return (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.45, delay: i * 0.05 }}
               className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 p-6"
             >
               <div className="h-10 w-10 rounded-xl bg-sky-100 text-sky-700 grid place-content-center mb-4">
@@ -43,7 +38,7 @@ export default function HowItWorksSection() {
               </div>
               <h3 className="text-lg font-semibold mb-1">{item.title}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
-            </motion.div>
+            </div>
           );
         })}
       </div>

@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { MapPin, Trophy } from "lucide-react";
 
 const modes = [
@@ -30,12 +29,8 @@ export default function ModesSection() {
           {modes.map((mode, i) => {
             const Icon = mode.icon;
             return (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 8 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.45, delay: i * 0.05 }}
                 className="relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 p-6"
               >
                 <div className="flex items-start gap-4">
@@ -55,7 +50,7 @@ export default function ModesSection() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>

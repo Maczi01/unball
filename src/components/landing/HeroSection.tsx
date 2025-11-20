@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Play, Upload } from "lucide-react";
 
 const heroImages = [
@@ -50,12 +49,7 @@ export default function HeroSection() {
         </div>
         {/*</motion.p>*/}
 
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mt-8 flex items-center justify-center gap-3"
-        >
+        <div className="mt-8 flex items-center justify-center gap-3">
           <a
             href="/play/normal"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-sky-600 text-white font-medium shadow-sm hover:bg-sky-700"
@@ -68,7 +62,7 @@ export default function HeroSection() {
           >
             <Upload className="h-4 w-4" /> Upload Photo
           </a>
-        </motion.div>
+        </div>
 
         {/* Hero preview cards */}
         {/*<motion.div*/}
