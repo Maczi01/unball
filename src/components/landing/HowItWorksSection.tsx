@@ -29,10 +29,7 @@ export default function HowItWorksSection() {
         {howItWorksItems.map((item, i) => {
           const Icon = item.icon;
           return (
-            <div
-              key={i}
-              className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 p-6"
-            >
+            <div key={i} className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 p-6">
               <div className="h-10 w-10 rounded-xl bg-sky-100 text-sky-700 grid place-content-center mb-4">
                 <Icon className="h-5 w-5" />
               </div>
