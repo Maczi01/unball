@@ -26,7 +26,7 @@ export default function HowItWorksSection() {
         <p className="mt-3 text-gray-600 max-w-2xl mx-auto">One simple loop that never gets old.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {howItWorksItems.map((item, i) => {
+        {howItWorksItems.map((item) => {
           const Icon = item.icon;
           return (
             <div key={item.title} className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 p-6">
