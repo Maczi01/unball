@@ -13,7 +13,7 @@ const initialFormData: PhotoSubmissionFormData = {
   lat: "",
   lon: "",
   description: "",
-  sources: [],
+  // sources: [],
   more_info: [],
   license: "",
   credit: "",
@@ -149,17 +149,6 @@ function validateUrl(value: string): boolean {
   }
 }
 
-function validateSources(sources: { url: string; title: string; source_type: string }[]): string | null {
-  // Sources are optional, so empty array is valid
-  if (sources.length === 0) return null;
-
-  for (let i = 0; i < sources.length; i++) {
-    if (!validateUrl(sources[i].url)) {
-      return `Source ${i + 1}: Please enter a valid URL`;
-    }
-  }
-  return null;
-}
 
 function validateMoreInfo(
   moreInfo: {
@@ -289,9 +278,6 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
         case "submitter_email":
           error = validateEmail(formData.submitter_email);
           break;
-        case "sources":
-          error = validateSources(formData.sources);
-          break;
         case "more_info":
           error = validateMoreInfo(formData.more_info);
           break;
@@ -333,7 +319,7 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       "competition",
       "place",
       "submitter_email",
-      "sources",
+      // "sources",
       "more_info",
     ];
 
@@ -378,7 +364,6 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       (formData.competition === "" || validateCompetition(formData.competition) === null) &&
       (formData.place === "" || validatePlace(formData.place) === null) &&
       (formData.submitter_email === "" || validateEmail(formData.submitter_email) === null) &&
-      validateSources(formData.sources) === null &&
       validateMoreInfo(formData.more_info) === null;
 
     return requiredFieldsValid && optionalFieldsValid;
@@ -441,7 +426,6 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
           notes: formData.notes || null,
           submitter_email: formData.submitter_email || null,
           tags: formData.tags.length > 0 ? formData.tags : null,
-          sources: formData.sources.length > 0 ? formData.sources : null,
           more_info: formData.more_info.length > 0 ? formData.more_info : null,
         }),
       });
@@ -522,7 +506,6 @@ function mapApiErrorsToFields(details: string[]): ValidationErrors {
     if (lower.includes("competition")) errors.competition = detail;
     if (lower.includes("place")) errors.place = detail;
     if (lower.includes("email")) errors.submitter_email = detail;
-    if (lower.includes("source")) errors.sources = detail;
     if (lower.includes("info")) errors.more_info = detail;
   });
 

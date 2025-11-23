@@ -505,6 +505,10 @@ export const ValidationConstants = {
     LON_MIN: -180,
     LON_MAX: 180,
   },
+  YEAR: {
+    MIN: 1800,
+    MAX: new Date().getFullYear() + 1,
+  },
   TIME: {
     MIN_MS: 0,
     MAX_MS: 86400000, // 24 hours

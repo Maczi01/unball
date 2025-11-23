@@ -4,14 +4,6 @@ import { ValidationConstants } from "@/types";
 export const prerender = false;
 
 /**
- * Validation constants for year (not exported from ValidationConstants)
- */
-const YEAR_VALIDATION = {
-  MIN: 1800,
-  MAX: new Date().getFullYear() + 1,
-};
-
-/**
  * POST /api/photo-submissions
  * Submit photo metadata for admin review
  *
@@ -70,8 +62,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const yearNum = parseInt(year_utc, 10);
     if (!year_utc || isNaN(yearNum)) {
       errors.push("year_utc is required and must be a number");
-    } else if (yearNum < YEAR_VALIDATION.MIN || yearNum > YEAR_VALIDATION.MAX) {
-      errors.push(`year_utc must be between ${YEAR_VALIDATION.MIN} and ${YEAR_VALIDATION.MAX}`);
+    } else if (yearNum < ValidationConstants.YEAR.MIN || yearNum > ValidationConstants.YEAR.MAX) {
+      errors.push(`year_utc must be between ${ValidationConstants.YEAR.MIN} and ${ValidationConstants.YEAR.MAX}`);
     }
 
     const latNum = parseFloat(lat);
