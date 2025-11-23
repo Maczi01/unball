@@ -32,6 +32,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const result = await authService.signIn({ email, password });
 
     if (!result.success) {
+      // eslint-disable-next-line no-console
+      console.error("Sign in failed:", result.error);
       return new Response(
         JSON.stringify({
           error: result.error,

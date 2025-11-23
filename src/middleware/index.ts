@@ -25,6 +25,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const supabaseUrl = context.locals.runtime?.env?.SUPABASE_URL;
     const supabaseKey = context.locals.runtime?.env?.SUPABASE_KEY;
 
+    // Debug: Log credentials (first chars only for security)
+    // eslint-disable-next-line no-console
+    console.log("Supabase URL:", supabaseUrl ? supabaseUrl.substring(0, 30) + "..." : "MISSING");
+    // eslint-disable-next-line no-console
+    console.log("Supabase Key:", supabaseKey ? supabaseKey.substring(0, 10) + "..." : "MISSING");
+
     // Create server-side Supabase client with proper cookie handling
     const supabase = createSupabaseServerInstance({
       cookies: context.cookies,
