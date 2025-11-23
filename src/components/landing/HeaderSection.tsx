@@ -30,9 +30,9 @@ export default function HeaderSection({ userEmail }: HeaderSectionProps) {
           <a className="hover:text-gray-900" href="/">
             Community
           </a>
-          <a className="hover:text-gray-900" href="/users">
-            Users
-          </a>
+          {/*<a className="hover:text-gray-900" href="/users">*/}
+          {/*  Users*/}
+          {/*</a>*/}
         </nav>
         <div className="flex items-center gap-2">
           {userEmail ? (
