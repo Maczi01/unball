@@ -4,14 +4,29 @@ import type { AstroCookies } from "astro";
 
 import type { Database } from "../db/database.types.ts";
 
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
-
 /**
  * Browser-side Supabase client (anonymous)
- * Used for public data access without authentication
+ * Used for public data access without authentication in the browser
+ * Lazy-loaded to handle runtime environment
+ *
+ * IMPORTANT: This uses PUBLIC_ env vars which are safe to expose to the browser
+ * and are bundled at build time by Astro/Vite
  */
-export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
+let browserClient: BaseSupabaseClient<Database> | null = null;
+export function getBrowserClient(): BaseSupabaseClient<Database> {
+  if (!browserClient) {
+    // Use PUBLIC_ prefixed vars for client-side (bundled at build time)
+    const url = import.meta.env.PUBLIC_SUPABASE_URL;
+    const key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!url || !key) {
+      throw new Error("PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY must be set");
+    }
+
+    browserClient = createClient<Database>(url, key);
+  }
+  return browserClient;
+}
 
 /**
  * Cookie options for Supabase server client
@@ -45,9 +60,23 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
  * - Uses getAll/setAll instead of individual get/set/remove methods
  * - Properly handles cookie serialization/deserialization
  * - Enables secure authentication flows with proper session management
+ * - Credentials must be passed from runtime.env (Cloudflare) or import.meta.env (dev)
  */
-export function createSupabaseServerInstance(context: { headers: Headers; cookies: AstroCookies }) {
-  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+export function createSupabaseServerInstance(context: {
+  headers: Headers;
+  cookies: AstroCookies;
+  supabaseUrl?: string;
+  supabaseKey?: string;
+}) {
+  // Credentials must be provided from runtime environment
+  const url = context.supabaseUrl || import.meta.env.SUPABASE_URL;
+  const key = context.supabaseKey || import.meta.env.SUPABASE_KEY;
+
+  if (!url || !key) {
+    throw new Error("Supabase credentials must be provided via context or environment variables");
+  }
+
+  return createServerClient<Database>(url, key, {
     cookieOptions,
     cookies: {
       getAll() {
@@ -64,10 +93,20 @@ export function createSupabaseServerInstance(context: { headers: Headers; cookie
  * @deprecated Use createSupabaseServerInstance instead
  * This function uses deprecated individual cookie methods
  */
-export function createSupabaseServerClient(cookies: AstroCookies) {
+export function createSupabaseServerClient(
+  cookies: AstroCookies,
+  options?: { supabaseUrl?: string; supabaseKey?: string }
+) {
   // eslint-disable-next-line no-console
   console.warn("createSupabaseServerClient is deprecated. Use createSupabaseServerInstance instead.");
-  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+  const url = options?.supabaseUrl || import.meta.env.SUPABASE_URL;
+  const key = options?.supabaseKey || import.meta.env.SUPABASE_KEY;
+
+  if (!url || !key) {
+    throw new Error("Supabase credentials must be provided");
+  }
+
+  return createServerClient<Database>(url, key, {
     cookies: {
       get(key: string) {
         return cookies.get(key)?.value;
