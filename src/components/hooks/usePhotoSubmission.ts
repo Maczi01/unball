@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import type { PhotoSubmissionFormData, ValidationErrors, SubmissionState, PhotoSubmissionResponseDTO } from "@/types";
 import { ValidationConstants } from "@/types";
+import { getBrowserClient } from "@/db/supabase.client";
 
 // Initial form data with empty values
 const initialFormData: PhotoSubmissionFormData = {
@@ -385,6 +386,8 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
 
   /**
    * Submit photo to API
+   * 1. Upload photo directly to Supabase Storage (bypasses Cloudflare Workers file size limits)
+   * 2. Send metadata to API endpoint
    */
   const submitPhoto = useCallback(async () => {
     // 1. Validate all fields
@@ -394,34 +397,53 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       return;
     }
 
-    // 2. Prepare FormData
-    const apiFormData = new FormData();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    apiFormData.append("photo_file", formData.photo_file!);
-    apiFormData.append("event_name", formData.event_name);
-    apiFormData.append("year_utc", formData.year_utc);
-    apiFormData.append("lat", formData.lat);
-    apiFormData.append("lon", formData.lon);
-    apiFormData.append("license", formData.license);
-    apiFormData.append("credit", formData.credit);
-
-    // Append optional fields if present
-    if (formData.competition) apiFormData.append("competition", formData.competition);
-    if (formData.place) apiFormData.append("place", formData.place);
-    if (formData.description) apiFormData.append("description", formData.description);
-    if (formData.notes) apiFormData.append("notes", formData.notes);
-    if (formData.submitter_email) apiFormData.append("submitter_email", formData.submitter_email);
-    if (formData.tags.length > 0) apiFormData.append("tags", JSON.stringify(formData.tags));
-    if (formData.sources.length > 0) apiFormData.append("sources", JSON.stringify(formData.sources));
-    if (formData.more_info.length > 0) apiFormData.append("more_info", JSON.stringify(formData.more_info));
-
-    // 3. Submit to API
     setSubmissionState({ status: "submitting" });
+
     try {
+      // 2. Upload photo directly to Supabase Storage from client
+      // This bypasses Cloudflare Workers' multipart form data limitations
+      const supabase = getBrowserClient();
+      const photoFile = formData.photo_file!;
+      const fileExt = photoFile.name.split(".").pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `submissions/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage.from("photos").upload(filePath, photoFile, {
+        contentType: photoFile.type,
+        upsert: false,
+      });
+
+      if (uploadError) {
+        throw new Error(`Failed to upload photo: ${uploadError.message}`);
+      }
+
+      // Get public URL for the uploaded file
+      const { data: urlData } = supabase.storage.from("photos").getPublicUrl(filePath);
+      const photo_url = urlData.publicUrl;
+
+      // 3. Submit metadata to API (no file, just JSON)
       const response = await fetch("/api/photo-submissions", {
         method: "POST",
-        body: apiFormData,
-        // No Content-Type header - browser sets it with boundary for multipart
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          photo_url,
+          event_name: formData.event_name,
+          year_utc: formData.year_utc,
+          lat: formData.lat,
+          lon: formData.lon,
+          license: formData.license,
+          credit: formData.credit,
+          competition: formData.competition || null,
+          place: formData.place || null,
+          description: formData.description || null,
+          notes: formData.notes || null,
+          submitter_email: formData.submitter_email || null,
+          tags: formData.tags.length > 0 ? formData.tags : null,
+          sources: formData.sources.length > 0 ? formData.sources : null,
+          more_info: formData.more_info.length > 0 ? formData.more_info : null,
+        }),
       });
 
       if (!response.ok) {
@@ -432,6 +454,9 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
           const fieldErrors = mapApiErrorsToFields(errorData.details);
           setValidationErrors(fieldErrors);
         }
+
+        // Clean up uploaded file on API error
+        await supabase.storage.from("photos").remove([filePath]);
 
         throw new Error(errorData.error || "Submission failed");
       }

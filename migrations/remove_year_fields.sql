@@ -44,3 +44,8 @@ FROM public.photos;
 -- After running this migration:
 -- 1. Regenerate TypeScript types: npx supabase gen types typescript --linked > src/db/database.types.ts
 -- 2. Update application code to remove year-related logic
+
+CREATE POLICY "Users can upload to submissions"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (bucket_id = 'photos' AND (storage.foldername(name))[1] = 'submissions');

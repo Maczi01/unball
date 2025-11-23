@@ -4,8 +4,20 @@ import { ValidationConstants } from "@/types";
 export const prerender = false;
 
 /**
+ * Validation constants for year (not exported from ValidationConstants)
+ */
+const YEAR_VALIDATION = {
+  MIN: 1800,
+  MAX: new Date().getFullYear() + 1,
+};
+
+/**
  * POST /api/photo-submissions
- * Submit a new photo for admin review
+ * Submit photo metadata for admin review
+ *
+ * Note: Photo file is uploaded directly to Supabase Storage from client-side
+ * to bypass Cloudflare Workers' multipart form data limitations.
+ * This endpoint only receives JSON metadata with the photo_url.
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
@@ -34,61 +46,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // Parse multipart form data
-    const formData = await request.formData();
-
-    // Extract and validate photo file
-    const photoFile = formData.get("photo_file") as File | null;
-    if (!photoFile) {
-      return new Response(
-        JSON.stringify({
-          error: "Validation failed",
-          details: ["Photo file is required"],
-          timestamp: new Date().toISOString(),
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
-    // Validate file size
-    const maxSizeBytes = ValidationConstants.FILE_UPLOAD.MAX_SIZE_MB * 1024 * 1024;
-    if (photoFile.size > maxSizeBytes) {
-      return new Response(
-        JSON.stringify({
-          error: `Photo file exceeds ${ValidationConstants.FILE_UPLOAD.MAX_SIZE_MB}MB limit`,
-          timestamp: new Date().toISOString(),
-        }),
-        { status: 413, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
-    // Validate file type
-    const allowedTypes = ValidationConstants.FILE_UPLOAD.ALLOWED_FORMATS.map(
-      (fmt) => `image/${fmt === "jpg" ? "jpeg" : fmt}`
-    );
-    if (!allowedTypes.includes(photoFile.type) && photoFile.type !== "image/jpg") {
-      return new Response(
-        JSON.stringify({
-          error: "Validation failed",
-          details: ["Photo must be JPG, PNG, or WebP"],
-          timestamp: new Date().toISOString(),
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
-    // Extract and validate required fields
-    const event_name = formData.get("event_name") as string;
-    const year_utc = formData.get("year_utc") as string;
-    const lat = formData.get("lat") as string;
-    const lon = formData.get("lon") as string;
-    const license = formData.get("license") as string;
-    const credit = formData.get("credit") as string;
+    // Parse JSON body
+    const body = await request.json();
 
     // Validation errors array
     const errors: string[] = [];
 
-    if (!event_name || event_name.trim().length === 0) {
+    // Validate photo_url (required - uploaded by client directly to Supabase Storage)
+    const { photo_url } = body;
+    if (!photo_url || typeof photo_url !== "string" || photo_url.trim().length === 0) {
+      errors.push("photo_url is required");
+    }
+
+    // Extract and validate required fields
+    const { event_name, year_utc, lat, lon, license, credit } = body;
+
+    if (!event_name || typeof event_name !== "string" || event_name.trim().length === 0) {
       errors.push("event_name is required");
     } else if (event_name.length > 255) {
       errors.push("event_name must be 255 characters or less");
@@ -97,12 +70,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const yearNum = parseInt(year_utc, 10);
     if (!year_utc || isNaN(yearNum)) {
       errors.push("year_utc is required and must be a number");
-    } else if (yearNum < ValidationConstants.YEAR.MIN || yearNum > ValidationConstants.YEAR.MAX) {
-      errors.push(`year_utc must be between ${ValidationConstants.YEAR.MIN} and ${ValidationConstants.YEAR.MAX}`);
+    } else if (yearNum < YEAR_VALIDATION.MIN || yearNum > YEAR_VALIDATION.MAX) {
+      errors.push(`year_utc must be between ${YEAR_VALIDATION.MIN} and ${YEAR_VALIDATION.MAX}`);
     }
 
     const latNum = parseFloat(lat);
-    if (!lat || isNaN(latNum)) {
+    if (lat === undefined || lat === null || lat === "" || isNaN(latNum)) {
       errors.push("lat is required and must be a number");
     } else if (latNum < ValidationConstants.COORDINATES.LAT_MIN || latNum > ValidationConstants.COORDINATES.LAT_MAX) {
       errors.push(
@@ -111,7 +84,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const lonNum = parseFloat(lon);
-    if (!lon || isNaN(lonNum)) {
+    if (lon === undefined || lon === null || lon === "" || isNaN(lonNum)) {
       errors.push("lon is required and must be a number");
     } else if (lonNum < ValidationConstants.COORDINATES.LON_MIN || lonNum > ValidationConstants.COORDINATES.LON_MAX) {
       errors.push(
@@ -119,13 +92,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    if (!license || license.trim().length === 0) {
+    if (!license || typeof license !== "string" || license.trim().length === 0) {
       errors.push("license is required");
     } else if (license.length > 100) {
       errors.push("license must be 100 characters or less");
     }
 
-    if (!credit || credit.trim().length === 0) {
+    if (!credit || typeof credit !== "string" || credit.trim().length === 0) {
       errors.push("credit is required");
     } else if (credit.length > 255) {
       errors.push("credit must be 255 characters or less");
@@ -143,50 +116,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Extract optional fields
-    const competition = (formData.get("competition") as string) || null;
-    const place = (formData.get("place") as string) || null;
-    const description = (formData.get("description") as string) || null;
-    const source_url = (formData.get("source_url") as string) || null;
-    const notes = (formData.get("notes") as string) || null;
-    const submitter_email = (formData.get("submitter_email") as string) || null;
-
-    // Parse tags if present
-    let tags: string[] | null = null;
-    const tagsJson = formData.get("tags") as string;
-    if (tagsJson) {
-      try {
-        tags = JSON.parse(tagsJson);
-      } catch {
-        errors.push("tags must be valid JSON array");
-      }
-    }
-
-    // Upload photo to Supabase Storage
-    const fileExt = photoFile.name.split(".").pop();
-    const fileName = `${crypto.randomUUID()}.${fileExt}`;
-    const filePath = `submissions/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage.from("photos").upload(filePath, photoFile, {
-      contentType: photoFile.type,
-      upsert: false,
-    });
-
-    if (uploadError) {
-      // eslint-disable-next-line no-console
-      console.error("Storage upload error:", uploadError);
-      return new Response(
-        JSON.stringify({
-          error: "Failed to upload photo",
-          timestamp: new Date().toISOString(),
-        }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
-    // Get public URL for the uploaded file
-    const { data: urlData } = supabase.storage.from("photos").getPublicUrl(filePath);
-
-    const photo_url = urlData.publicUrl;
+    const competition = body.competition || null;
+    const place = body.place || null;
+    const description = body.description || null;
+    const source_url = body.source_url || null;
+    const notes = body.notes || null;
+    const submitter_email = body.submitter_email || null;
+    const tags = Array.isArray(body.tags) ? body.tags : null;
 
     // Insert into photo_submissions table
     const { data: submission, error: insertError } = await supabase
@@ -215,9 +151,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (insertError) {
       // eslint-disable-next-line no-console
       console.error("Database insert error:", insertError);
-
-      // Clean up uploaded file
-      await supabase.storage.from("photos").remove([filePath]);
 
       return new Response(
         JSON.stringify({
