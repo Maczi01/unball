@@ -3,7 +3,7 @@
 
 name = "unball"
 compatibility_date = "2025-11-02"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nodejs_compat", "disable_nodejs_process_v2"]
 pages_build_output_dir = "dist"
 
 # For local development with Wrangler
