@@ -15,6 +15,12 @@ import { createSupabaseServerInstance } from "../db/supabase.client.ts";
  */
 export const onRequest = defineMiddleware(async (context, next) => {
   try {
+    // Debug: Log runtime availability
+    // eslint-disable-next-line no-console
+    console.log("Runtime available:", !!context.locals.runtime);
+    // eslint-disable-next-line no-console
+    console.log("Runtime env keys:", context.locals.runtime?.env ? Object.keys(context.locals.runtime.env) : "no env");
+
     // Get runtime environment variables (Cloudflare Workers) or use import.meta.env (dev)
     const supabaseUrl = context.locals.runtime?.env?.SUPABASE_URL;
     const supabaseKey = context.locals.runtime?.env?.SUPABASE_KEY;
