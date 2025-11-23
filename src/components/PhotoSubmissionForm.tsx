@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Upload, MapPin, ImagePlus, Loader2, CheckCircle2, MapPinned, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LocationPicker } from "@/components/LocationPicker";
+import { getBrowserClient } from "@/db/supabase.client";
 import exifr from "exifr";
 
 interface PhotoSubmissionFormProps {
@@ -248,25 +249,53 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
     setSubmitting(true);
 
     try {
-      const apiFormData = new FormData();
-      apiFormData.append("photo_file", file);
-      apiFormData.append("place", place);
-      apiFormData.append("lat", lat);
-      apiFormData.append("lon", lon);
+      // 1. Upload photo directly to Supabase Storage from client
+      // This bypasses Cloudflare Workers' multipart form data limitations
+      const supabase = getBrowserClient();
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `submissions/${fileName}`;
 
-      if (title) apiFormData.append("title", title);
+      const { error: uploadError } = await supabase.storage.from("photos").upload(filePath, file, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+      if (uploadError) {
+        throw new Error(`Failed to upload photo: ${uploadError.message}`);
+      }
+
+      // Get public URL for the uploaded file
+      const { data: urlData } = supabase.storage.from("photos").getPublicUrl(filePath);
+      const photo_url = urlData.publicUrl;
+
+      // 2. Submit metadata to API (no file, just JSON)
       const tagArray = parseTags(tags);
-      if (tagArray.length > 0) apiFormData.append("tags", JSON.stringify(tagArray));
-      if (userEmail) apiFormData.append("submitter_email", userEmail);
 
       const response = await fetch("/api/photo-submissions", {
         method: "POST",
-        body: apiFormData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          photo_url,
+          event_name: title || place || "Unknown Event",
+          year_utc: new Date().getFullYear().toString(),
+          lat,
+          lon,
+          license: "All Rights Reserved",
+          credit: userEmail || "Anonymous",
+          place: place || null,
+          tags: tagArray.length > 0 ? tagArray : null,
+          submitter_email: userEmail || null,
+        }),
       });
 
       const result = await response.json();
 
       if (!response.ok || "error" in result) {
+        // Clean up uploaded file on API error
+        await supabase.storage.from("photos").remove([filePath]);
         setErrors({ submit: result.error || "Failed to submit photo" });
         formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       } else {
