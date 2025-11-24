@@ -280,7 +280,6 @@ export function PhotoSubmissionForm({ userEmail }: PhotoSubmissionFormProps) {
         body: JSON.stringify({
           photo_url,
           event_name: title || place || "Unknown Event",
-          year_utc: new Date().getFullYear().toString(),
           lat,
           lon,
           license: "All Rights Reserved",

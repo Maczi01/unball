@@ -505,10 +505,6 @@ export const ValidationConstants = {
     LON_MIN: -180,
     LON_MAX: 180,
   },
-  YEAR: {
-    MIN: 1800,
-    MAX: new Date().getFullYear() + 1,
-  },
   TIME: {
     MIN_MS: 0,
     MAX_MS: 86400000, // 24 hours
@@ -639,7 +635,6 @@ export interface PhotoSubmissionFormData {
   photo_file: File | null;
   event_name: string;
   competition: string;
-  year_utc: string; // String in input, converts to number for API
   place: string;
   lat: string; // String in input, converts to number for API
   lon: string; // String in input, converts to number for API

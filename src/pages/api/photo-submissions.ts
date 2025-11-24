@@ -55,7 +55,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Extract and validate required fields
-    const { event_name, year_utc, lat, lon, license, credit } = body;
+    const { event_name, lat, lon, license, credit } = body;
 
     if (!event_name || typeof event_name !== "string" || event_name.trim().length === 0) {
       errors.push("event_name is required");
@@ -63,12 +63,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       errors.push("event_name must be 255 characters or less");
     }
 
-    const yearNum = parseInt(year_utc, 10);
-    if (!year_utc || isNaN(yearNum)) {
-      errors.push("year_utc is required and must be a number");
-    } else if (yearNum < ValidationConstants.YEAR.MIN || yearNum > ValidationConstants.YEAR.MAX) {
-      errors.push(`year_utc must be between ${ValidationConstants.YEAR.MIN} and ${ValidationConstants.YEAR.MAX}`);
-    }
+    // Get current year for database (year_utc is still required by DB schema)
+    const yearNum = new Date().getFullYear();
 
     const latNum = parseFloat(lat);
     if (lat === undefined || lat === null || lat === "" || isNaN(latNum)) {

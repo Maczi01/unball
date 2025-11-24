@@ -8,7 +8,6 @@ const initialFormData: PhotoSubmissionFormData = {
   photo_file: null,
   event_name: "",
   competition: "",
-  year_utc: "",
   place: "",
   lat: "",
   lon: "",
@@ -67,18 +66,6 @@ function validateEventName(value: string): string | null {
   return null;
 }
 
-function validateYear(value: string): string | null {
-  const year = parseInt(value, 10);
-  if (isNaN(year)) return "Year must be a number";
-  if (!Number.isInteger(year)) return "Year must be a whole number";
-  if (year < ValidationConstants.YEAR.MIN) {
-    return `Year must be ${ValidationConstants.YEAR.MIN} or later`;
-  }
-  if (year > ValidationConstants.YEAR.MAX) {
-    return `Year must be ${ValidationConstants.YEAR.MAX} or earlier`;
-  }
-  return null;
-}
 
 function validateLatitude(value: string): string | null {
   if (!value) return "Latitude is required";
@@ -254,9 +241,6 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
         case "event_name":
           error = validateEventName(formData.event_name);
           break;
-        case "year_utc":
-          error = validateYear(formData.year_utc);
-          break;
         case "lat":
           error = validateLatitude(formData.lat);
           break;
@@ -309,7 +293,6 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
     const requiredFields: (keyof PhotoSubmissionFormData)[] = [
       "photo_file",
       "event_name",
-      "year_utc",
       "lat",
       "lon",
       "license",
@@ -354,7 +337,6 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       formData.photo_file !== null &&
       validatePhotoFile(formData.photo_file) === null &&
       validateEventName(formData.event_name) === null &&
-      validateYear(formData.year_utc) === null &&
       validateLatitude(formData.lat) === null &&
       validateLongitude(formData.lon) === null &&
       validateLicense(formData.license) === null &&
@@ -415,7 +397,6 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
         body: JSON.stringify({
           photo_url,
           event_name: formData.event_name,
-          year_utc: formData.year_utc,
           lat: formData.lat,
           lon: formData.lon,
           license: formData.license,
@@ -494,7 +475,6 @@ function mapApiErrorsToFields(details: string[]): ValidationErrors {
   details.forEach((detail) => {
     const lower = detail.toLowerCase();
 
-    if (lower.includes("year")) errors.year_utc = detail;
     if (lower.includes("lat") && !lower.includes("latitude")) errors.lat = detail;
     if (lower.includes("latitude")) errors.lat = detail;
     if (lower.includes("lon") && !lower.includes("longitude")) errors.lon = detail;
