@@ -49,3 +49,11 @@ CREATE POLICY "Users can upload to submissions"
   ON storage.objects FOR INSERT
   TO authenticated
   WITH CHECK (bucket_id = 'photos' AND (storage.foldername(name))[1] = 'submissions');
+
+         CREATE POLICY "Authenticated users can upload to submissions"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    bucket_id = 'photos'
+    AND (storage.foldername(name))[1] = 'submissions'
+  );

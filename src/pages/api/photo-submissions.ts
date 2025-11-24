@@ -41,6 +41,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Parse JSON body
     const body = await request.json();
 
+    // Debug logging
+    // eslint-disable-next-line no-console
+    console.log("Received body:", JSON.stringify(body, null, 2));
+
     // Validation errors array
     const errors: string[] = [];
 
@@ -97,6 +101,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     if (errors.length > 0) {
+      // eslint-disable-next-line no-console
+      console.log("Validation errors:", errors);
       return new Response(
         JSON.stringify({
           error: "Validation failed",
