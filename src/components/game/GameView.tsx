@@ -144,6 +144,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
   const [leaderboardRank, setLeaderboardRank] = useState<number | undefined>(undefined);
   const [lastGuessPin, setLastGuessPin] = useState<{ lat: number; lon: number } | null>(null);
   const [hasSubmittedToLeaderboard, setHasSubmittedToLeaderboard] = useState(false);
+  const [mobileView, setMobileView] = useState<"photo" | "map">("photo");
 
   const currentPhoto = gameState.photos[gameState.currentPhotoIndex];
   const currentPhotoNumber = gameState.currentPhotoIndex + 1;
@@ -345,10 +346,38 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       )}
 
       {/* Main game area */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden p-4 md:p-6 pb-6">
-        <div className="w-full h-full max-h-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="flex-1 flex overflow-hidden p-4 md:p-6 pb-6">
+        <div className="w-full h-full max-h-full flex flex-col lg:grid lg:grid-cols-2 gap-6">
+          {/* Mobile toggle buttons */}
+          <div className="lg:hidden flex gap-2 flex-shrink-0">
+            <button
+              onClick={() => setMobileView("photo")}
+              className={`flex-1 py-2.5 px-4 rounded-lg font-medium transition-colors ${
+                mobileView === "photo"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
+              }`}
+            >
+              Photo
+            </button>
+            <button
+              onClick={() => setMobileView("map")}
+              className={`flex-1 py-2.5 px-4 rounded-lg font-medium transition-colors ${
+                mobileView === "map"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
+              }`}
+            >
+              Map
+            </button>
+          </div>
+
           {/* Left column: Photo and controls */}
-          <div className="space-y-3 flex flex-col max-h-full overflow-hidden">
+          <div
+            className={`flex-1 space-y-3 flex-col max-h-full overflow-hidden ${
+              mobileView === "photo" ? "flex" : "hidden"
+            } lg:flex`}
+          >
             {/* Photo */}
             <div className="flex-1 flex flex-col min-h-0">
               <PhotoDisplay
@@ -358,21 +387,32 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
               />
             </div>
 
-            {/* Submit button */}
-            <SubmitButton isDisabled={!isComplete} isLoading={gameState.isLoading} onClick={handleSubmitGuess} />
+            {/* Submit button - visible on desktop or when on photo view on mobile */}
+            <div className="lg:block flex-shrink-0">
+              <SubmitButton isDisabled={!isComplete} isLoading={gameState.isLoading} onClick={handleSubmitGuess} />
+            </div>
           </div>
 
           {/* Right column: Map */}
-          <div className="h-[400px] lg:max-h-full lg:h-full">
-            <MapComponent
-              userPin={pin}
-              correctPin={null}
-              showFeedback={false}
-              kmError={null}
-              onPinPlace={setPin}
-              onPinMove={setPin}
-              className="h-full"
-            />
+          <div
+            className={`flex-1 lg:flex-none lg:h-full ${mobileView === "map" ? "flex" : "hidden"} lg:flex flex-col min-h-0`}
+          >
+            <div className="flex-1 min-h-0">
+              <MapComponent
+                userPin={pin}
+                correctPin={null}
+                showFeedback={false}
+                kmError={null}
+                onPinPlace={setPin}
+                onPinMove={setPin}
+                className="h-full"
+              />
+            </div>
+
+            {/* Submit button - visible on mobile when on map view */}
+            <div className="lg:hidden mt-3 flex-shrink-0">
+              <SubmitButton isDisabled={!isComplete} isLoading={gameState.isLoading} onClick={handleSubmitGuess} />
+            </div>
           </div>
         </div>
       </div>
