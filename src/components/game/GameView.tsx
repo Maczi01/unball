@@ -230,7 +230,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
         total_time_ms: 0,
       };
 
-      const response = await fetch("/api/daily/submissions", {
+      const response = await fetch("/api/leaderboard", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

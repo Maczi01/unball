@@ -45,7 +45,6 @@ export function GameHeader({ mode, currentPhoto, totalPhotos, elapsedMs, onExit 
 
           {/* Right section: Timer (Daily mode) and Exit button */}
           <div className="flex items-center justify-between md:justify-end gap-4">
-            {mode === "daily" && <Timer elapsedMs={elapsedMs} />}
 
             <Button
               variant="outline"
