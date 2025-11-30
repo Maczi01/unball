@@ -134,11 +134,21 @@ export function RoundSummary({
         className="overflow-hidden rounded-b-3xl bg-gradient-to-r from-sky-500 to-teal-400 text-white shadow-sm"
       >
         <div className="mx-auto max-w-6xl px-4 py-8 md:py-10">
-          <div className="text-3xl md:text-4xl font-semibold tracking-tight">Round Complete!</div>
-          <div className="mt-2 text-white/90 flex items-center gap-2">
-            <Trophy className="h-5 w-5" /> {mode === "daily" ? "Daily Challenge" : "Normal Mode"}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <div className="text-3xl md:text-4xl font-semibold tracking-tight">Round Complete!</div>
+              <div className="mt-2 text-white/90 flex items-center gap-2">
+                <Trophy className="h-5 w-5" /> {mode === "daily" ? "Daily Challenge" : "Normal Mode"}
+              </div>
+              <div className="mt-3 text-lg text-white/95">🎯 {getPerformanceMessage()}</div>
+            </div>
+            <button
+              onClick={onPlayAgain}
+              className="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-medium transition-colors backdrop-blur-sm border border-white/30"
+            >
+              <RefreshCw className="h-4 w-4" /> Play Again
+            </button>
           </div>
-          <div className="mt-3 text-lg text-white/95">🎯 {getPerformanceMessage()}</div>
         </div>
       </motion.section>
 

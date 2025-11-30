@@ -248,9 +248,15 @@ const MapComponentInner = ({
       bounds.extend([userPin.lon, userPin.lat]);
       bounds.extend([correctPin.lon, correctPin.lat]);
 
+      // For very close distances, use a higher zoom level and more padding
+      // to ensure both pins are visible near the edges
+      const isVeryClose = kmError < 5; // Less than 5 km
+      const paddingAmount = isVeryClose ? { top: 150, bottom: 150, left: 150, right: 150 } : 100;
+      const maxZoomLevel = isVeryClose ? 14 : 10;
+
       map.current.fitBounds(bounds, {
-        padding: 100,
-        maxZoom: 10,
+        padding: paddingAmount,
+        maxZoom: maxZoomLevel,
       });
     }
   }, [correctPin, showFeedback, userPin, mapLoaded, kmError]);
