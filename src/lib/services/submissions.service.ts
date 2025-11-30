@@ -54,16 +54,14 @@ export async function checkDailySubmission(
       };
     }
 
-    // Calculate rank only if saved to leaderboard (has user_id)
-    const rank = data.user_id
-      ? await calculateLeaderboardRank(
-          supabase,
-          dateUtc,
-          data.total_score,
-          data.total_time_ms,
-          data.submission_timestamp
-        )
-      : null;
+    // Calculate rank for all submissions (authenticated and anonymous)
+    const rank = await calculateLeaderboardRank(
+      supabase,
+      dateUtc,
+      data.total_score,
+      data.total_time_ms,
+      data.submission_timestamp
+    );
 
     const submission: SubmissionDetailsDTO = {
       id: data.id,
@@ -201,8 +199,19 @@ export async function submitDailyChallenge(
 
     const totalScore = photoResults.reduce((sum, result) => sum + result.total_score, 0);
 
-    // 5. Save to leaderboard ONLY if authenticated
-    if (userId) {
+    // 5. Determine if we should save to leaderboard
+    // Save if: authenticated user OR anonymous user with consent
+    const shouldSaveToLeaderboard = userId || (command.consent_given && deviceToken);
+
+    if (shouldSaveToLeaderboard) {
+      // Check for duplicate submission for anonymous users with device token
+      if (!userId && deviceToken) {
+        const existingSubmission = await checkDailySubmission(supabase, date_utc, null, deviceToken);
+        if (existingSubmission.has_submitted) {
+          throw new Error("DUPLICATE_SUBMISSION");
+        }
+      }
+
       const { data: submission, error: submissionError } = await supabase
         .from("daily_submissions")
         .insert({
@@ -243,7 +252,7 @@ export async function submitDailyChallenge(
         photos: photoResults,
       };
     } else {
-      // 5b. Anonymous user - calculate potential rank without saving
+      // Anonymous user without consent - calculate potential rank without saving
       const potentialRank = await calculatePotentialRank(supabase, date_utc, totalScore, total_time_ms);
 
       return {
@@ -265,7 +274,7 @@ export async function submitDailyChallenge(
 /**
  * Calculates leaderboard rank for a submission using tie-breaking logic
  * Tie-breaking order: score DESC, time ASC, timestamp ASC
- * Only counts authenticated users (user_id IS NOT NULL)
+ * Counts all submissions (authenticated users and anonymous users with consent)
  * @param supabase - Supabase client
  * @param dateUtc - Date in YYYY-MM-DD format
  * @param score - Total score
@@ -281,12 +290,11 @@ async function calculateLeaderboardRank(
   timestamp: string
 ): Promise<number> {
   try {
-    // Count authenticated submissions that rank higher (better) than this one
+    // Count all submissions that rank higher (better) than this one
     const { count, error } = await supabase
       .from("daily_submissions")
       .select("*", { count: "exact", head: true })
       .eq("date_utc", dateUtc)
-      .not("user_id", "is", null)
       .or(
         `total_score.gt.${score},and(total_score.eq.${score},total_time_ms.lt.${timeMs}),and(total_score.eq.${score},total_time_ms.eq.${timeMs},submission_timestamp.lt.${timestamp})`
       );
@@ -305,9 +313,9 @@ async function calculateLeaderboardRank(
 }
 
 /**
- * Calculates potential rank for an anonymous user
- * Shows where they would place if they created an account
- * Only counts authenticated users (user_id IS NOT NULL)
+ * Calculates potential rank for an anonymous user without consent
+ * Shows where they would place if they submitted to the leaderboard
+ * Counts all submissions (authenticated users and anonymous users with consent)
  * @param supabase - Supabase client
  * @param dateUtc - Date in YYYY-MM-DD format
  * @param score - Total score
@@ -321,7 +329,7 @@ async function calculatePotentialRank(
   timeMs: number
 ): Promise<number> {
   try {
-    // Count authenticated submissions with better or equal score/time
+    // Count all submissions with better or equal score/time
     // Use current timestamp as tiebreaker assumption
     const currentTime = new Date().toISOString();
 
@@ -329,7 +337,6 @@ async function calculatePotentialRank(
       .from("daily_submissions")
       .select("*", { count: "exact", head: true })
       .eq("date_utc", dateUtc)
-      .not("user_id", "is", null)
       .or(
         `total_score.gt.${score},and(total_score.eq.${score},total_time_ms.lt.${timeMs}),and(total_score.eq.${score},total_time_ms.eq.${timeMs},submission_timestamp.lt.${currentTime})`
       );

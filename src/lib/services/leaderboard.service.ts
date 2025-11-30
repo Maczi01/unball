@@ -4,7 +4,7 @@ import type { LeaderboardEntryDTO, LeaderboardResponseDTO } from "@/types";
 /**
  * Fetches the leaderboard for a specific date
  * Returns top entries ranked by score (desc), time (asc), timestamp (asc)
- * Only includes authenticated users with saved submissions
+ * Includes all submissions with nicknames (authenticated and anonymous with consent)
  *
  * @param supabase - Supabase client from context.locals
  * @param dateUtc - Date in YYYY-MM-DD format
@@ -18,11 +18,11 @@ export async function getLeaderboard(
 ): Promise<LeaderboardResponseDTO> {
   try {
     // Fetch all submissions for the date, ordered by ranking criteria
+    // Include both authenticated users and anonymous users with consent
     const { data: submissions, error: submissionsError } = await supabase
       .from("leaderboard_with_users")
       .select("*")
       .eq("date_utc", dateUtc)
-      .eq("is_authenticated", true)
       .order("total_score", { ascending: false })
       .order("total_time_ms", { ascending: true })
       .order("submission_timestamp", { ascending: true })
@@ -36,8 +36,7 @@ export async function getLeaderboard(
     const { count, error: countError } = await supabase
       .from("leaderboard_with_users")
       .select("*", { count: "exact", head: true })
-      .eq("date_utc", dateUtc)
-      .eq("is_authenticated", true);
+      .eq("date_utc", dateUtc);
 
     if (countError) {
       throw countError;
@@ -81,6 +80,7 @@ export async function getTodaysLeaderboard(supabase: SupabaseClient, limit = 100
 /**
  * Gets available leaderboard dates
  * Returns list of dates that have leaderboard data
+ * Includes dates with any submissions (authenticated or anonymous with consent)
  *
  * @param supabase - Supabase client from context.locals
  * @param limit - Maximum number of dates to return (default: 30)
@@ -91,7 +91,6 @@ export async function getAvailableLeaderboardDates(supabase: SupabaseClient, lim
     const { data, error } = await supabase
       .from("leaderboard_with_users")
       .select("date_utc")
-      .eq("is_authenticated", true)
       .order("date_utc", { ascending: false })
       .limit(limit);
 
