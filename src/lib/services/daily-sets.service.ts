@@ -150,7 +150,7 @@ export async function createDailySet(
     // Verify all photos exist and are daily eligible
     const { data: photos, error: photosError } = await supabase
       .from("photos")
-      .select("id, is_daily_eligible, event_name, first_used_in_daily_date")
+      .select("id, is_daily_eligible, first_used_in_daily_date")
       .in("id", photo_ids);
 
     if (photosError) throw photosError;
@@ -161,14 +161,14 @@ export async function createDailySet(
 
     const ineligiblePhotos = photos.filter((p) => !p.is_daily_eligible);
     if (ineligiblePhotos.length > 0) {
-      throw new Error(`Photos are not daily eligible: ${ineligiblePhotos.map((p) => p.event_name).join(", ")}`);
+      throw new Error(`${ineligiblePhotos.length} photo(s) are not daily eligible`);
     }
 
     // STRICT UNIQUENESS: Check if any photos have been used before
     const usedPhotos = photos.filter((p) => p.first_used_in_daily_date !== null);
     if (usedPhotos.length > 0) {
       throw new Error(
-        `Photos have already been used in daily sets: ${usedPhotos.map((p) => `${p.event_name} (used on ${p.first_used_in_daily_date})`).join(", ")}`
+        `${usedPhotos.length} photo(s) have already been used in daily sets`
       );
     }
 
@@ -235,9 +235,8 @@ export async function getDailySetById(supabase: SupabaseClient, daily_set_id: st
           photo_id,
           photos!inner (
             id,
-            event_name,
             photo_url,
-            year_utc
+            place
           )
         )
       `
@@ -265,9 +264,8 @@ export async function getDailySetById(supabase: SupabaseClient, daily_set_id: st
     const photos: AdminDailySetPhotoDTO[] = data.daily_set_photos.map((dsp: any) => ({
       photo_id: dsp.photos.id,
       position: dsp.position,
-      event_name: dsp.photos.event_name,
       photo_url: dsp.photos.photo_url,
-      year_utc: dsp.photos.year_utc,
+      place: dsp.photos.place,
     }));
 
     return {
@@ -537,8 +535,7 @@ export async function getAvailablePhotosForDaily(
         `
         id,
         photo_url,
-        event_name,
-        year_utc,
+        place,
         lat,
         lon,
         is_daily_eligible,

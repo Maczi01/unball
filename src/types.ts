@@ -369,9 +369,8 @@ export interface CreateDailySetCommand {
 export interface AdminDailySetPhotoDTO {
   photo_id: string;
   position: number;
-  event_name: string;
   photo_url: string;
-  year_utc: number;
+  place: string | null;
 }
 
 /**
