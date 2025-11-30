@@ -17,10 +17,7 @@ export class PhotosService {
 
     let query = this.supabase
       .from("photos")
-      .select(
-        "id, photo_url, lat, lon, is_daily_eligible, first_used_in_daily_date, created_at",
-        { count: "exact" }
-      );
+      .select("id, photo_url, lat, lon, is_daily_eligible, first_used_in_daily_date, created_at", { count: "exact" });
 
     // Apply filter
     if (is_daily_eligible !== undefined) {

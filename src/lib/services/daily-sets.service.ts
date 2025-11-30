@@ -167,9 +167,7 @@ export async function createDailySet(
     // STRICT UNIQUENESS: Check if any photos have been used before
     const usedPhotos = photos.filter((p) => p.first_used_in_daily_date !== null);
     if (usedPhotos.length > 0) {
-      throw new Error(
-        `${usedPhotos.length} photo(s) have already been used in daily sets`
-      );
+      throw new Error(`${usedPhotos.length} photo(s) have already been used in daily sets`);
     }
 
     // Create daily set

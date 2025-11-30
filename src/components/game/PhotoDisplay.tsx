@@ -39,34 +39,43 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
   }, [photo.photo_id]);
 
   // Wheel zoom handler
-  const handleWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    const delta = e.deltaY * -0.001;
-    const newScale = Math.min(Math.max(1, scale + delta), 5);
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = e.deltaY * -0.001;
+      const newScale = Math.min(Math.max(1, scale + delta), 5);
 
-    if (newScale === 1) {
-      setPosition({ x: 0, y: 0 });
-    }
+      if (newScale === 1) {
+        setPosition({ x: 0, y: 0 });
+      }
 
-    setScale(newScale);
-  }, [scale]);
+      setScale(newScale);
+    },
+    [scale]
+  );
 
   // Mouse drag handlers
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (scale > 1) {
-      setIsDragging(true);
-      setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
-    }
-  }, [scale, position]);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (scale > 1) {
+        setIsDragging(true);
+        setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+      }
+    },
+    [scale, position]
+  );
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (isDragging && scale > 1) {
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
-    }
-  }, [isDragging, scale, dragStart]);
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (isDragging && scale > 1) {
+        setPosition({
+          x: e.clientX - dragStart.x,
+          y: e.clientY - dragStart.y,
+        });
+      }
+    },
+    [isDragging, scale, dragStart]
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -77,24 +86,30 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
   }, []);
 
   // Touch handlers for mobile
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (scale > 1 && e.touches.length === 1) {
-      setIsDragging(true);
-      setDragStart({
-        x: e.touches[0].clientX - position.x,
-        y: e.touches[0].clientY - position.y
-      });
-    }
-  }, [scale, position]);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (scale > 1 && e.touches.length === 1) {
+        setIsDragging(true);
+        setDragStart({
+          x: e.touches[0].clientX - position.x,
+          y: e.touches[0].clientY - position.y,
+        });
+      }
+    },
+    [scale, position]
+  );
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (isDragging && scale > 1 && e.touches.length === 1) {
-      setPosition({
-        x: e.touches[0].clientX - dragStart.x,
-        y: e.touches[0].clientY - dragStart.y,
-      });
-    }
-  }, [isDragging, scale, dragStart]);
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (isDragging && scale > 1 && e.touches.length === 1) {
+        setPosition({
+          x: e.touches[0].clientX - dragStart.x,
+          y: e.touches[0].clientY - dragStart.y,
+        });
+      }
+    },
+    [isDragging, scale, dragStart]
+  );
 
   const handleTouchEnd = useCallback(() => {
     setIsDragging(false);
@@ -149,6 +164,7 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
   return (
     <div className="h-full flex flex-col min-h-0">
       {/* Photo container */}
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div
         ref={containerRef}
         className="relative w-full h-full bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg"
@@ -159,7 +175,7 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
+        style={{ cursor: scale > 1 ? (isDragging ? "grabbing" : "grab") : "default" }}
       >
         {/* Loading skeleton */}
         {isLoading && !hasError && (
@@ -217,8 +233,8 @@ export function PhotoDisplay({ photo, currentIndex, totalPhotos, onLoad }: Photo
           }`}
           style={{
             transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
-            transformOrigin: 'center center',
-            transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+            transformOrigin: "center center",
+            transition: isDragging ? "none" : "transform 0.1s ease-out",
           }}
           onLoad={handleImageLoad}
           onError={handleImageError}

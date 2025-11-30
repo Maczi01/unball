@@ -322,13 +322,7 @@ export type AdminPhotoDTO = DbTable<"photos">;
  */
 export type AdminPhotoListItemDTO = Pick<
   DbTable<"photos">,
-  | "id"
-  | "photo_url"
-  | "lat"
-  | "lon"
-  | "is_daily_eligible"
-  | "first_used_in_daily_date"
-  | "created_at"
+  "id" | "photo_url" | "lat" | "lon" | "is_daily_eligible" | "first_used_in_daily_date" | "created_at"
 >;
 
 /**

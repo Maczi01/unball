@@ -252,10 +252,10 @@ export function RoundSummary({
                             entry.rank === 1
                               ? "bg-yellow-400 text-yellow-900"
                               : entry.rank === 2
-                              ? "bg-slate-300 text-slate-900"
-                              : entry.rank === 3
-                              ? "bg-orange-400 text-orange-900"
-                              : "bg-slate-200 dark:bg-gray-600 text-slate-700 dark:text-gray-300"
+                                ? "bg-slate-300 text-slate-900"
+                                : entry.rank === 3
+                                  ? "bg-orange-400 text-orange-900"
+                                  : "bg-slate-200 dark:bg-gray-600 text-slate-700 dark:text-gray-300"
                           }`}
                         >
                           {entry.rank}
@@ -277,9 +277,7 @@ export function RoundSummary({
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-gray-500 dark:text-gray-400 py-8">
-                  No leaderboard data available
-                </p>
+                <p className="text-center text-gray-500 dark:text-gray-400 py-8">No leaderboard data available</p>
               )}
             </motion.div>
           </>

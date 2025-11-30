@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ModeBadge } from "./ModeBadge";
 import { ProgressIndicator } from "./ProgressIndicator";
-import { Timer } from "./Timer";
 import { Button } from "@/components/ui/button";
 import type { GameMode } from "@/types";
 
@@ -9,11 +8,11 @@ interface GameHeaderProps {
   mode: GameMode;
   currentPhoto: number; // 1-5
   totalPhotos: number; // Always 5
-  elapsedMs: number; // Timer value in milliseconds (Daily mode)
+  // elapsedMs: number; // Timer value in milliseconds (Daily mode)
   onExit: () => void;
 }
 
-export function GameHeader({ mode, currentPhoto, totalPhotos, elapsedMs, onExit }: GameHeaderProps) {
+export function GameHeader({ mode, currentPhoto, totalPhotos, onExit }: GameHeaderProps) {
   const [showExitDialog, setShowExitDialog] = useState(false);
 
   const handleExitClick = () => {
@@ -45,7 +44,6 @@ export function GameHeader({ mode, currentPhoto, totalPhotos, elapsedMs, onExit 
 
           {/* Right section: Timer (Daily mode) and Exit button */}
           <div className="flex items-center justify-between md:justify-end gap-4">
-
             <Button
               variant="outline"
               size="sm"
