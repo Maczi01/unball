@@ -21,15 +21,15 @@ export default function HeaderSection({ userEmail }: HeaderSectionProps) {
           <span className="font-semibold text-lg tracking-tight">Snaptrip</span>
         </a>
         <nav className="hidden sm:flex items-center gap-6 text-sm text-gray-600">
-          <a className="hover:text-gray-900" href="/">
+          <a className="hover:text-gray-900" href="#how">
             How it works
           </a>
-          <a className="hover:text-gray-900" href="/">
+          <a className="hover:text-gray-900" href="#modes">
             Modes
           </a>
-          <a className="hover:text-gray-900" href="/">
-            Community
-          </a>
+          {/*<a className="hover:text-gray-900" href="/">*/}
+          {/*  Community*/}
+          {/*</a>*/}
           {/*<a className="hover:text-gray-900" href="/users">*/}
           {/*  Users*/}
           {/*</a>*/}

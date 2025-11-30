@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { Checkbox } from "@/components/ui/checkbox";
 import { BulkActionsToolbar } from "@/components/BulkActionsToolbar";
 import type { AdminPhotoListItemDTO } from "@/types";
 import { cn } from "@/lib/utils";
@@ -123,11 +122,11 @@ export const PhotosListWithBulkActions = ({ initialPhotos }: PhotosListWithBulkA
                 {/* Selection Checkbox */}
                 <div className="absolute top-3 left-3 z-10">
                   <div className="bg-white dark:bg-neutral-800 rounded p-1 shadow-md">
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={(checked) => handleSelectPhoto(photo.id, checked as boolean)}
-                      aria-label={`Select ${photo.event_name}`}
-                    />
+                    {/*<Checkbox*/}
+                    {/*  checked={isSelected}*/}
+                    {/*  onCheckedChange={(checked) => handleSelectPhoto(photo.id, checked as boolean)}*/}
+                    {/*  aria-label={`Select ${photo.event_name}`}*/}
+                    {/*/>*/}
                   </div>
                 </div>
 
@@ -136,19 +135,19 @@ export const PhotosListWithBulkActions = ({ initialPhotos }: PhotosListWithBulkA
                   <div className="aspect-video bg-neutral-100 dark:bg-neutral-800 overflow-hidden relative">
                     <img
                       src={photo.photo_url}
-                      alt={photo.event_name}
+                      alt="of the event"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                     />
                   </div>
 
                   {/* Info */}
                   <div className="p-4 space-y-2">
-                    <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {photo.event_name}
-                    </h3>
+                    {/*<h3 className="font-semibold text-neutral-900 dark:text-neutral-100 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">*/}
+                    {/*  {photo.event_name}*/}
+                    {/*</h3>*/}
 
                     <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
-                      <span>Year: {photo.year_utc}</span>
+                      {/*<span>Year: {photo.year_utc}</span>*/}
                       {photo.is_daily_eligible && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
                           Daily

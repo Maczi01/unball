@@ -324,8 +324,6 @@ export type AdminPhotoListItemDTO = Pick<
   DbTable<"photos">,
   | "id"
   | "photo_url"
-  | "event_name"
-  | "year_utc"
   | "lat"
   | "lon"
   | "is_daily_eligible"

@@ -3,6 +3,18 @@ import { MapPin, Compass, Award, ArrowRight } from "lucide-react";
 import { MapComponent } from "./MapComponent";
 import type { PhotoScoreResultDTO } from "@/types";
 
+const arrowPulseVariants = {
+  initial: { scale: 1 },
+  animate: {
+    scale: [1, 1.3, 1],
+    transition: {
+      duration: 1.5,
+      repeat: Infinity,
+      ease: "easeInOut",
+    },
+  },
+};
+
 interface FeedbackSectionProps {
   result: PhotoScoreResultDTO;
   runningTotal: number;
@@ -117,7 +129,7 @@ function ScoreBanner({
         <div className="hidden md:block h-[120px] w-px bg-white/25" />
         <button
           onClick={onNext}
-          className="shrink-0 inline-flex cursor-pointer items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/20 hover:bg-white/30 text-white font-medium transition-colors backdrop-blur-sm ring-1 ring-white/30 hover:ring-white/40"
+          className="shrink-0 inline-flex cursor-pointer items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white hover:bg-gray-50 text-slate-900 font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105"
         >
           {isLastPhoto ? (
             <>
@@ -127,7 +139,9 @@ function ScoreBanner({
           ) : (
             <>
               Next photo
-              <ArrowRight className="h-5 w-5" />
+              <motion.div variants={arrowPulseVariants} initial="initial" animate="animate">
+                <ArrowRight className="h-5 w-5" />
+              </motion.div>
             </>
           )}
         </button>

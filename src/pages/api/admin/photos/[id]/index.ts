@@ -7,7 +7,7 @@ import type { AdminPhotoDTO, UpdatePhotoCommand } from "@/types";
 export const prerender = false;
 
 const updatePhotoSchema = z.object({
-  event_name: z.string().max(255).optional(),
+  // event_name: z.string().max(255).optional(),
   competition: z.string().max(255).optional(),
   year_utc: z.number().int().min(1880).max(2025).optional(),
   place: z.string().max(255).optional(),
