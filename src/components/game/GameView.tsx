@@ -395,9 +395,9 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
 
           {/* Right column: Map */}
           <div
-            className={`flex-1 lg:flex-none lg:h-full ${mobileView === "map" ? "flex" : "hidden"} lg:flex flex-col min-h-0`}
+            className={`flex-1 lg:flex-none lg:h-full ${mobileView === "map" ? "flex" : "hidden"} lg:flex flex-col gap-3`}
           >
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 overflow-hidden">
               <MapComponent
                 userPin={pin}
                 correctPin={null}
@@ -410,7 +410,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
             </div>
 
             {/* Submit button - visible on mobile when on map view */}
-            <div className="lg:hidden mt-3 flex-shrink-0">
+            <div className="lg:hidden flex-shrink-0">
               <SubmitButton isDisabled={!isComplete} isLoading={gameState.isLoading} onClick={handleSubmitGuess} />
             </div>
           </div>
