@@ -186,7 +186,7 @@ export function Leaderboard({ date }: LeaderboardProps) {
                     <th className="px-6 py-3 text-left text-sm font-semibold">Rank</th>
                     <th className="px-6 py-3 text-left text-sm font-semibold">Player</th>
                     <th className="px-6 py-3 text-right text-sm font-semibold">Score</th>
-                    <th className="px-6 py-3 text-right text-sm font-semibold">Time</th>
+                    {/*<th className="px-6 py-3 text-right text-sm font-semibold">Time</th>*/}
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -216,12 +216,12 @@ export function Leaderboard({ date }: LeaderboardProps) {
                           {entry.total_score}
                         </Badge>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1 text-sm text-neutral-600 dark:text-neutral-400">
-                          <Clock className="h-4 w-4" />
-                          <span>{formatTime(entry.total_time_ms)}</span>
-                        </div>
-                      </td>
+                      {/*<td className="px-6 py-4 text-right">*/}
+                      {/*  <div className="flex items-center justify-end gap-1 text-sm text-neutral-600 dark:text-neutral-400">*/}
+                      {/*    <Clock className="h-4 w-4" />*/}
+                      {/*    <span>{formatTime(entry.total_time_ms)}</span>*/}
+                      {/*  </div>*/}
+                      {/*</td>*/}
                     </tr>
                   ))}
                 </tbody>
