@@ -160,12 +160,6 @@ export function Leaderboard({ date }: LeaderboardProps) {
                   {entry.total_score} points
                 </CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
-                <div className="flex items-center justify-center gap-1 text-sm text-neutral-600 dark:text-neutral-400">
-                  <Clock className="h-4 w-4" />
-                  <span>{formatTime(entry.total_time_ms)}</span>
-                </div>
-              </CardContent>
             </Card>
           ))}
         </div>
