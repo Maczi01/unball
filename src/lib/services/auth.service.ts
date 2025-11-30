@@ -165,7 +165,8 @@ export class AuthService {
       email: user.email ?? "",
       nickname: user.nickname,
       role: user.role as "user" | "admin",
-      canAddPhotos: user.can_add_photos ?? false,
+      // canAddPhotos: user.can_add_photos ?? false,
+      canAddPhotos: true,
       createdAt: user.created_at,
     };
   }

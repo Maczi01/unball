@@ -346,7 +346,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       )}
 
       {/* Main game area */}
-      <div className="flex-1 flex flex-col overflow-hidden p-4 md:p-6 pb-4 md:pb-6 gap-3">
+      <div className="flex-1 flex flex-col overflow-hidden p-4 md:p-6 pb-6 md:pb-6 gap-3">
         {/* Mobile toggle buttons */}
         <div className="lg:hidden flex gap-2 flex-shrink-0">
           <button
