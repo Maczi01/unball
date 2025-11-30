@@ -346,40 +346,39 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       )}
 
       {/* Main game area */}
-      <div className="flex-1 flex overflow-hidden p-4 md:p-6 pb-6">
-        <div className="w-full h-full max-h-full flex flex-col lg:grid lg:grid-cols-2 gap-6">
-          {/* Mobile toggle buttons */}
-          <div className="lg:hidden flex gap-2 flex-shrink-0">
-            <button
-              onClick={() => setMobileView("photo")}
-              className={`flex-1 py-2.5 px-4 rounded-lg font-medium transition-colors ${
-                mobileView === "photo"
-                  ? "bg-blue-500 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
-              }`}
-            >
-              Photo
-            </button>
-            <button
-              onClick={() => setMobileView("map")}
-              className={`flex-1 py-2.5 px-4 rounded-lg font-medium transition-colors ${
-                mobileView === "map"
-                  ? "bg-blue-500 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
-              }`}
-            >
-              Map
-            </button>
-          </div>
+      <div className="flex-1 flex flex-col overflow-hidden p-4 md:p-6 pb-4 md:pb-6 gap-3">
+        {/* Mobile toggle buttons */}
+        <div className="lg:hidden flex gap-2 flex-shrink-0">
+          <button
+            onClick={() => setMobileView("photo")}
+            className={`flex-1 py-2.5 px-4 rounded-lg font-medium transition-colors ${
+              mobileView === "photo"
+                ? "bg-blue-500 text-white"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
+            }`}
+          >
+            Photo
+          </button>
+          <button
+            onClick={() => setMobileView("map")}
+            className={`flex-1 py-2.5 px-4 rounded-lg font-medium transition-colors ${
+              mobileView === "map"
+                ? "bg-blue-500 text-white"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600"
+            }`}
+          >
+            Map
+          </button>
+        </div>
 
+        {/* Desktop and mobile content container */}
+        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left column: Photo and controls */}
           <div
-            className={`flex-1 space-y-3 flex-col max-h-full overflow-hidden ${
-              mobileView === "photo" ? "flex" : "hidden"
-            } lg:flex`}
+            className={`flex flex-col gap-3 min-h-0 ${mobileView === "photo" ? "flex" : "hidden"} lg:flex`}
           >
             {/* Photo */}
-            <div className="flex-1 flex flex-col min-h-0">
+            <div className="flex-1 min-h-0 overflow-hidden">
               <PhotoDisplay
                 photo={currentPhoto.photoData}
                 currentIndex={gameState.currentPhotoIndex}
@@ -388,14 +387,14 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
             </div>
 
             {/* Submit button - visible on desktop or when on photo view on mobile */}
-            <div className="lg:block flex-shrink-0">
+            <div className="flex-shrink-0">
               <SubmitButton isDisabled={!isComplete} isLoading={gameState.isLoading} onClick={handleSubmitGuess} />
             </div>
           </div>
 
           {/* Right column: Map */}
           <div
-            className={`flex-1 lg:flex-none lg:h-full ${mobileView === "map" ? "flex" : "hidden"} lg:flex flex-col gap-3`}
+            className={`flex flex-col gap-3 min-h-0 ${mobileView === "map" ? "flex" : "hidden"} lg:flex`}
           >
             <div className="flex-1 min-h-0 overflow-hidden">
               <MapComponent
