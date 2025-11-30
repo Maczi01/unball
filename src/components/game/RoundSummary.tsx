@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Award, BarChart3, Home, MapPin, RefreshCw, Share2, Trophy } from "lucide-react";
 import { NicknameInput } from "./NicknameInput";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import type { GameMode, NicknameValidation, PhotoScoreResultDTO, LeaderboardEntryDTO } from "@/types";
 import { ValidationConstants } from "@/types";
 
@@ -34,7 +33,6 @@ export function RoundSummary({
   onSubmitWithNickname,
 }: RoundSummaryProps) {
   const [nickname, setNickname] = useState("");
-  const [consentGiven, setConsentGiven] = useState(false);
   const [nicknameError, setNicknameError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -114,16 +112,11 @@ export function RoundSummary({
       return;
     }
 
-    if (!consentGiven) {
-      setNicknameError("You must agree to display your nickname on the leaderboard");
-      return;
-    }
-
     setIsSubmitting(true);
     setNicknameError(null);
 
     try {
-      await onSubmitWithNickname(nickname, consentGiven);
+      await onSubmitWithNickname(nickname, true); // Always consent = true
       setHasSubmitted(true);
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -307,23 +300,10 @@ export function RoundSummary({
 
             <NicknameInput value={nickname} onChange={handleNicknameChange} error={nicknameError || undefined} />
 
-            {/* Consent checkbox */}
-            <div className="flex items-start gap-3 pt-2">
-              <Checkbox
-                id="consent"
-                checked={consentGiven}
-                onCheckedChange={(checked) => setConsentGiven(checked === true)}
-                className="mt-1"
-              />
-              <label htmlFor="consent" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                I agree to have my nickname displayed on the public leaderboard
-              </label>
-            </div>
-
             {/* Submit button */}
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting || !nickname || !consentGiven}
+              disabled={isSubmitting || !nickname}
               className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
               size="lg"
             >
