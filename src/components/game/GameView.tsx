@@ -268,17 +268,17 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
   }, []);
 
   // Show error if device token is unavailable in Daily mode
-  useEffect(() => {
-    if (mode === "daily" && !isStorageAvailable) {
-      dispatch({
-        type: "SET_ERROR",
-        payload: {
-          message: "Daily mode requires browser storage. Please enable cookies/storage or try Normal mode.",
-          retryable: false,
-        },
-      });
-    }
-  }, [mode, isStorageAvailable]);
+  // useEffect(() => {
+  //   if (mode === "daily" && !isStorageAvailable) {
+  //     dispatch({
+  //       type: "SET_ERROR",
+  //       payload: {
+  //         message: "Daily mode requires browser storage. Please enable cookies/storage or try Normal mode.",
+  //         retryable: false,
+  //       },
+  //     });
+  //   }
+  // }, [mode, isStorageAvailable]);
 
   if (!currentPhoto) {
     return (
