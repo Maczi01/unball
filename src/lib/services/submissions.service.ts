@@ -120,7 +120,7 @@ export async function submitDailyChallenge(
     const photoIds = guesses.map((g) => g.photo_id);
     const { data: photos, error: photosError } = await supabase
       .from("photos")
-      .select("id, lat, lon, event_name, description, place, license, credit, photo_url")
+      .select("id, lat, lon, description, place, license, credit, photo_url")
       .in("id", photoIds);
 
     if (photosError) {
@@ -188,7 +188,7 @@ export async function submitDailyChallenge(
         km_error: Math.round(kmError * 10) / 10,
         correct_lat: correctPhoto.lat,
         correct_lon: correctPhoto.lon,
-        event_name: correctPhoto.event_name,
+        event_name: "", // TODO: Fetch from database when schema is updated
         description: correctPhoto.description,
         place: correctPhoto.place,
         more_info: moreInfoByPhotoId.get(guess.photo_id) || [],
