@@ -51,7 +51,7 @@ export default function HeroSection() {
 
         <div className="mt-8 flex items-center justify-center gap-3">
           <a
-            href="/play/normal"
+            href="/play/daily"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-sky-600 text-white font-medium shadow-sm hover:bg-sky-700"
           >
             <Play className="h-4 w-4" /> Play Now
