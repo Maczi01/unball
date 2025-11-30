@@ -145,6 +145,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
   const [showSummary, setShowSummary] = useState(false);
   const [leaderboardRank, setLeaderboardRank] = useState<number | undefined>(undefined);
   const [lastGuessPin, setLastGuessPin] = useState<{ lat: number; lon: number } | null>(null);
+  const [hasSubmittedToLeaderboard, setHasSubmittedToLeaderboard] = useState(false);
 
   const currentPhoto = gameState.photos[gameState.currentPhotoIndex];
   const currentPhotoNumber = gameState.currentPhotoIndex + 1;
@@ -247,6 +248,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
 
       const result: DailySubmissionResponseDTO = await response.json();
       setLeaderboardRank(result.leaderboard_rank ?? undefined);
+      setHasSubmittedToLeaderboard(true);
     },
     [mode, gameState.dailySetId, gameState.dateUtc, gameState.photos, deviceToken, elapsedMs]
   );
@@ -317,7 +319,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
         mode={mode}
         results={gameState.photos.filter((p) => p.result !== null).map((p) => p.result as PhotoScoreResultDTO)}
         totalScore={gameState.totalScore}
-        isFirstSubmission={mode === "daily" && !hasSubmitted && !isAlreadySubmitted}
+        isFirstSubmission={mode === "daily" && !hasSubmitted && !isAlreadySubmitted && !hasSubmittedToLeaderboard}
         leaderboardRank={leaderboardRank}
         onViewLeaderboard={handleViewLeaderboard}
         onPlayAgain={handlePlayAgain}
