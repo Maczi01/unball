@@ -6,7 +6,6 @@ import { MapComponent } from "./MapComponent";
 import { SubmitButton } from "./SubmitButton";
 import { FeedbackSection } from "./FeedbackSection";
 import { RoundSummary } from "./RoundSummary";
-import { useGameTimer } from "@/components/hooks/useGameTimer";
 import { usePhotoGuess } from "@/components/hooks/usePhotoGuess";
 import { useDeviceToken } from "@/components/hooks/useDeviceToken";
 import { useSubmissionCheck } from "@/components/hooks/useSubmissionCheck";
@@ -137,7 +136,6 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
   );
 
   const { pin, setPin, clearGuess, isComplete } = usePhotoGuess();
-  const { elapsedMs } = useGameTimer(mode === "daily");
   const { deviceToken, isStorageAvailable } = useDeviceToken();
   const { hasSubmitted } = useSubmissionCheck(mode, deviceToken);
 
@@ -229,7 +227,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
         nickname,
         consent_given: consent,
         guesses,
-        total_time_ms: elapsedMs,
+        total_time_ms: 0,
       };
 
       const response = await fetch("/api/daily/submissions", {
@@ -250,7 +248,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
       setLeaderboardRank(result.leaderboard_rank ?? undefined);
       setHasSubmittedToLeaderboard(true);
     },
-    [mode, gameState.dailySetId, gameState.dateUtc, gameState.photos, deviceToken, elapsedMs]
+    [mode, gameState.dailySetId, gameState.dateUtc, gameState.photos, deviceToken]
   );
 
   // Handle exit
@@ -336,7 +334,6 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
         mode={mode}
         currentPhoto={currentPhotoNumber}
         totalPhotos={gameState.photos.length}
-        elapsedMs={elapsedMs}
         onExit={handleExit}
       />
 
