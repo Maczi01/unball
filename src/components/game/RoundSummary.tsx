@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Award, BarChart3, Home, MapPin, RefreshCw, Share2, Trophy } from "lucide-react";
 import { NicknameInput } from "./NicknameInput";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { GameMode, NicknameValidation, PhotoScoreResultDTO } from "@/types";
+import type { GameMode, NicknameValidation, PhotoScoreResultDTO, LeaderboardEntryDTO } from "@/types";
 import { ValidationConstants } from "@/types";
 
 interface RoundSummaryProps {
@@ -38,12 +38,35 @@ export function RoundSummary({
   const [nicknameError, setNicknameError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntryDTO[]>([]);
+  const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false);
 
   const isDailyMode = mode === "daily";
   const showNicknameForm = isDailyMode && isFirstSubmission && !hasSubmitted;
   const showLeaderboardRank = isDailyMode && (hasSubmitted || !isFirstSubmission) && leaderboardRank !== undefined;
   const maxScore = results.length * 10000;
   const accuracy = Math.round((totalScore / maxScore) * 100);
+
+  // Fetch leaderboard after submission
+  useEffect(() => {
+    if (showLeaderboardRank && isDailyMode) {
+      const fetchLeaderboard = async () => {
+        setIsLoadingLeaderboard(true);
+        try {
+          const response = await fetch("/api/leaderboard?limit=10");
+          if (response.ok) {
+            const data = await response.json();
+            setLeaderboardData(data.leaderboard || []);
+          }
+        } catch (error) {
+          console.error("Failed to fetch leaderboard:", error);
+        } finally {
+          setIsLoadingLeaderboard(false);
+        }
+      };
+      fetchLeaderboard();
+    }
+  }, [showLeaderboardRank, isDailyMode]);
 
   // Validate nickname
   const validateNickname = (value: string): NicknameValidation => {
@@ -190,17 +213,83 @@ export function RoundSummary({
 
         {/* Leaderboard rank (after submission) */}
         {showLeaderboardRank && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.55 }}
-            className="mt-6 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-2xl p-6 text-center border-2 border-yellow-400 dark:border-yellow-600"
-          >
-            <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-2">
-              <Award className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-              You placed #{leaderboardRank} on today`&#39;`s leaderboard!
-            </p>
-          </motion.div>
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.55 }}
+              className="mt-6 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-2xl p-6 text-center border-2 border-yellow-400 dark:border-yellow-600"
+            >
+              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-2">
+                <Award className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                You placed #{leaderboardRank} on today&#39;s leaderboard!
+              </p>
+            </motion.div>
+
+            {/* Leaderboard list */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.6 }}
+              className="mt-6 bg-white dark:bg-gray-800 rounded-2xl ring-1 ring-slate-100 dark:ring-gray-700 shadow-sm p-6"
+            >
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-4">
+                <Trophy className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                Today&#39;s Top 10
+              </h3>
+
+              {isLoadingLeaderboard ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : leaderboardData.length > 0 ? (
+                <div className="space-y-2">
+                  {leaderboardData.map((entry, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center justify-between p-3 rounded-lg ${
+                        entry.rank === leaderboardRank
+                          ? "bg-yellow-100 dark:bg-yellow-900/30 border-2 border-yellow-400 dark:border-yellow-600"
+                          : "bg-slate-50 dark:bg-gray-700/50"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`flex items-center justify-center w-8 h-8 rounded-full font-bold ${
+                            entry.rank === 1
+                              ? "bg-yellow-400 text-yellow-900"
+                              : entry.rank === 2
+                              ? "bg-slate-300 text-slate-900"
+                              : entry.rank === 3
+                              ? "bg-orange-400 text-orange-900"
+                              : "bg-slate-200 dark:bg-gray-600 text-slate-700 dark:text-gray-300"
+                          }`}
+                        >
+                          {entry.rank}
+                        </div>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                          {entry.nickname}
+                          {entry.rank === leaderboardRank && (
+                            <span className="ml-2 text-xs text-yellow-600 dark:text-yellow-400">(You)</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold text-gray-900 dark:text-gray-100">
+                          {entry.total_score.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">points</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+                  No leaderboard data available
+                </p>
+              )}
+            </motion.div>
+          </>
         )}
 
         {/* Nickname submission form (Daily, first attempt) */}
