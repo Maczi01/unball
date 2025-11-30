@@ -227,7 +227,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
         nickname,
         consent_given: consent,
         guesses,
-        total_time_ms: 0,
+        total_time_ms: 1, // Dummy value (time tracking removed from game)
       };
 
       const response = await fetch("/api/leaderboard", {
