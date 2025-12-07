@@ -46,7 +46,7 @@ export function FeedbackSection({
     <div className="min-h-screen bg-gradient-to-b from-white to-sky-50 text-slate-900 dark:from-gray-900 dark:to-gray-800 dark:text-gray-100">
       <Header runningTotal={runningTotal} />
 
-      <main className="mx-auto max-w-6xl px-4 py-8 md:py-12">
+      <main className="mx-auto max-w-6xl px-4 py-8 md:py-2">
         <ScoreBanner
           points={result.total_score}
           distanceKm={result.km_error}
@@ -124,7 +124,6 @@ function ScoreBanner({
         <div className="hidden md:block h-[120px] w-px bg-white/25" />
         <div className="flex items-center gap-3">
           <Badge icon={MapPin} label={`${fmt(distanceKm)} km`} sub="distance" />
-          <Badge icon={Award} label={`${Math.max(0, Math.round((points / 20000) * 100))}%`} sub="of max" />
         </div>
         <div className="hidden md:block h-[120px] w-px bg-white/25" />
         <button
