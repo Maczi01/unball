@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Award, BarChart3, Home, MapPin, RefreshCw, Share2, Trophy } from "lucide-react";
 import { NicknameInput } from "./NicknameInput";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import type { GameMode, NicknameValidation, PhotoScoreResultDTO, LeaderboardEntryDTO } from "@/types";
 import { ValidationConstants } from "@/types";
 
@@ -138,6 +139,36 @@ export function RoundSummary({
     if (accuracy >= 60) return "Great Job!";
     if (accuracy >= 40) return "Good Effort!";
     return "Room for Improvement!";
+  };
+
+  // Handle share to clipboard
+  const handleShare = async () => {
+    const emojiMap = {
+      90: "🏆✨",
+      75: "🎯🔥",
+      60: "👍💪",
+      40: "📈🎲",
+      0: "🌱🎮",
+    };
+
+    const emoji = emojiMap[Object.keys(emojiMap).find((key) => accuracy >= Number(key)) as keyof typeof emojiMap] || "🎮";
+
+    const shareText = `${emoji} Snaptrip Results ${emoji}
+
+📊 Score: ${fmt(totalScore)}/${fmt(maxScore)} (${accuracy}%)
+${isDailyMode ? "🗓️ Daily Challenge" : "🎯 Normal Mode"}
+
+${results.map((r, i) => `${i + 1}. ${r.place || "Unknown"} - ${fmt(r.total_score)} pts (${fmt(r.km_error)} km)`).join("\n")}
+
+Play at: https://snaptrip.app/`;
+
+    try {
+      await navigator.clipboard.writeText(shareText);
+      toast.success("Results copied to clipboard! 🎉");
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
+      toast.error("Failed to copy results");
+    }
   };
 
   return (
@@ -398,8 +429,10 @@ export function RoundSummary({
           <motion.button
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.4, delay: 1.0 }}
-            onClick={() => (window.location.href = "/")}
+            onClick={handleShare}
             className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-800 font-medium transition-colors"
           >
             <Share2 className="h-4 w-4" /> Share Results

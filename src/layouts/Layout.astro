@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { Toaster } from "@/components/ui/sonner";
 
 interface Props {
   title?: string;
@@ -42,6 +43,7 @@ const { title = "Daily photo quizz" } = Astro.props;
     <main>
       <slot />
     </main>
+    <Toaster client:load />
   </body>
 </html>
 
