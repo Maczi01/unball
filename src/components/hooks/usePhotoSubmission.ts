@@ -368,6 +368,7 @@ export function usePhotoSubmission(userEmail?: string): UsePhotoSubmissionReturn
       // 2. Upload photo directly to Supabase Storage from client
       // This bypasses Cloudflare Workers' multipart form data limitations
       const supabase = getBrowserClient();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const photoFile = formData.photo_file!;
       const fileExt = photoFile.name.split(".").pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;

@@ -93,7 +93,7 @@ export const ContactForm = () => {
           <Check className="mx-auto mb-4 size-12 text-green-600 dark:text-green-400" />
           <h2 className="text-2xl font-semibold text-green-600 dark:text-green-400">Thank you!</h2>
           <p className="text-gray-700 dark:text-gray-300">
-            Your message has been sent successfully. We'll get back to you soon.
+            Your message has been sent successfully. We&#39;ll get back to you soon.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button
@@ -120,8 +120,8 @@ export const ContactForm = () => {
       <div className="mb-10 text-center">
         <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Get in Touch</h1>
         <p className="mx-auto max-w-2xl text-gray-600 dark:text-gray-300">
-          Have a question or feedback? We'd love to hear from you. Fill out the form below and we'll get back to you as
-          soon as possible.
+          Have a question or feedback? We&#39;d love to hear from you. Fill out the form below and we&#39;ll get back to
+          you as soon as possible.
         </p>
       </div>
 
