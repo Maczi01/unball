@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { ContactForm } from "../components/ContactForm";
+---
+
+<Layout>
+  <div class="min-h-screen bg-gradient-to-b from-white to-sky-50 py-16 px-4 text-gray-900 dark:from-gray-900 dark:to-gray-800 dark:text-gray-100 sm:px-6 lg:px-8">
+    <ContactForm client:load />
+  </div>
+</Layout>

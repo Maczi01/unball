@@ -14,7 +14,7 @@ export default function FooterSection() {
           <a className="hover:text-gray-900" href={"/"}>
             Instagram
           </a>
-          <a className="hover:text-gray-900" href={"/"}>
+          <a className="hover:text-gray-900" href={"/contact"}>
             Contact
           </a>
         </div>
