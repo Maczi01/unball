@@ -17,18 +17,6 @@ export const PhotosListWithBulkActions = ({ initialPhotos }: PhotosListWithBulkA
     setPhotos(initialPhotos);
   }, [initialPhotos]);
 
-  const handleSelectPhoto = useCallback((photoId: string, checked: boolean) => {
-    setSelectedIds((prev) => {
-      const newSet = new Set(prev);
-      if (checked) {
-        newSet.add(photoId);
-      } else {
-        newSet.delete(photoId);
-      }
-      return newSet;
-    });
-  }, []);
-
   const handleSelectAll = useCallback(() => {
     setSelectedIds(new Set(photos.map((p) => p.id)));
   }, [photos]);

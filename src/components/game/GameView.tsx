@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useReducer, useState } from "react";
 import { GameHeader } from "./GameHeader";
 import { AlreadySubmittedNotice } from "./AlreadySubmittedNotice";
 import { PhotoDisplay } from "./PhotoDisplay";
@@ -136,7 +136,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
   );
 
   const { pin, setPin, clearGuess, isComplete } = usePhotoGuess();
-  const { deviceToken, isStorageAvailable } = useDeviceToken();
+  const { deviceToken } = useDeviceToken();
   const { hasSubmitted } = useSubmissionCheck(mode, deviceToken);
 
   const [showFeedback, setShowFeedback] = useState(false);
@@ -374,9 +374,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
         {/* Desktop and mobile content container */}
         <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left column: Photo and controls */}
-          <div
-            className={`flex flex-col gap-3 min-h-0 ${mobileView === "photo" ? "flex" : "hidden"} lg:flex`}
-          >
+          <div className={`flex flex-col gap-3 min-h-0 ${mobileView === "photo" ? "flex" : "hidden"} lg:flex`}>
             {/* Photo */}
             <div className="flex-1 min-h-0 overflow-hidden">
               <PhotoDisplay
@@ -393,9 +391,7 @@ export function GameView({ mode, initialData, isAlreadySubmitted }: GameViewProp
           </div>
 
           {/* Right column: Map */}
-          <div
-            className={`flex flex-col gap-3 min-h-0 ${mobileView === "map" ? "flex" : "hidden"} lg:flex`}
-          >
+          <div className={`flex flex-col gap-3 min-h-0 ${mobileView === "map" ? "flex" : "hidden"} lg:flex`}>
             <div className="flex-1 min-h-0 overflow-hidden">
               <MapComponent
                 userPin={pin}

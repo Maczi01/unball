@@ -58,6 +58,7 @@ export function RoundSummary({
             setLeaderboardData(data.leaderboard || []);
           }
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error("Failed to fetch leaderboard:", error);
         } finally {
           setIsLoadingLeaderboard(false);
@@ -151,7 +152,9 @@ export function RoundSummary({
       0: "🌱🎮",
     };
 
-    const emoji = emojiMap[Object.keys(emojiMap).find((key) => accuracy >= Number(key)) as keyof typeof emojiMap] || "🎮";
+    const emoji =
+      emojiMap[Object.keys(emojiMap).find((key) => accuracy >= Number(key)) as unknown as keyof typeof emojiMap] ||
+      "🎮";
 
     const shareText = `${emoji} Snaptrip Results ${emoji}
 
@@ -166,6 +169,7 @@ Play at: https://snaptrip.app/`;
       await navigator.clipboard.writeText(shareText);
       toast.success("Results copied to clipboard! 🎉");
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to copy to clipboard:", error);
       toast.error("Failed to copy results");
     }

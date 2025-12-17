@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, Award, Calendar, Clock, Loader2, Medal, Trophy } from "lucide-react";
+import { AlertCircle, Award, Calendar, Loader2, Medal, Trophy } from "lucide-react";
 import type { LeaderboardResponseDTO } from "@/types";
 
 interface LeaderboardProps {
@@ -52,13 +52,6 @@ export function Leaderboard({ date }: LeaderboardProps) {
       day: "numeric",
       year: "numeric",
     }).format(date);
-  };
-
-  const formatTime = (ms: number) => {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const getRankBadge = (rank: number) => {

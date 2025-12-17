@@ -6,14 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Check, LoaderCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
@@ -98,9 +91,7 @@ export const ContactForm = () => {
       <div className="flex min-h-[60vh] items-center justify-center p-4">
         <div className="w-full max-w-md space-y-6 rounded-2xl bg-white/80 p-8 text-center shadow-2xl dark:bg-gray-800/90">
           <Check className="mx-auto mb-4 size-12 text-green-600 dark:text-green-400" />
-          <h2 className="text-2xl font-semibold text-green-600 dark:text-green-400">
-            Thank you!
-          </h2>
+          <h2 className="text-2xl font-semibold text-green-600 dark:text-green-400">Thank you!</h2>
           <p className="text-gray-700 dark:text-gray-300">
             Your message has been sent successfully. We'll get back to you soon.
           </p>
@@ -127,12 +118,10 @@ export const ContactForm = () => {
   return (
     <div className="mx-auto w-full max-w-3xl rounded-xl bg-white/70 p-6 shadow-2xl ring-1 ring-gray-100 backdrop-blur dark:bg-gray-800/90 dark:ring-gray-700 sm:p-8 md:p-12">
       <div className="mb-10 text-center">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-          Get in Touch
-        </h1>
+        <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Get in Touch</h1>
         <p className="mx-auto max-w-2xl text-gray-600 dark:text-gray-300">
-          Have a question or feedback? We'd love to hear from you. Fill out the form below and
-          we'll get back to you as soon as possible.
+          Have a question or feedback? We'd love to hear from you. Fill out the form below and we'll get back to you as
+          soon as possible.
         </p>
       </div>
 
@@ -151,9 +140,7 @@ export const ContactForm = () => {
             render={({ field }) => (
               <FormItem>
                 <div className="mb-2 flex justify-between">
-                  <FormLabel className="font-medium text-gray-700 dark:text-gray-300">
-                    Your Email
-                  </FormLabel>
+                  <FormLabel className="font-medium text-gray-700 dark:text-gray-300">Your Email</FormLabel>
                   <span className={`text-xs ${getCounterColor(charCounts.email, maxLengths.email)}`}>
                     {charCounts.email}/{maxLengths.email}
                   </span>
@@ -211,9 +198,7 @@ export const ContactForm = () => {
             render={({ field }) => (
               <FormItem className="relative md:col-span-2">
                 <div className="mb-2 flex justify-between">
-                  <FormLabel className="font-medium text-gray-700 dark:text-gray-300">
-                    Message
-                  </FormLabel>
+                  <FormLabel className="font-medium text-gray-700 dark:text-gray-300">Message</FormLabel>
                   <span className={`text-xs ${getCounterColor(charCounts.message, maxLengths.message)}`}>
                     {charCounts.message}/{maxLengths.message}
                   </span>

@@ -66,7 +66,6 @@ function validateEventName(value: string): string | null {
   return null;
 }
 
-
 function validateLatitude(value: string): string | null {
   if (!value) return "Latitude is required";
   const lat = parseFloat(value);
@@ -135,7 +134,6 @@ function validateUrl(value: string): boolean {
     return false;
   }
 }
-
 
 function validateMoreInfo(
   moreInfo: {
