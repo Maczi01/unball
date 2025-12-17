@@ -63,8 +63,8 @@ CREATE TRIGGER update_photo_submissions_updated_at
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, created_at, updated_at)
-  VALUES (NEW.id, NEW.email, now(), now());
+  INSERT INTO public.users (id, email, can_add_photos, created_at, updated_at)
+  VALUES (NEW.id, NEW.email, true, now(), now());
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
