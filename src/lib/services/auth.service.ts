@@ -4,6 +4,7 @@ export interface SignUpData {
   email: string;
   password: string;
   nickname?: string;
+  siteUrl?: string;
 }
 
 export interface SignInData {
@@ -37,7 +38,7 @@ export class AuthService {
    * Sign up a new user with email and password
    */
   async signUp(data: SignUpData): Promise<AuthResult> {
-    const { email, password, nickname } = data;
+    const { email, password, nickname, siteUrl } = data;
 
     // Validate password
     if (password.length < 8) {
@@ -63,9 +64,13 @@ export class AuthService {
     // }
 
     // Sign up with Supabase Auth
+    // Include emailRedirectTo to ensure confirmation emails redirect to the correct site
     const { data: authData, error: authError } = await this.supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: siteUrl ? `${siteUrl}/auth/callback` : undefined,
+      },
     });
 
     if (authError) {

@@ -10,6 +10,7 @@ interface CloudflareEnv {
   OPENROUTER_API_KEY?: string;
   PUBLIC_MAPBOX_ACCESS_TOKEN?: string;
   CRON_SECRET?: string;
+  SITE_URL?: string;
 }
 
 declare global {
@@ -33,6 +34,7 @@ interface ImportMetaEnv {
   readonly OPENROUTER_API_KEY: string;
   readonly GOOGLE_GEMINI_API_KEY: string;
   readonly CRON_SECRET: string;
+  readonly SITE_URL: string;
 
   // Client-side (PUBLIC_ vars are bundled and safe to expose)
   readonly PUBLIC_SUPABASE_URL: string;

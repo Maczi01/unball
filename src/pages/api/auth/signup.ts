@@ -28,9 +28,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const { email, password, nickname } = validationResult.data;
 
+    // Get site URL from environment or runtime
+    const siteUrl = locals.runtime?.env?.SITE_URL || import.meta.env.SITE_URL;
+
     // Use auth service
     const authService = new AuthService(locals.supabase);
-    const result = await authService.signUp({ email, password, nickname });
+    const result = await authService.signUp({ email, password, nickname, siteUrl });
 
     if (!result.success) {
       return new Response(
