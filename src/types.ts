@@ -381,11 +381,12 @@ export type AdminDailySetDTO = Pick<
 
 /**
  * Summary daily set information for admin list view
- * Includes photo count
+ * Includes photo count and player count
  */
 export type AdminDailySetListItemDTO = Pick<DbTable<"daily_sets">, "date_utc" | "is_published" | "created_at"> & {
   daily_set_id: string; // Derived from daily_sets.id
   photo_count: number;
+  player_count: number;
 };
 
 /**

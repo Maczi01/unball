@@ -271,6 +271,10 @@ const DailySetRow = ({ set, onDelete, onPublish }: DailySetRowProps) => {
           <span className="text-sm text-neutral-600 dark:text-neutral-400">
             {set.photo_count} photo{set.photo_count !== 1 ? "s" : ""}
           </span>
+
+          <span className="text-sm text-neutral-600 dark:text-neutral-400">
+            {set.player_count} player{set.player_count !== 1 ? "s" : ""}
+          </span>
         </div>
       </div>
 

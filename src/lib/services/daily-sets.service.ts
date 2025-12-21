@@ -309,7 +309,8 @@ export async function listDailySets(
       date_utc,
       is_published,
       created_at,
-      daily_set_photos!left (photo_id)
+      daily_set_photos!left (photo_id),
+      daily_submissions!left (id)
     `,
       { count: "exact" }
     );
@@ -340,6 +341,7 @@ export async function listDailySets(
       is_published: set.is_published,
       created_at: set.created_at,
       photo_count: set.daily_set_photos?.length || 0,
+      player_count: set.daily_submissions?.length || 0,
     }));
 
     // Calculate pagination
