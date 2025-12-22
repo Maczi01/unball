@@ -368,8 +368,19 @@ export interface AdminDailySetPhotoDTO {
 }
 
 /**
+ * Leaderboard entry for daily set admin view
+ */
+export interface AdminDailySetLeaderboardEntryDTO {
+  nickname: string;
+  total_score: number;
+  total_time_ms: number;
+  submission_timestamp: string;
+  rank: number;
+}
+
+/**
  * Complete daily set details for admin
- * Combines daily_sets with photo array
+ * Combines daily_sets with photo array and leaderboard
  */
 export type AdminDailySetDTO = Pick<
   DbTable<"daily_sets">,
@@ -377,6 +388,7 @@ export type AdminDailySetDTO = Pick<
 > & {
   daily_set_id: string; // Derived from daily_sets.id
   photos: AdminDailySetPhotoDTO[];
+  leaderboard: AdminDailySetLeaderboardEntryDTO[];
 };
 
 /**

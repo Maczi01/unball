@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, CheckCircle, Clock, Image as ImageIcon, Trash2 } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock, Image as ImageIcon, Trash2, Trophy } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -245,6 +245,94 @@ export const DailySetDetail = ({ dailySetId }: DailySetDetailProps) => {
               </div>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Leaderboard */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
+            <CardTitle>Leaderboard ({dailySet.leaderboard.length})</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {dailySet.leaderboard.length === 0 ? (
+            <div className="text-center py-8 text-neutral-600 dark:text-neutral-400">
+              No submissions yet for this daily set.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b border-neutral-200 dark:border-neutral-800">
+                  <tr>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                      Rank
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                      Nickname
+                    </th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                      Score
+                    </th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                      Time
+                    </th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                      Submitted
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dailySet.leaderboard.map((entry) => (
+                    <tr
+                      key={`${entry.nickname}-${entry.submission_timestamp}`}
+                      className="border-b border-neutral-100 dark:border-neutral-900 last:border-0 hover:bg-neutral-50 dark:hover:bg-neutral-900"
+                    >
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          {entry.rank <= 3 ? (
+                            <Badge
+                              className={
+                                entry.rank === 1
+                                  ? "bg-yellow-100 dark:bg-yellow-950 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-900"
+                                  : entry.rank === 2
+                                    ? "bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-900"
+                                    : "bg-orange-100 dark:bg-orange-950 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-900"
+                              }
+                            >
+                              #{entry.rank}
+                            </Badge>
+                          ) : (
+                            <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                              #{entry.rank}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                        {entry.nickname}
+                      </td>
+                      <td className="py-3 px-4 text-right text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                        {entry.total_score}
+                      </td>
+                      <td className="py-3 px-4 text-right text-sm text-neutral-600 dark:text-neutral-400">
+                        {(entry.total_time_ms / 1000).toFixed(1)}s
+                      </td>
+                      <td className="py-3 px-4 text-right text-sm text-neutral-600 dark:text-neutral-400">
+                        {new Date(entry.submission_timestamp).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 

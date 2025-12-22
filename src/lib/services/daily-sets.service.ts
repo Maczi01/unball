@@ -257,13 +257,35 @@ export async function getDailySetById(supabase: SupabaseClient, daily_set_id: st
       throw new Error("Daily set not found");
     }
 
-    // Transform to DTO
+    // Transform photos to DTO
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const photos: AdminDailySetPhotoDTO[] = data.daily_set_photos.map((dsp: any) => ({
       photo_id: dsp.photos.id,
       position: dsp.position,
       photo_url: dsp.photos.photo_url,
       place: dsp.photos.place,
+    }));
+
+    // Fetch leaderboard data
+    const { data: submissions, error: submissionsError } = await supabase
+      .from("daily_submissions")
+      .select("nickname, total_score, total_time_ms, submission_timestamp")
+      .eq("daily_set_id", daily_set_id)
+      .order("total_score", { ascending: false })
+      .order("total_time_ms", { ascending: true });
+
+    if (submissionsError) {
+      // eslint-disable-next-line no-console
+      console.error("[Daily Sets] Error fetching leaderboard:", submissionsError);
+    }
+
+    // Transform submissions to leaderboard with ranks
+    const leaderboard = (submissions || []).map((submission, index) => ({
+      nickname: submission.nickname,
+      total_score: submission.total_score,
+      total_time_ms: submission.total_time_ms,
+      submission_timestamp: submission.submission_timestamp,
+      rank: index + 1,
     }));
 
     return {
@@ -273,6 +295,7 @@ export async function getDailySetById(supabase: SupabaseClient, daily_set_id: st
       created_at: data.created_at,
       updated_at: data.updated_at,
       photos,
+      leaderboard,
     };
   } catch (error) {
     // eslint-disable-next-line no-console
