@@ -21,10 +21,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const { COORDINATES } = ValidationConstants;
 
     if (typeof photo_id !== "string" || photo_id.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Invalid photo_id", timestamp: new Date().toISOString() }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Invalid photo_id", timestamp: new Date().toISOString() }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     if (
@@ -35,10 +35,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
       guessed_lon < COORDINATES.LON_MIN ||
       guessed_lon > COORDINATES.LON_MAX
     ) {
-      return new Response(
-        JSON.stringify({ error: "Invalid guess coordinates", timestamp: new Date().toISOString() }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Invalid guess coordinates", timestamp: new Date().toISOString() }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const [result] = await scoreGuesses(locals.supabase, [{ photo_id, guessed_lat, guessed_lon }]);
@@ -63,9 +63,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    return new Response(
-      JSON.stringify({ error: "Failed to score guess", timestamp: new Date().toISOString() }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: "Failed to score guess", timestamp: new Date().toISOString() }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
