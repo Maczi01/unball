@@ -1,6 +1,6 @@
 import { defineMiddleware } from "astro:middleware";
 
-import { createSupabaseServerInstance } from "../db/supabase.client.ts";
+import { createSupabaseBearerClient, createSupabaseServerInstance } from "../db/supabase.client.ts";
 
 /**
  * Authentication middleware
@@ -45,6 +45,33 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
+    // Mobile clients can't carry cookies — fall back to Authorization: Bearer <jwt>
+    // when the cookie session is absent.
+    if (!user) {
+      const authHeader = context.request.headers.get("Authorization");
+      const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+
+      if (bearerToken) {
+        const bearerClient = createSupabaseBearerClient({
+          accessToken: bearerToken,
+          supabaseUrl,
+          supabaseKey,
+        });
+        const {
+          data: { user: bearerUser },
+        } = await bearerClient.auth.getUser(bearerToken);
+
+        if (bearerUser) {
+          context.locals.supabase = bearerClient;
+          context.locals.user = bearerUser;
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          context.locals.session = { user: bearerUser };
+          return next();
+        }
+      }
+    }
 
     // Attach to context for use in pages and API routes
     context.locals.supabase = supabase;

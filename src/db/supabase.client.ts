@@ -122,6 +122,36 @@ export function createSupabaseServerClient(
 }
 
 /**
+ * Server-side Supabase client authenticated with a user's Bearer token.
+ * Used by mobile clients that can't carry cookies — RLS uses the embedded JWT.
+ */
+export function createSupabaseBearerClient(options: {
+  accessToken: string;
+  supabaseUrl?: string;
+  supabaseKey?: string;
+}) {
+  const url = options.supabaseUrl || import.meta.env.SUPABASE_URL;
+  const key = options.supabaseKey || import.meta.env.SUPABASE_KEY;
+
+  if (!url || !key) {
+    throw new Error("Supabase credentials must be provided");
+  }
+
+  return createClient<Database>(url, key, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${options.accessToken}`,
+      },
+    },
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+  });
+}
+
+/**
  * Type-safe Supabase client for this project
  * Use this type instead of importing from @supabase/supabase-js
  */
