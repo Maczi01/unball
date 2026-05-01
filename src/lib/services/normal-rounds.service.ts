@@ -1,17 +1,19 @@
 import type { SupabaseClient } from "@/db/supabase.client";
-import type { CalculateScoreCommand, PhotoMoreInfoDTO, PhotoScoreResultDTO, ScoreResponseDTO } from "@/types";
+import type {
+  CalculateScoreCommand,
+  GuessDTO,
+  PhotoMoreInfoDTO,
+  PhotoScoreResultDTO,
+  ScoreResponseDTO,
+} from "@/types";
 import { calculateDistance, calculateLocationScore } from "@/lib/utils/scoreCalculation";
 
 /**
- * Scores a Normal-mode round.
- * No persistence, no leaderboard, no daily-set validation — just resolve the
- * guessed photo IDs against the photos table and return per-photo scores.
+ * Scores N guesses against the photos table.
+ * Resolves photo IDs, fetches more_info, computes per-photo location scores.
+ * No persistence, no leaderboard, no daily-set validation.
  */
-export async function scoreNormalRound(
-  supabase: SupabaseClient,
-  command: CalculateScoreCommand
-): Promise<ScoreResponseDTO> {
-  const { guesses, total_time_ms } = command;
+export async function scoreGuesses(supabase: SupabaseClient, guesses: GuessDTO[]): Promise<PhotoScoreResultDTO[]> {
   const photoIds = guesses.map((g) => g.photo_id);
 
   const { data: photos, error: photosError } = await supabase
@@ -23,7 +25,7 @@ export async function scoreNormalRound(
     throw photosError;
   }
 
-  if (!photos || photos.length !== guesses.length) {
+  if (!photos || photos.length !== new Set(photoIds).size) {
     throw new Error("INVALID_PHOTO_IDS");
   }
 
@@ -45,7 +47,7 @@ export async function scoreNormalRound(
     moreInfoByPhotoId.set(info.photo_id, list);
   });
 
-  const photoResults: PhotoScoreResultDTO[] = guesses.map((guess) => {
+  return guesses.map((guess) => {
     const correctPhoto = photos.find((p) => p.id === guess.photo_id);
     if (!correctPhoto) {
       throw new Error(`Photo not found: ${guess.photo_id}`);
@@ -70,12 +72,21 @@ export async function scoreNormalRound(
       credit: correctPhoto.credit,
     };
   });
+}
 
-  const totalScore = photoResults.reduce((sum, r) => sum + r.total_score, 0);
+/**
+ * Scores a Normal-mode round (5 guesses, no persistence).
+ */
+export async function scoreNormalRound(
+  supabase: SupabaseClient,
+  command: CalculateScoreCommand
+): Promise<ScoreResponseDTO> {
+  const photos = await scoreGuesses(supabase, command.guesses);
+  const totalScore = photos.reduce((sum, r) => sum + r.total_score, 0);
 
   return {
     total_score: totalScore,
-    total_time_ms,
-    photos: photoResults,
+    total_time_ms: command.total_time_ms,
+    photos,
   };
 }
