@@ -1,11 +1,5 @@
 import type { SupabaseClient } from "@/db/supabase.client";
-import type {
-  CalculateScoreCommand,
-  GuessDTO,
-  PhotoMoreInfoDTO,
-  PhotoScoreResultDTO,
-  ScoreResponseDTO,
-} from "@/types";
+import type { CalculateScoreCommand, GuessDTO, PhotoMoreInfoDTO, PhotoScoreResultDTO, ScoreResponseDTO } from "@/types";
 import { calculateDistance, calculateLocationScore } from "@/lib/utils/scoreCalculation";
 
 /**
