@@ -1,10 +1,25 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
+import type { StyleSpecification } from "maplibre-gl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { ValidationConstants } from "@/types";
+
+const OSM_RASTER_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    osm: {
+      type: "raster",
+      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      tileSize: 256,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxzoom: 19,
+    },
+  },
+  layers: [{ id: "osm", type: "raster", source: "osm" }],
+};
 
 interface LocationPickerProps {
   lat: string;
@@ -16,8 +31,8 @@ interface LocationPickerProps {
 
 export function LocationPicker({ lat, lon, onChange, error, disabled = false }: LocationPickerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markerRef = useRef<mapboxgl.Marker | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markerRef = useRef<maplibregl.Marker | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [pasteCoords, setPasteCoords] = useState<string>("");
   const [pasteError, setPasteError] = useState<string | null>(null);
@@ -46,7 +61,7 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
     }
 
     // Create new marker
-    const marker = new mapboxgl.Marker({
+    const marker = new maplibregl.Marker({
       draggable: isDraggable,
       color: "#ef4444", // red-500
     })
@@ -71,19 +86,10 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    // Check if mapbox token is available
-    const token = import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN;
-    if (!token) {
-      setMapError("Mapbox token not configured. Please enter coordinates manually.");
-      return;
-    }
-
-    mapboxgl.accessToken = token;
-
     try {
-      const map = new mapboxgl.Map({
+      const map = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: "mapbox://styles/mapbox/streets-v12",
+        style: OSM_RASTER_STYLE,
         center: [0, 20], // Default center
         zoom: 1.5,
       });
@@ -91,7 +97,7 @@ export function LocationPicker({ lat, lon, onChange, error, disabled = false }: 
       mapRef.current = map;
 
       // Add navigation controls
-      map.addControl(new mapboxgl.NavigationControl(), "top-right");
+      map.addControl(new maplibregl.NavigationControl(), "top-right");
 
       // Handle map clicks
       map.on("click", (e) => {

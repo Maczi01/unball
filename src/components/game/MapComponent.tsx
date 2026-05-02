@@ -1,9 +1,22 @@
 import { useEffect, useRef, useState, memo } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
+import type { StyleSpecification } from "maplibre-gl";
 import type { PinLocation } from "@/types";
 
-mapboxgl.accessToken = import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN || "";
+const OSM_RASTER_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    osm: {
+      type: "raster",
+      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      tileSize: 256,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxzoom: 19,
+    },
+  },
+  layers: [{ id: "osm", type: "raster", source: "osm" }],
+};
 
 interface MapComponentProps {
   userPin: PinLocation | null;
@@ -25,10 +38,10 @@ const MapComponentInner = ({
   className = "",
 }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const userMarker = useRef<mapboxgl.Marker | null>(null);
-  const correctMarker = useRef<mapboxgl.Marker | null>(null);
-  const distanceMarker = useRef<mapboxgl.Marker | null>(null);
+  const map = useRef<maplibregl.Map | null>(null);
+  const userMarker = useRef<maplibregl.Marker | null>(null);
+  const correctMarker = useRef<maplibregl.Marker | null>(null);
+  const distanceMarker = useRef<maplibregl.Marker | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
 
@@ -37,9 +50,9 @@ const MapComponentInner = ({
     if (!mapContainer.current || map.current) return;
 
     try {
-      map.current = new mapboxgl.Map({
+      map.current = new maplibregl.Map({
         container: mapContainer.current,
-        style: "mapbox://styles/mapbox/streets-v12",
+        style: OSM_RASTER_STYLE,
         center: [0, 20], // Center on world view
         zoom: 1.5,
         attributionControl: true,
@@ -57,7 +70,7 @@ const MapComponentInner = ({
 
       // Add navigation controls
       map.current.addControl(
-        new mapboxgl.NavigationControl({
+        new maplibregl.NavigationControl({
           showCompass: true,
           showZoom: true,
         }),
@@ -82,7 +95,7 @@ const MapComponentInner = ({
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
 
-    const handleClick = (e: mapboxgl.MapMouseEvent) => {
+    const handleClick = (e: maplibregl.MapMouseEvent) => {
       if (!showFeedback) {
         onPinPlace(e.lngLat.lat, e.lngLat.lng);
       }
@@ -129,7 +142,7 @@ const MapComponentInner = ({
 
       el.setAttribute("aria-label", "Your guess location");
 
-      userMarker.current = new mapboxgl.Marker({
+      userMarker.current = new maplibregl.Marker({
         element: el,
         draggable: !showFeedback, // Only draggable when not in feedback mode
         anchor: showFeedback ? "center" : "bottom",
@@ -173,7 +186,7 @@ const MapComponentInner = ({
       el.innerHTML = '<span class="text-2xl">🏁</span>';
       el.setAttribute("aria-label", "Correct location");
 
-      correctMarker.current = new mapboxgl.Marker({ element: el })
+      correctMarker.current = new maplibregl.Marker({ element: el })
         .setLngLat([correctPin.lon, correctPin.lat])
         .addTo(map.current);
     }
@@ -236,7 +249,7 @@ const MapComponentInner = ({
       distanceEl.setAttribute("aria-label", `Distance: ${kmError.toFixed(1)} kilometers`);
 
       // Add distance marker at midpoint
-      distanceMarker.current = new mapboxgl.Marker({
+      distanceMarker.current = new maplibregl.Marker({
         element: distanceEl,
         anchor: "center",
       })
@@ -244,7 +257,7 @@ const MapComponentInner = ({
         .addTo(map.current);
 
       // Fit bounds to show both pins
-      const bounds = new mapboxgl.LngLatBounds();
+      const bounds = new maplibregl.LngLatBounds();
       bounds.extend([userPin.lon, userPin.lat]);
       bounds.extend([correctPin.lon, correctPin.lat]);
 

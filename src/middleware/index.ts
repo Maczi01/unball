@@ -13,7 +13,33 @@ import { createSupabaseBearerClient, createSupabaseServerInstance } from "../db/
  * Note: Route protection (redirects) should be handled per-page, not here.
  * This middleware only establishes the auth context.
  */
+const CORS_ALLOW_HEADERS = "Content-Type, Authorization, X-Device-Token";
+const CORS_ALLOW_METHODS = "GET, POST, PATCH, DELETE, OPTIONS";
+
+function applyCorsHeaders(response: Response, origin: string | null): void {
+  response.headers.set("Access-Control-Allow-Origin", origin ?? "*");
+  response.headers.set("Vary", "Origin");
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
+  const url = new URL(context.request.url);
+  const isApi = url.pathname.startsWith("/api/");
+  const origin = context.request.headers.get("Origin");
+
+  // CORS preflight — bypass auth, browsers send OPTIONS without credentials.
+  if (isApi && context.request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": origin ?? "*",
+        "Access-Control-Allow-Methods": CORS_ALLOW_METHODS,
+        "Access-Control-Allow-Headers": CORS_ALLOW_HEADERS,
+        "Access-Control-Max-Age": "86400",
+        Vary: "Origin",
+      },
+    });
+  }
+
   try {
     // Debug: Log runtime availability
     // eslint-disable-next-line no-console
@@ -68,7 +94,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-expect-error
           context.locals.session = { user: bearerUser };
-          return next();
+          const bearerResponse = await next();
+          if (isApi) {
+            applyCorsHeaders(bearerResponse, origin);
+          }
+          return bearerResponse;
         }
       }
     }
@@ -88,5 +118,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.session = null;
   }
 
-  return next();
+  const response = await next();
+  if (isApi) {
+    applyCorsHeaders(response, origin);
+  }
+  return response;
 });
