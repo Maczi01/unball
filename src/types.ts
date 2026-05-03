@@ -195,6 +195,125 @@ export interface DailySubmissionResponseDTO {
 }
 
 // =============================================================================
+// FRIENDS MATCH MODE
+// =============================================================================
+
+/**
+ * Photo in a friends match (no answers revealed)
+ * Returned at create time and on join lookup
+ */
+export interface MatchPhotoDTO {
+  photo_id: string;
+  position: number;
+  photo_url: string;
+  place: string | null;
+  tags: string[] | null;
+}
+
+/**
+ * Photo in match results — like MatchPhotoDTO but with revealed answers
+ */
+export interface MatchPhotoWithAnswerDTO extends MatchPhotoDTO {
+  correct_lat: number;
+  correct_lon: number;
+  description: string | null;
+  license: string;
+  credit: string;
+}
+
+/**
+ * Response for POST /api/matches
+ */
+export interface CreateMatchResponseDTO {
+  match_id: string;
+  code: string;
+  created_at: string;
+  expires_at: string;
+  photos: MatchPhotoDTO[];
+}
+
+/**
+ * Match status type
+ */
+export type MatchStatus = "open" | "expired";
+
+/**
+ * Response for GET /api/matches/[code]
+ * Used by the join screen and the play screen
+ */
+export interface MatchJoinResponseDTO {
+  match_id: string;
+  code: string;
+  created_at: string;
+  expires_at: string;
+  status: MatchStatus;
+  creator_nickname: string;
+  photos: MatchPhotoDTO[];
+  already_submitted: boolean;
+}
+
+/**
+ * Command for POST /api/matches/[code]/submissions
+ */
+export interface MatchSubmissionCommand {
+  nickname: string;
+  guesses: GuessDTO[];
+  total_time_ms: number;
+}
+
+/**
+ * Response for POST /api/matches/[code]/submissions
+ * Returns the submitter's per-photo results so the client can render
+ * reveal/done screens without a second round-trip.
+ */
+export interface MatchSubmissionResponseDTO {
+  submission_id: string;
+  total_score: number;
+  total_time_ms: number;
+  photos: PhotoScoreResultDTO[];
+}
+
+/**
+ * Per-photo guess for a single player in the results view
+ */
+export interface MatchPlayerGuessDTO {
+  photo_id: string;
+  position: number;
+  guessed_lat: number;
+  guessed_lon: number;
+  km_error: number;
+  total_score: number;
+}
+
+/**
+ * Single player's summary in the match results
+ */
+export interface MatchPlayerSummaryDTO {
+  submission_id: string;
+  nickname: string;
+  is_self: boolean;
+  total_score: number;
+  total_time_ms: number;
+  submitted_at: string;
+  per_photo: MatchPlayerGuessDTO[];
+}
+
+/**
+ * Response for GET /api/matches/[code]/results
+ * Comparison view: photos with answers + every player's submission/guesses.
+ * Caller must have submitted to this match (server enforces).
+ */
+export interface MatchResultsResponseDTO {
+  match_id: string;
+  code: string;
+  status: MatchStatus;
+  created_at: string;
+  expires_at: string;
+  photos: MatchPhotoWithAnswerDTO[];
+  players: MatchPlayerSummaryDTO[];
+}
+
+// =============================================================================
 // LEADERBOARD
 // =============================================================================
 
